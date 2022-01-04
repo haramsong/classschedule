@@ -70,10 +70,20 @@ class Ui_Dialog(QDialog):
             self.gridLayout.addWidget(label_arr[i], i, 0, 1, 1)     # (i,0) 번째 Label
             line_arr[i] = QLineEdit(self.gridLayoutWidget)
             self.gridLayout.addWidget(line_arr[i], i, 1, 1, 1)      # (i,1) 번째 LineEdit
+            
+        # List Widget 클릭 메소드 연결
+        self.listWidget.itemClicked.connect(self.listClick)
 
         self.page_data()            # 데이터 불러오기
         self.retranslateUi()        # 텍스트 출력
         global_funtion.buttonBox(self, self, 330, 450, 311, 30, self.accept)
+        
+        
+    # List Click Event
+    def listClick(self):
+        row = self.listWidget.currentRow()
+        for i in range(len(line_arr)):
+            line_arr[i].setText(str(data[row][i+1]))
 
 
     # json에서 가져온 값에 따라 Dialog 모습이 바뀜
@@ -115,7 +125,8 @@ class Ui_Dialog(QDialog):
 
     # 새로고침 메소드
     def refreshInfo(self):
-        print("")
+        for i in range(len(line_arr)):
+            line_arr[i].setText("")
 
 
     # 데이터 저장 메소드
@@ -142,5 +153,8 @@ class Ui_Dialog(QDialog):
 
     # 데이터 삭제 메소드
     def deleteInfo(self):
-        print("")
+        self.close()
+        self.page_data()
+        self.show()
+
 
