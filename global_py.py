@@ -62,7 +62,8 @@ class global_funtion():
 
     # 범용 Message Box(2 Buttons)
     def message_box_2(self, MsgOption, title, MsgText, YesText, NoText):
-        global MsgBoxRtnSignal
+         with open("info_type.json", "r") as info:
+            configData = json.load(info)
 
         msgBox2 = QMessageBox()
         msgBox2.setIcon(MsgOption)
@@ -76,10 +77,14 @@ class global_funtion():
         msgBox2.exec_()
 
         if msgBox2.clickedButton() == buttonY:
-           MsgBoxRtnSignal = 'Y'
+           configData['message'] = "Y"
         elif msgBox2.clickedButton() == buttonN:
-           MsgBoxRtnSignal = 'N'
-        return MsgBoxRtnSignal
+           configData['message'] = "N"
+
+        json.dumps(configData, indent="\t")
+
+        with open('info_type.json', 'w', encoding='utf-8') as make_file:
+            json.dump(configData, make_file, indent="\t")
 
     def buttonBox(self, qwidget, x, y, w, h, slot):
         self.buttonBox = QDialogButtonBox(qwidget)
