@@ -4,15 +4,23 @@ global today_QDate
 
 today_QDate = QDate.currentDate()
 
+global classroom_df, lesson_assign_df, lesson_df, professor_df, time_df
 global classroom_list, lesson_assign_list, lesson_list, professor_list, time_list
 global classroom_list_col, lesson_assign_list_col, lesson_list_col, professor_list_col, time_list_col
 
 # 로컬 마스터데이터 로드(위치 : data 폴더 안 excel 파일)
-classroom_list = pd.read_excel('data/classroom_info.xlsx').values.tolist()      # 강의실 데이터
-lesson_assign_list = pd.read_excel('data/lesson_assign.xlsx').values.tolist()   # 강의 배정 데이터
-lesson_list = pd.read_excel('data/lesson_info.xlsx').values.tolist()            # 강의 데이터
-professor_list = pd.read_excel('data/professor_info.xlsx').values.tolist()      # 교수 데이터
-time_list = pd.read_excel('data/time_period.xlsx').values.tolist()              # 시간표 데이터
+classroom_df = pd.read_excel('data/classroom_info.xlsx')
+lesson_assign_df = pd.read_excel('data/lesson_assign.xlsx')
+lesson_df = pd.read_excel('data/lesson_info.xlsx')
+professor_df = pd.read_excel('data/professor_info.xlsx')
+time_df = pd.read_excel('data/time_period.xlsx')
+
+# nan값 제거
+classroom_df.replace(np.NaN, '', inplace=True)
+lesson_assign_df.replace(np.NaN, '', inplace=True)
+lesson_df.replace(np.NaN, '', inplace=True)
+professor_df.replace(np.NaN, '', inplace=True)
+time_df.replace(np.NaN, '', inplace=True)
 
 # 데이터 저장할 때 필요한 column(to_excel)
 classroom_list_col = list([col for col in pd.read_excel('data/classroom_info.xlsx')])                # 강의실 column
