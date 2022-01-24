@@ -5,6 +5,3 @@ from PyQt5.QtWidgets import *
 import pandas as pd
 import numpy as np
 import json
-
-# branch 테스트
-#pull request 테스트
