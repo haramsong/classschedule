@@ -1,4 +1,5 @@
 from dialog import *
+from timetable import *
 
 # 메인 화면
 class Ui_MainWindow(QMainWindow):
@@ -70,15 +71,14 @@ class Ui_MainWindow(QMainWindow):
         configData['info_type'] = "professor"
         self.page_move()
 
-
     # 강의실 정보 창 이동
     def classroomInfo(self):
         configData['info_type'] = "classroom"
         self.page_move()
 
-    # 강의 배정 창 이동(아직 UI 작성 안됨)
+    # 강의 배정 창 이동 (아직 UI 작성 안됨)
     def lessonSchedule(self):
-        print("")
+        Ui_Timetable().exec_()
 
     # 창 이동 메소드
     def page_move(self):
@@ -90,7 +90,8 @@ class Ui_MainWindow(QMainWindow):
         Ui_Dialog().exec_()
 
 
-if __name__ == "__main__":
+
+if __name__ == "__main__":  #'__name__' 이란 현재 모듈의 이름이 저장되는 내장 변수로 이 경우에는 main이므로 직접 실행
     import sys
     app = QApplication(sys.argv)
     ui = Ui_MainWindow()
