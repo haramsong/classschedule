@@ -2,6 +2,7 @@ from data_load import *
 from global_py import *
 import json
 
+# pull request
 # 마스터데이터 정보 창
 class Ui_Dialog(QDialog):
     # 마스터데이터 정보 창 출력
