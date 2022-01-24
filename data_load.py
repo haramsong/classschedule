@@ -39,7 +39,7 @@ professor_list_col = list([col for col in pd.read_excel('data/professor_info.xls
 time_list_col = list([col for col in pd.read_excel('data/time_period.xlsx')])                        # 시간표 column
 global_list_col = list([col for col in pd.read_excel('data/global_master.xlsx')])                        # 시간표 column
 
-
+# github test
 # 아직 안쓰이는 함수
 #
 # global season_active_idx, Selected_season_ID, Selected_season_SDate, Selected_season_EDate, season_tabarray
