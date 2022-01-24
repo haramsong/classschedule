@@ -1,5 +1,6 @@
 from dialog import *
 from timetable import *
+#꺄르르르르르ㅡㄹㅇ
 
 # 메인 화면
 class Ui_MainWindow(QMainWindow):
