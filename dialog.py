@@ -2,7 +2,6 @@ from data_load import *
 from global_py import *
 import json
 
-# pull request
 # 마스터데이터 정보 창
 class Ui_Dialog(QDialog):
     # 마스터데이터 정보 창 출력
@@ -14,8 +13,7 @@ class Ui_Dialog(QDialog):
 
     # 기본 데이터 설정
     def get_init_data(self):
-        global tool_button_arr, label_arr, line_arr, configData, row
-        row = 999
+        global tool_button_arr, label_arr, line_arr, configData , row
         # 버튼 관련 설정
         tool_button_arr = [
             ["새로고침", "img/refresh.png", 40, 40, self.refreshInfo],
@@ -32,6 +30,9 @@ class Ui_Dialog(QDialog):
         # json load
         with open("info_type.json", "r") as info:
             configData = json.load(info)
+
+        row=999
+        #print(row)
 
 
     # 화면 출력
@@ -54,7 +55,7 @@ class Ui_Dialog(QDialog):
         self.verticalLayoutWidget.setGeometry(QRect(220, 110, 60, 300))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-
+        
         # 버튼 생성
         for i in range(len(tool_button_arr)):
             self.toolButton = QToolButton(self.verticalLayoutWidget)
@@ -87,6 +88,7 @@ class Ui_Dialog(QDialog):
         row = self.listWidget.currentRow()
         for i in range(len(line_arr)):
             line_arr[i].setText(str(data[row][i+1]))
+        print(row)
 
     def jsonLoad(self):
         global configData
@@ -96,7 +98,7 @@ class Ui_Dialog(QDialog):
 
     # json에서 가져온 값에 따라 Dialog 모습이 바뀜
     def page_data(self):
-        global data, label_col, dialog_type, masterID_code, next_index
+        global data, label_col, dialog_type, masterID_code , next_index
         data = []           # 마스터 데이터의 전체 데이터 row
         label_col = []      # 마스터 데이터 column
         dialog_type = ""    # Dialog 타입
@@ -105,23 +107,24 @@ class Ui_Dialog(QDialog):
             label_col = lesson_list_col
             dialog_type = "강의"
             masterID_code = global_list[0][1]   # A
-            next_index = int(global_list[0][3])
+            next_index = global_list[0][3]
         elif configData['info_type'] == "professor":    # 교수 정보
             data = professor_list
             label_col = professor_list_col
             dialog_type = "교수"
             masterID_code = global_list[1][1]   # B
-            next_index = int(global_list[1][3])
+            next_index = global_list[1][3]
         elif configData['info_type'] == "classroom":    # 강의실 정보
             data = classroom_list
             label_col = classroom_list_col
             dialog_type = "강의실"
-            masterID_code = global_list[2][1]   # R
-            next_index = int(global_list[2][3])
+            masterID_code = global_list[2][1]  # R
+            next_index = global_list[2][3]
 
+            
         # 잘 모르시겠으면 print 주석 제거한 후 확인해보세요!
-        #print(data)         #excel 파일에 저장된 데이터 값을 pandas dataframe으로 읽어온 후 python의 array로 넘긴 것
-        #print(label_col)    #excel 파일의 column명
+        # print(data)
+        # print(label_col)
         
         # List Widget에 등록된 데이터 등록
         for i in data:
@@ -139,52 +142,51 @@ class Ui_Dialog(QDialog):
 
     # 새로고침 메소드
     def refreshInfo(self):
+        # for i in range(len(line_arr)):
+        #     line_arr[i].setText("")
         self.close()
         self.__init__()
         self.exec_()
 
+
     # 데이터 저장 메소드
     def saveInfo(self):
-        # listclick 시 임력폼에 데이터가 담긴 상태의 내용을 다시 저장하지 못하도록하는 코드
-        # 입력하고 수정을 눌러야하는데 저장버튼을 잘못 눌렀을 경우를 대비한 코드
-        if row != 999:      # 새 창이 열릴 때 row의 default = 999
-            global_funtion().message_box_1(QMessageBox.Information, "정보", "이미 입력된 내용입니다", "확인")  # 알림 메세지 출력
-            return
-
-        # Step1 우측 입력한 form들의 데이터를 new_data에 담는다
-        new_data = []
+        new_data=[]
+        # 데이터 입력 list 만들기
         for i in range(len(line_arr)):
             new_data.append(line_arr[i].text())
-        #print(new_data)
-
-        # Step2 array를 data 안에 append한다.
-        masterID = masterID_code + str(next_index).zfill(3)  #문자 A, B, R 표현을 위해 masterID_code라는 global 변수를 추가함
-        new_data.insert(0, masterID)
+        # 라인에 작성된 text 가져오기
+        masterID=masterID_code + str(next_index).zfill(3)
+        # 마스터id = 마스터 코드 + ((데이터 길이+1) + 앞에 0 넣어서 자릿수 채우기)
+        new_data.insert(0,masterID)
+        # 마스터id를 new_data 맨 앞에다 붙이자
+        if row != 999:
+            global_funtion().message_box_1(QMessageBox.Information, "정보", "이미 입력된 값입니다", "확인")
+            return
         data.append(new_data)
+        # row가 999가 아니면 저장이 되지 않게 설정
+        # data에 new_data 붙여넣자
 
-        print(data)
-        list.sort(data, key=lambda k: (k[0]))               # data array의 0번째 index를 기준으로 sort
-        df = pd.DataFrame(data, columns=label_col)          # data array, column은 label_col로 하는 dataframe 생성
+        #print(data)
+        list.sort(data,key=lambda k: (k[0]))
+        # list를 index 기준으로 정렬하자
+        df=pd.DataFrame(data, columns=label_col)
+        # 데이터 프레임으로 저장하자
 
-        # Step3 configData에 따라서 저장해야하는 excel의 위치 바꿔서 저장
-        if configData['info_type'] == "lesson":                     # 강의 정보
-            df.to_excel('data/lesson_info.xlsx', index=False)       # dataframe excel 저장
-            global_list[0][3] = next_index + 1                      # 다음 ID 수정
-        elif configData['info_type'] == "professor":                # 교수 정보
-            df.to_excel('data/professor_info.xlsx', index=False)    # dataframe excel 저장
-            global_list[1][3] = next_index + 1                      # 다음 ID 수정
-        elif configData['info_type'] == "classroom":                # 강의실 정보
-            df.to_excel('data/classroom_info.xlsx', index=False)    # dataframe excel 저장
-            global_list[2][3] = next_index + 1                      # 다음 ID 수정
-        print(df)
+        if configData['info_type'] == "lesson":
+            df.to_excel('data/lesson_info.xlsx', index=False)
+            global_list[0][3] = next_index + 1
+        elif configData['info_type'] == "professor":
+            df.to_excel('data/professor_info.xlsx', index=False)
+            global_list[1][3] = next_index + 1
+        elif configData['info_type'] == "classroom":
+            df.to_excel('data/classroom_info.xlsx', index=False)
+            global_list[2][3] = next_index + 1
 
-        df = pd.DataFrame(global_list, columns=global_list_col)     # global_list array, column은 global_list_col로 하는 dataframe 생성
-        df.to_excel('data/global_master.xlsx', index=False)         # global list df를 excel 저장
+        df = pd.DataFrame(global_list, columns = global_list_col)  # global_list_array, column은 global_list_col 로 하는 dataframe 생성
+        df.to_excel('data/global_master.xlsx', index=False)    # global list df 를 excel 저장
 
-        global_funtion().message_box_1(QMessageBox.Information, "정보", "등록되었습니다", "확인")      # 저장완료 메세지 출력
-        print("저장완료")   #확인용
-        print(df)   #확인용
-
+        global_funtion().message_box_1(QMessageBox.Information, "정보", "등록되었습니다", "확인")
         self.close()
         self.__init__()
         self.exec_()
@@ -194,37 +196,40 @@ class Ui_Dialog(QDialog):
     def changeInfo(self):
         global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 수정하시겠습니까?", "예", "아니오")
         self.jsonLoad()
-        selected_row = row
         if configData['message'] == 'Y':
-            for i in range(len(data)):      # data 개수만큼 for문
-                if i == selected_row:       # 위젯list에서 선택한 row와 i번째 data가 일치하면
-                    changed_data = []
-                    for i in range(len(line_arr)):
-                        changed_data.append(line_arr[i].text())     # 입력폼으로 수정한 내용을 changed_data에 담는다
-                    changed_data.insert(0, data[selected_row][0])   # masterID 추가 : 입력폼에서 선택했던 row에 해당하는 masterID를 가져옴
-                    data[selected_row] = changed_data       # 수정한 내용인 changed_data를 selected_row의 data에 담기
+            # 수정하시겠습니까? => 예
+            selected_row = []
+            # 데이터 입력 list 만들기
+            for i in range(len(line_arr)):
+                selected_row.append(line_arr[i].text())
+            # 라인에 작성된 text 가져오기 ( 내가 수정한 값 )
+            masterID = data[row][0]
+            # 마스터 id = 내가 클릭한 데이터에 해당하는 인덱스 뽑아오자  ( 수정 전 데이터의 idx)
+            selected_row.insert(0, masterID)
+            # 라인에 작성된 text 앞에 마스터 id 넣자 ( 수정 전 index와 수정 후 index가 같게 설정 -> idx는 같지만 안에 내용은 수정되었음 )
+            for i in range(len(data)):
+                if selected_row[0] == data[i][0]:
+                    data[i]=selected_row
+            # 기존 데이터랑 비교해서 수정 전 idx와 수정 후 idx가 같으면 수정한 값들로 변경하자
 
-                    list.sort(data, key=lambda k: (k[0]))          # data array의 0번째 index를 기준으로 sort
-                    df = pd.DataFrame(data, columns=label_col)     # data array, column은 label_col로 하는 dataframe 생성
+            list.sort(data, key=lambda k: (k[0]))
+            # list를 index 기준으로 정렬하자
+            df = pd.DataFrame(data, columns=label_col)
+            # 데이터 프레임으로 저장하자
+            print(df)
 
-                    # configData에 따라서 저장해야하는 excel의 위치 바꿔서 저장
-                    if configData['info_type'] == "lesson":                   # 강의 정보
-                        df.to_excel('data/lesson_info.xlsx', index=False)     # dataframe excel 저장
-                    elif configData['info_type'] == "professor":              # 교수 정보
-                        df.to_excel('data/professor_info.xlsx', index=False)  # dataframe excel 저장
-                    elif configData['info_type'] == "classroom":              # 강의실 정보
-                        df.to_excel('data/classroom_info.xlsx', index=False)  # dataframe excel 저장
+            if configData['info_type'] == "lesson":  # 강의 정보
+                df.to_excel('data/lesson_info.xlsx', index=False)  # dataframe excel 저장
+            elif configData['info_type'] == "professor":  # 교수 정보
+                df.to_excel('data/professor_info.xlsx', index=False)  # dataframe excel 저장
+            elif configData['info_type'] == "classroom":  # 강의실 정보
+                df.to_excel('data/classroom_info.xlsx', index=False)  # dataframe excel 저장
 
-                    break    #수정 완료했으므로 break
-
-            print("수정완료")
-            global_funtion().message_box_1(QMessageBox.Information, "정보", "등록되었습니다", "확인")  # 수정완료 메세지 출력
-
+            print("yes")
+            global_funtion().message_box_1(QMessageBox.Information, "정보", "수정되었습니다", "확인")
         elif configData['message'] == 'N':
             print("no")
             return
-
-        print(df)   #확인용
         self.close()
         self.__init__()
         self.exec_()
@@ -233,35 +238,40 @@ class Ui_Dialog(QDialog):
     def deleteInfo(self):
         global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 삭제하시겠습니까?", "예", "아니오")
         self.jsonLoad()
-        selected_row = row          # 위젯 list에서 선택한 row
         if configData['message'] == 'Y':
-            for i in range(len(data)):      # data 개수만큼 for문
-                if i == selected_row:       # i번째 data와 위젯 list에서 선택한 row가 일치할 때
-                    data.pop(i)             # i번째 data를 삭제한다 -> i번째 이후에 있던 값들이 한칸씩 앞으로 자동으로 이동한다 -> 중간에서 data가 삭제되었다면 masterID 안맞음
-                    # 삭제한 i번째 data 이후에 오는 모든 row의 masterID를 바꿔주는 코드
-                    #for j in range(i, len(data)):       # i번째 data부터 마지막 data까지
-                    #    data[j][0] = masterID_code + str(j+1).zfill(3)      # j번째 row이면 masterID는 (j+1)번째임
-                    break       # 삭제 및 masterID 업데이트 완료했으므로 break
+            for i in range(len(data)):
+                selected_row = line_arr[0].text()
+                # 라인에 작성된 첫번째 값 즉, 과목 명만 selected_row로 뽑아오자
+                if selected_row == data[i][1]:
+                    data.pop(i)
+                    break
+                # selected_row가 기존 데이터와 비교했을 때 같으면 그 데이터는 삭제하자
+            # print(selected_row)
+            # print("yes")
+            # print(data)
 
-            list.sort(data, key=lambda k: (k[0]))           # data array의 0번째 index를 기준으로 sort
-            df = pd.DataFrame(data, columns=label_col)      # data array, column은 label_col로 하는 dataframe 생성
+            list.sort(data, key=lambda k: (k[0]))
+            # list를 index 기준으로 정렬하자
+            df = pd.DataFrame(data, columns=label_col)
+            # 데이터 프레임으로 저장하자
+            # print(df)
 
-            # configData에 따라서 저장해야하는 excel의 위치 바꿔서 저장
-            if configData['info_type'] == "lesson":                     # 강의 정보
-                df.to_excel('data/lesson_info.xlsx', index=False)       # dataframe excel 저장
-            elif configData['info_type'] == "professor":                # 교수 정보
-                df.to_excel('data/professor_info.xlsx', index=False)    # dataframe excel 저장
-            elif configData['info_type'] == "classroom":                # 강의실 정보
-                df.to_excel('data/classroom_info.xlsx', index=False)    # dataframe excel 저장
+            if configData['info_type'] == "lesson":  # 강의 정보
+                df.to_excel('data/lesson_info.xlsx', index=False)  # dataframe excel 저장
+            elif configData['info_type'] == "professor":  # 교수 정보
+                df.to_excel('data/professor_info.xlsx', index=False)  # dataframe excel 저장
+            elif configData['info_type'] == "classroom":  # 강의실 정보
+                df.to_excel('data/classroom_info.xlsx', index=False)  # dataframe excel 저장
 
-            print("삭제완료")
-            global_funtion().message_box_1(QMessageBox.Information, "정보", "등록되었습니다", "확인")  # 삭제완료 메세지 출력
+            global_funtion().message_box_1(QMessageBox.Information, "정보", "삭제되었습니다", "확인")  # 저장완료 메세지 출력
 
         elif configData['message'] == 'N':
             print("no")
             return
 
-        print(df)      #확인용
+
         self.close()
         self.__init__()
         self.exec_()
+
+

@@ -4,9 +4,9 @@ global today_QDate
 
 today_QDate = QDate.currentDate()
 
-global classroom_df, lesson_assign_df, lesson_df, professor_df, time_df, global_df
-global classroom_list, lesson_assign_list, lesson_list, professor_list, time_list, global_list
-global classroom_list_col, lesson_assign_list_col, lesson_list_col, professor_list_col, time_list_col, global_list_col
+global classroom_df, lesson_assign_df, lesson_df, professor_df, time_df , global_df
+global classroom_list, lesson_assign_list, lesson_list, professor_list, time_list , global_list
+global classroom_list_col, lesson_assign_list_col, lesson_list_col, professor_list_col, time_list_col , global_list_col
 
 # 로컬 마스터데이터 로드(위치 : data 폴더 안 excel 파일)
 classroom_df = pd.read_excel('data/classroom_info.xlsx')
@@ -17,12 +17,11 @@ time_df = pd.read_excel('data/time_period.xlsx')
 global_df = pd.read_excel('data/global_master.xlsx')
 
 
-classroom_list = classroom_df.values.tolist()
-lesson_assign_list = lesson_assign_df.values.tolist()
-lesson_list = lesson_df.values.tolist()
-professor_list = professor_df.values.tolist()
-time_list = time_df.values.tolist()
-global_list = global_df.values.tolist()
+classroom_list = pd.read_excel('data/classroom_info.xlsx').values.tolist()
+lesson_list = pd.read_excel('data/lesson_info.xlsx').values.tolist()
+professor_list = pd.read_excel('data/professor_info.xlsx').values.tolist()
+global_list= pd.read_excel('data/global_master.xlsx').values.tolist()
+lesson_assign_list=pd.read_excel('data/lesson_assign.xlsx').values.tolist()
 
 # nan값 제거
 classroom_df.replace(np.NaN, '', inplace=True)
@@ -30,16 +29,17 @@ lesson_assign_df.replace(np.NaN, '', inplace=True)
 lesson_df.replace(np.NaN, '', inplace=True)
 professor_df.replace(np.NaN, '', inplace=True)
 time_df.replace(np.NaN, '', inplace=True)
+global_df.replace(np.NaN, '', inplace=True)
 
 # 데이터 저장할 때 필요한 column(to_excel)
 classroom_list_col = list([col for col in pd.read_excel('data/classroom_info.xlsx')])                # 강의실 column
 lesson_assign_list_col = list([col for col in pd.read_excel('data/lesson_assign.xlsx')])             # 강의 배정 column
 lesson_list_col = list([col for col in pd.read_excel('data/lesson_info.xlsx')])                      # 강의 column
 professor_list_col = list([col for col in pd.read_excel('data/professor_info.xlsx')])                # 교수 column
-time_list_col = list([col for col in pd.read_excel('data/time_period.xlsx')])                        # 시간표 column
-global_list_col = list([col for col in pd.read_excel('data/global_master.xlsx')])                        # 시간표 column
+time_list_col = list([col for col in pd.read_excel('data/time_period.xlsx')])
+global_list_col = list([col for col in pd.read_excel('data/global_master.xlsx')])                    # 시간표 column
 
-# github test
+
 # 아직 안쓰이는 함수
 #
 # global season_active_idx, Selected_season_ID, Selected_season_SDate, Selected_season_EDate, season_tabarray
