@@ -63,7 +63,7 @@ class Ui_MainWindow(QMainWindow):
         self.setWindowTitle(_translate("MainWindow", "교과 배정 프로그램"))
         self.titleLabel.setText(_translate("MainWindow", "교과 배정 프로그램"))
 
-    # 강의 정보 창 이동
+    # 강좌 정보 창 이동
     def classInfo(self):
         configData['info_type'] = "lesson"
         self.page_move()

@@ -66,12 +66,42 @@ class Ui_Dialog(QDialog):
         self.gridLayout = QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
     
-        # 입력 Form 생성
+        # 입력 Form 생성 - label 생성
         for i in range(len(label_arr)):
             label_arr[i] = QLabel(self.gridLayoutWidget)
-            self.gridLayout.addWidget(label_arr[i], i, 0, 1, 1)     # (i,0) 번째 Label
-            line_arr[i] = QLineEdit(self.gridLayoutWidget)
-            self.gridLayout.addWidget(line_arr[i], i, 1, 1, 1)      # (i,1) 번째 LineEdit
+            self.gridLayout.addWidget(label_arr[i], i, 0, 1, 1)  # (i,0) 번째 Label
+
+        # 입력 Form 생성 - lineedit, combobox 생성
+        if configData['info_type'] == "lesson":  # 강의 정보
+            # lineedit
+            for i in [0, 1, 3, 5]:
+                line_arr[i] = QLineEdit(self.gridLayoutWidget)
+                self.gridLayout.addWidget(line_arr[i], i, 1, 1, 1)  # (i,1) 번째 LineEdit
+
+            #combobox
+            line_arr[2] = QComboBox(self.gridLayoutWidget)
+            line_arr[2].addItems(['전공기초', '전공선택', '전공필수', '전공'])
+            self.gridLayout.addWidget(line_arr[2], 2, 1, 1, 1)  # (2,1) 번째 QComboBox
+
+            line_arr[4] = QComboBox(self.gridLayoutWidget)
+            line_arr[4].addItems(['3', '2'])
+            self.gridLayout.addWidget(line_arr[4], 4, 1, 1, 1)  # (4,1) 번째 QComboBox
+
+        elif configData['info_type'] == "professor":    # 교수 정보
+            # lineedit
+            for i in [0, 2, 3, 4, 5]:
+                line_arr[i] = QLineEdit(self.gridLayoutWidget)
+                self.gridLayout.addWidget(line_arr[i], i, 1, 1, 1)  # (i,1) 번째 LineEdit
+
+            # combobox
+            line_arr[1] = QComboBox(self.gridLayoutWidget)
+            line_arr[1].addItems(['교수', '부교수', '조교수'])
+            self.gridLayout.addWidget(line_arr[1], 1, 1, 1, 1)  # (1,1) 번째 QComboBox
+
+        elif configData['info_type'] == 'classroom':    # 강의실 정보
+            for i in range(len(label_arr)):
+                line_arr[i] = QLineEdit(self.gridLayoutWidget)
+                self.gridLayout.addWidget(line_arr[i], i, 1, 1, 1)  # (i,1) 번째 LineEdit
             
         # List Widget 클릭 메소드 연결
         self.listWidget.itemClicked.connect(self.listClick)
@@ -85,8 +115,27 @@ class Ui_Dialog(QDialog):
     def listClick(self):
         global row
         row = self.listWidget.currentRow()
-        for i in range(len(line_arr)):
-            line_arr[i].setText(str(data[row][i+1]))
+        item = ""
+        if configData['info_type'] == "lesson":  # 강의 정보
+            for i in [0, 1, 3, 5]:               # lineedit에 해당
+                line_arr[i].setText(str(data[row][i+1]))
+
+            for i in [2, 4]:                     # combobox에 해당
+                item = str(data[row][i+1])
+                line_arr[i].setCurrentText(item)    # setting current item
+
+        elif configData['info_type'] == "professor":  # 교수 정보
+            # lineedit에 해당
+            for i in [0, 2, 3, 4, 5]:
+                line_arr[i].setText(str(data[row][i+1]))
+
+            # combobox에 해당
+            item = str(data[row][2])
+            line_arr[1].setCurrentText(item)
+
+        elif configData['info_type'] == 'classroom':  # 강의실 정보
+            for i in range(len(line_arr)):
+                line_arr[i].setText(str(data[row][i+1]))
 
     def jsonLoad(self):
         global configData
@@ -153,8 +202,25 @@ class Ui_Dialog(QDialog):
 
         # Step1 우측 입력한 form들의 데이터를 new_data에 담는다
         new_data = []
-        for i in range(len(line_arr)):
-            new_data.append(line_arr[i].text())
+        if configData['info_type'] == "lesson":  # 강의 정보
+            new_data.append(line_arr[0].text())
+            new_data.append(line_arr[1].text())
+            new_data.append(line_arr[2].currentText())
+            new_data.append(line_arr[3].text())
+            new_data.append(line_arr[4].currentText())
+            new_data.append(line_arr[5].text())
+
+        elif configData['info_type'] == "professor":  # 교수 정보
+            new_data.append(line_arr[0].text())
+            new_data.append(line_arr[1].currentText())
+            new_data.append(line_arr[2].text())
+            new_data.append(line_arr[3].text())
+            new_data.append(line_arr[4].text())
+            new_data.append(line_arr[5].text())
+
+        elif configData['info_type'] == 'classroom':  # 강의실 정보
+            for i in range(len(line_arr)):
+                new_data.append(line_arr[i].text())
         #print(new_data)
 
         # Step2 array를 data 안에 append한다.
@@ -163,17 +229,25 @@ class Ui_Dialog(QDialog):
         data.append(new_data)
 
         print(data)
-        list.sort(data, key=lambda k: (k[0]))               # data array의 0번째 index를 기준으로 sort
-        df = pd.DataFrame(data, columns=label_col)          # data array, column은 label_col로 하는 dataframe 생성
+        #list.sort(data, key=lambda k: (k[0]))               # data array의 0번째 index를 기준으로 sort
+        #df = pd.DataFrame(data, columns=label_col)          # data array, column은 label_col로 하는 dataframe 생성
 
         # Step3 configData에 따라서 저장해야하는 excel의 위치 바꿔서 저장
         if configData['info_type'] == "lesson":                     # 강의 정보
+            list.sort(data, key=lambda k: (k[0]))                   # data array의 0번째 index를 기준으로 sort
+            df = pd.DataFrame(data, columns=label_col)              # data array, column은 label_col로 하는 dataframe 생성
             df.to_excel('data/lesson_info.xlsx', index=False)       # dataframe excel 저장
             global_list[0][3] = next_index + 1                      # 다음 ID 수정
+
         elif configData['info_type'] == "professor":                # 교수 정보
+            list.sort(data, key=lambda k: int(k[3]))                # data array의 3번째 index(교수임용순서)를 기준으로 sort
+            df = pd.DataFrame(data, columns=label_col)              # data array, column은 label_col로 하는 dataframe 생성
             df.to_excel('data/professor_info.xlsx', index=False)    # dataframe excel 저장
             global_list[1][3] = next_index + 1                      # 다음 ID 수정
+
         elif configData['info_type'] == "classroom":                # 강의실 정보
+            list.sort(data, key=lambda k: (k[0]))                   # data array의 0번째 index를 기준으로 sort
+            df = pd.DataFrame(data, columns=label_col)              # data array, column은 label_col로 하는 dataframe 생성
             df.to_excel('data/classroom_info.xlsx', index=False)    # dataframe excel 저장
             global_list[2][3] = next_index + 1                      # 다음 ID 수정
         print(df)
@@ -199,20 +273,49 @@ class Ui_Dialog(QDialog):
             for i in range(len(data)):      # data 개수만큼 for문
                 if i == selected_row:       # 위젯list에서 선택한 row와 i번째 data가 일치하면
                     changed_data = []
-                    for i in range(len(line_arr)):
-                        changed_data.append(line_arr[i].text())     # 입력폼으로 수정한 내용을 changed_data에 담는다
-                    changed_data.insert(0, data[selected_row][0])   # masterID 추가 : 입력폼에서 선택했던 row에 해당하는 masterID를 가져옴
-                    data[selected_row] = changed_data       # 수정한 내용인 changed_data를 selected_row의 data에 담기
+                    if configData['info_type'] == "lesson":  # 강의 정보
+                        # 입력폼으로 수정한 내용을 changed_data에 담는다
+                        changed_data.append(line_arr[0].text())
+                        changed_data.append(line_arr[1].text())
+                        changed_data.append(line_arr[2].currentText())
+                        changed_data.append(line_arr[3].text())
+                        changed_data.append(line_arr[4].currentText())
+                        changed_data.append(line_arr[5].text())
 
-                    list.sort(data, key=lambda k: (k[0]))          # data array의 0번째 index를 기준으로 sort
-                    df = pd.DataFrame(data, columns=label_col)     # data array, column은 label_col로 하는 dataframe 생성
+                    elif configData['info_type'] == "professor":  # 교수 정보
+                        # 입력폼으로 수정한 내용을 changed_data에 담는다
+                        changed_data.append(line_arr[0].text())
+                        changed_data.append(line_arr[1].currentText())
+                        changed_data.append(line_arr[2].text())
+                        changed_data.append(line_arr[3].text())
+                        changed_data.append(line_arr[4].text())
+                        changed_data.append(line_arr[5].text())
+
+                    elif configData['info_type'] == 'classroom':  # 강의실 정보
+                        # 입력폼으로 수정한 내용을 changed_data에 담는다
+                        for i in range(len(line_arr)):
+                            changed_data.append(line_arr[i].text())
+
+                    changed_data.insert(0, data[selected_row][0])  # masterID 추가 : 입력폼에서 선택했던 row에 해당하는 masterID를 가져옴
+                    data[selected_row] = changed_data              # 수정한 내용인 changed_data를 selected_row의 data에 담기
+
+                    #list.sort(data, key=lambda k: (k[0]))          # data array의 0번째 index를 기준으로 sort
+                    #df = pd.DataFrame(data, columns=label_col)     # data array, column은 label_col로 하는 dataframe 생성
 
                     # configData에 따라서 저장해야하는 excel의 위치 바꿔서 저장
                     if configData['info_type'] == "lesson":                   # 강의 정보
+                        list.sort(data, key=lambda k: (k[0]))                 # data array의 0번째 index를 기준으로 sort
+                        df = pd.DataFrame(data, columns=label_col)            # data array, column은 label_col로 하는 dataframe 생성
                         df.to_excel('data/lesson_info.xlsx', index=False)     # dataframe excel 저장
+
                     elif configData['info_type'] == "professor":              # 교수 정보
+                        list.sort(data, key=lambda k: int(k[3]))              # data array의 3번째 index를 기준으로 sort
+                        df = pd.DataFrame(data, columns=label_col)            # data array, column은 label_col로 하는 dataframe 생성
                         df.to_excel('data/professor_info.xlsx', index=False)  # dataframe excel 저장
+
                     elif configData['info_type'] == "classroom":              # 강의실 정보
+                        list.sort(data, key=lambda k: k[0])                   # data array의 0번째 index를 기준으로 sort
+                        df = pd.DataFrame(data, columns=label_col)            # data array, column은 label_col로 하는 dataframe 생성
                         df.to_excel('data/classroom_info.xlsx', index=False)  # dataframe excel 저장
 
                     break    #수정 완료했으므로 break
@@ -238,20 +341,25 @@ class Ui_Dialog(QDialog):
             for i in range(len(data)):      # data 개수만큼 for문
                 if i == selected_row:       # i번째 data와 위젯 list에서 선택한 row가 일치할 때
                     data.pop(i)             # i번째 data를 삭제한다 -> i번째 이후에 있던 값들이 한칸씩 앞으로 자동으로 이동한다 -> 중간에서 data가 삭제되었다면 masterID 안맞음
-                    # 삭제한 i번째 data 이후에 오는 모든 row의 masterID를 바꿔주는 코드
-                    #for j in range(i, len(data)):       # i번째 data부터 마지막 data까지
-                    #    data[j][0] = masterID_code + str(j+1).zfill(3)      # j번째 row이면 masterID는 (j+1)번째임
                     break       # 삭제 및 masterID 업데이트 완료했으므로 break
 
-            list.sort(data, key=lambda k: (k[0]))           # data array의 0번째 index를 기준으로 sort
-            df = pd.DataFrame(data, columns=label_col)      # data array, column은 label_col로 하는 dataframe 생성
+            #list.sort(data, key=lambda k: (k[0]))           # data array의 0번째 index를 기준으로 sort
+            #df = pd.DataFrame(data, columns=label_col)      # data array, column은 label_col로 하는 dataframe 생성
 
             # configData에 따라서 저장해야하는 excel의 위치 바꿔서 저장
             if configData['info_type'] == "lesson":                     # 강의 정보
+                list.sort(data, key=lambda k: (k[0]))                   # data array의 0번째 index를 기준으로 sort
+                df = pd.DataFrame(data, columns=label_col)              # data array, column은 label_col로 하는 dataframe 생성
                 df.to_excel('data/lesson_info.xlsx', index=False)       # dataframe excel 저장
+
             elif configData['info_type'] == "professor":                # 교수 정보
+                list.sort(data, key=lambda k: int(k[3]))                # data array의 3번째 index를 기준으로 sort
+                df = pd.DataFrame(data, columns=label_col)              # data array, column은 label_col로 하는 dataframe 생성
                 df.to_excel('data/professor_info.xlsx', index=False)    # dataframe excel 저장
+
             elif configData['info_type'] == "classroom":                # 강의실 정보
+                list.sort(data, key=lambda k: (k[0]))  # data array의 0번째 index를 기준으로 sort
+                df = pd.DataFrame(data, columns=label_col)  # data array, column은 label_col로 하는 dataframe 생성
                 df.to_excel('data/classroom_info.xlsx', index=False)    # dataframe excel 저장
 
             print("삭제완료")
