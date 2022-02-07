@@ -80,11 +80,11 @@ class Ui_Dialog(QDialog):
 
             #combobox
             line_arr[2] = QComboBox(self.gridLayoutWidget)
-            line_arr[2].addItems(['전공기초', '전공선택', '전공필수', '전공'])
+            line_arr[2].addItems(['전공기초', '전공선택', '전공필수', '공통', '석사', '박사'])
             self.gridLayout.addWidget(line_arr[2], 2, 1, 1, 1)  # (2,1) 번째 QComboBox
 
             line_arr[4] = QComboBox(self.gridLayoutWidget)
-            line_arr[4].addItems(['3', '2'])
+            line_arr[4].addItems(['3', '2', '1'])
             self.gridLayout.addWidget(line_arr[4], 4, 1, 1, 1)  # (4,1) 번째 QComboBox
 
         elif configData['info_type'] == "professor":    # 교수 정보
