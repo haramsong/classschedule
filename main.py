@@ -79,8 +79,7 @@ class Ui_MainWindow(QMainWindow):
     # 강의 배정 창 이동 (아직 UI 작성 안됨)
     def lessonSchedule(self):
         page = Ui_Timetable()
-        page.show()
-        exec
+        page.exec_()
         # print("")
 
 

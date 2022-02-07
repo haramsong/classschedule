@@ -247,8 +247,7 @@ class Ui_Timetable(QDialog):
 
     def lesson_assign(self):
         a = Ui_Lesson_Assign()
-        a.show()
-        exec
+        a.exec_()
         #print('사용자 지정')
 
     def delete(self):
