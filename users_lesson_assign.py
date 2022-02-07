@@ -168,8 +168,7 @@ class Ui_Lesson_Assign(QDialog):
         radioBtn=self.sender()
         if radioBtn.isChecked():
             self.tableWidget.clear()
-            df=[]
-            df = pd.read_excel('/Users/seojung/Desktop/시간표 정리/2021_2.xlsx')
+            df = pd.read_excel('data/class_dataset/2021_2.xlsx')
             df = df[df['대상학과'].str.contains('대학원')]
             df['요일'] = df['강의시간'].str.findall('[ㄱ-ㅣ가-힣]+')
             df = df[['성명', '교과목명','강의시간','강의실','교과구분']]
@@ -189,7 +188,7 @@ class Ui_Lesson_Assign(QDialog):
         if radioBtn2.isChecked():
             self.tableWidget.clear()
             df2 = []
-            df2 = pd.read_excel('/Users/seojung/Desktop/시간표 정리/2021_2.xlsx')
+            df2 = pd.read_excel('data/class_dataset/2021_2.xlsx')
             df2 = df2[~df2['대상학과'].str.contains('대학원')]
             df2['요일'] = df2['강의시간'].str.findall('[ㄱ-ㅣ가-힣]+')
             df2 = df2[['성명', '교과목명', '강의시간', '강의실', '교과구분']]
