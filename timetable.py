@@ -21,6 +21,7 @@ class Ui_Timetable(QDialog):
         super().__init__()
         self.get_init_data()
         self.setupUi()
+        print("c")
 
     # 데이터 불러오기
     def get_init_data(self):
