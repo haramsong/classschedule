@@ -60,6 +60,7 @@ class Ui_MainWindow(QMainWindow):
         _translate = QCoreApplication.translate
         self.setWindowTitle(_translate("MainWindow", "교과 배정 프로그램"))
         self.titleLabel.setText(_translate("MainWindow", "교과 배정 프로그램"))
+        print("a")
 
     # 강의 정보 창 이동
     def classInfo(self):
