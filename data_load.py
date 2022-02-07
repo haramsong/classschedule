@@ -16,6 +16,12 @@ professor_df = pd.read_excel('data/professor_info.xlsx')
 time_df = pd.read_excel('data/time_period.xlsx')
 global_df = pd.read_excel('data/global_master.xlsx')
 
+# nan값 제거
+classroom_df.replace(np.NaN, '', inplace=True)
+lesson_assign_df.replace(np.NaN, '', inplace=True)
+lesson_df.replace(np.NaN, '', inplace=True)
+professor_df.replace(np.NaN, '', inplace=True)
+time_df.replace(np.NaN, '', inplace=True)
 
 classroom_list = classroom_df.values.tolist()
 lesson_assign_list = lesson_assign_df.values.tolist()
@@ -24,12 +30,7 @@ professor_list = professor_df.values.tolist()
 time_list = time_df.values.tolist()
 global_list = global_df.values.tolist()
 
-# nan값 제거
-classroom_df.replace(np.NaN, '', inplace=True)
-lesson_assign_df.replace(np.NaN, '', inplace=True)
-lesson_df.replace(np.NaN, '', inplace=True)
-professor_df.replace(np.NaN, '', inplace=True)
-time_df.replace(np.NaN, '', inplace=True)
+
 
 # 데이터 저장할 때 필요한 column(to_excel)
 classroom_list_col = list([col for col in pd.read_excel('data/classroom_info.xlsx')])                # 강의실 column
