@@ -13,7 +13,7 @@
 from dialog import *
 from data_load import *
 import json
-from timetable_detail import timetable_detail
+from users_lesson_assign import users_lesson_assign
 
 # 시간표 창 만들기
 class timetable(QDialog):
@@ -246,7 +246,7 @@ class timetable(QDialog):
 
 
     def lesson_assign(self):
-        a = timetable_detail()
+        a = users_lesson_assign()
         a.show()
         exec
         #print('사용자 지정')
