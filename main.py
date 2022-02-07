@@ -1,8 +1,6 @@
 from dialog import *
 from timetable import *
 #꺄르르르르르ㅡㄹㅇ???
-#hihihihi
-#내가 와따!
 # 메인 화면
 class Ui_MainWindow(QMainWindow):
     # 메인 화면 출력
@@ -63,7 +61,7 @@ class Ui_MainWindow(QMainWindow):
         self.setWindowTitle(_translate("MainWindow", "교과 배정 프로그램"))
         self.titleLabel.setText(_translate("MainWindow", "교과 배정 프로그램"))
 
-    # 강좌 정보 창 이동
+    # 강의 정보 창 이동
     def classInfo(self):
         configData['info_type'] = "lesson"
         self.page_move()
@@ -80,7 +78,11 @@ class Ui_MainWindow(QMainWindow):
 
     # 강의 배정 창 이동 (아직 UI 작성 안됨)
     def lessonSchedule(self):
-        Ui_Timetable().exec_()
+        page = Ui_Timetable()
+        page.show()
+        exec
+        # print("")
+
 
     # 창 이동 메소드
     def page_move(self):
