@@ -16,7 +16,7 @@ import json
 from users_lesson_assign import users_lesson_assign
 
 # 시간표 창 만들기
-class timetable(QDialog):
+class Ui_Timetable(QDialog):
     def __init__(self):
         super().__init__()
         self.get_init_data()
