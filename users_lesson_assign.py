@@ -37,7 +37,7 @@ class Ui_Lesson_Assign(QDialog):
     # 화면 출력
     def setupUi(self):
         self.setObjectName("Dialog")
-        self.resize(618, 476)
+        self.setFixedSize(618, 476)
 
         # 그룹박스 만들기
         self.groupBox = QGroupBox(self)
@@ -52,12 +52,13 @@ class Ui_Lesson_Assign(QDialog):
         self.horizontalLayout.setObjectName("horizontalLayout")
 
         # 라디오 버튼 2개 만들기
-        self.radioButton = QRadioButton(self.horizontalLayoutWidget)
-        self.radioButton.setObjectName("radioButton")
-        self.horizontalLayout.addWidget(self.radioButton, 0, Qt.AlignHCenter)
         self.radioButton_2 = QRadioButton(self.horizontalLayoutWidget)
         self.radioButton_2.setObjectName("radioButton_2")
         self.horizontalLayout.addWidget(self.radioButton_2, 0, Qt.AlignHCenter)
+        self.radioButton = QRadioButton(self.horizontalLayoutWidget)
+        self.radioButton.setObjectName("radioButton")
+        self.horizontalLayout.addWidget(self.radioButton, 0, Qt.AlignHCenter)
+
 
         # 두번째 그룹박스 만들기
         self.groupBox_2 = QGroupBox(self)
@@ -136,6 +137,7 @@ class Ui_Lesson_Assign(QDialog):
         item =QTableWidgetItem() # 강의실
         self.tableWidget.setHorizontalHeaderItem(4, item)
         self.tableWidget.horizontalHeader().setDefaultSectionSize(77)
+        self.tableWidget.verticalHeader().hide()
 
         # 사용자 지정 배정 라벨
         self.label_11 = QLabel()
@@ -200,7 +202,7 @@ class Ui_Lesson_Assign(QDialog):
     # 텍스트 출력
     def retranslateUi(self):
         _translate = QCoreApplication.translate
-        self.setWindowTitle(_translate("Dialog", "Dialog"))
+        self.setWindowTitle(_translate("Dialog", "사용자 지정 배정"))
         self.radioButton.setText(_translate("Dialog", "대학원"))
         self.radioButton_2.setText(_translate("Dialog", "학부"))
         self.label_6.setText(_translate("Dialog", "시간"))

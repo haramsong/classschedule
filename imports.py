@@ -5,5 +5,3 @@ from PyQt5.QtWidgets import *
 import pandas as pd
 import numpy as np
 import json
-
-print("b")

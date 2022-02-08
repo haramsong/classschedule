@@ -21,11 +21,10 @@ class Ui_Timetable(QDialog):
         super().__init__()
         self.get_init_data()
         self.setupUi()
-        print("c")
 
     # 데이터 불러오기
     def get_init_data(self):
-        global tool_button_arr, configData
+        global tool_button_arr, configData, horizontal_header_arr
         # 버튼 관련 설정
         tool_button_arr = [
             ["사용자 지정", "img/edit.png", 50, 50, self.lesson_assign],
@@ -36,112 +35,48 @@ class Ui_Timetable(QDialog):
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
+        horizontal_header_arr = ['월', '화', '수', '목', '금']
+
     # 화면 출력
     def setupUi(self):
         self.setObjectName("Dialog")
-        self.resize(548, 599)
+        self.setFixedSize(1050, 700)
 
         # 테이블 위젯 설정( 시간표)
         self.tableWidget = QTableWidget(self)
-        self.tableWidget.setGeometry(QRect(160, 50, 381, 526))
+        self.tableWidget.setGeometry(QRect(160, 100, 850, 530))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
-        self.tableWidget.setRowCount(21)
+        self.tableWidget.setRowCount(0)
 
         # 시간대 표시
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(0, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(1, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(2, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(3, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(4, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(5, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(6, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(7, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(8, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(9, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(10, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(11, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(12, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(13, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(14, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(15, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(16, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(17, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(18, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(19, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setVerticalHeaderItem(20, item)
+        for i in range(len(time_list)):
+            row = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(row)
+            item = QTableWidgetItem()
+            self.tableWidget.setVerticalHeaderItem(i, item)
+            item = self.tableWidget.verticalHeaderItem(i)
+            # print(time_list[i])
+            time_text = time_list[i][1].strftime("%H:%M") + '-' + time_list[i][2].strftime("%H:%M")
+            item.setText(time_text)
 
         # 요일 입력
-        item = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(0, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(1, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(2, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(3, item)
-        item = QTableWidgetItem()
-        self.tableWidget.setHorizontalHeaderItem(4, item)
+        for i in range(len(horizontal_header_arr)):
+            item = QTableWidgetItem()
+            self.tableWidget.setHorizontalHeaderItem(i, item)
+            item = self.tableWidget.horizontalHeaderItem(i)
+            item.setText(horizontal_header_arr[i])
+            self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
 
         # 테이블 위젯 행렬 사이즈 조절
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(60)
-        self.tableWidget.horizontalHeader().setMinimumSectionSize(15)
-        self.tableWidget.verticalHeader().setDefaultSectionSize(5)
-
-        # 제목 설정
-        self.horizontalLayoutWidget = QWidget(self)
-        self.horizontalLayoutWidget.setGeometry(QRect(0, -10, 551, 80))
-        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
-        self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout.setContentsMargins(80, 10, 80, 20)
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.tableWidget.verticalHeader().setDefaultSectionSize(60)
 
         # 라벨 설정
-        self.label_4 = QLabel(self.horizontalLayoutWidget)  # 2022
-        self.label_4.setObjectName("label_4")
-        self.horizontalLayout.addWidget(self.label_4)
-        global_funtion.fontSetting(self, self.label_4, "8H", 24, " ")
-
-        self.label = QLabel(self.horizontalLayoutWidget) # 학년도
+        self.label = QLabel(self) # 학년도
         self.label.setObjectName("label")
-        self.horizontalLayout.addWidget(self.label)
+        self.label.setGeometry(QRect(0, 10, 1050, 80))
+        self.label.setAlignment(Qt.AlignCenter)
         global_funtion.fontSetting(self, self.label, "8H", 24, " ")
-
-        self.label_5 = QLabel(self.horizontalLayoutWidget) # 1
-        self.label_5.setObjectName("label_5")
-        self.horizontalLayout.addWidget(self.label_5)
-        global_funtion.fontSetting(self, self.label_5, "8H", 24, " ")
-
-        self.label_2 = QLabel(self.horizontalLayoutWidget) # 학기
-        self.label_2.setObjectName("label_2")
-        self.horizontalLayout.addWidget(self.label_2)
-        global_funtion.fontSetting(self, self.label_2, "8H", 24, " ")
-
-        self.label_3 = QLabel(self.horizontalLayoutWidget)  # 시간표
-        self.label_3.setObjectName("label_3")
-        self.horizontalLayout.addWidget(self.label_3)
-        global_funtion.fontSetting(self, self.label_3, "8H", 24, " ")
 
         # 버튼 설정
         self.verticalLayoutWidget = QWidget(self)
@@ -150,12 +85,7 @@ class Ui_Timetable(QDialog):
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
-        # self.pushButton = QPushButton(self.verticalLayoutWidget)
-        # self.pushButton.setObjectName("pushButton")
-        # self.verticalLayout.addWidget(self.pushButton)
-        # self.pushButton_2 = QPushButton(self.verticalLayoutWidget)
-        # self.pushButton_2.setObjectName("pushButton_2")
-        # self.verticalLayout.addWidget(self.pushButton_2)
+
         # 버튼 생성
         for i in range(len(tool_button_arr)):
             self.toolButton = QToolButton(self.verticalLayoutWidget)
@@ -170,68 +100,8 @@ class Ui_Timetable(QDialog):
 
     def retranslateUi(self):
         _translate = QCoreApplication.translate
-        self.setWindowTitle(_translate("Dialog", "Dialog"))
-        item = self.tableWidget.verticalHeaderItem(0)
-        item.setText(_translate("Dialog", "9:00-9:30"))
-        item = self.tableWidget.verticalHeaderItem(1)
-        item.setText(_translate("Dialog", "10:00-10:30"))
-        item = self.tableWidget.verticalHeaderItem(2)
-        item.setText(_translate("Dialog", "10:30-11:00"))
-        item = self.tableWidget.verticalHeaderItem(3)
-        item.setText(_translate("Dialog", "11:00-11:30"))
-        item = self.tableWidget.verticalHeaderItem(4)
-        item.setText(_translate("Dialog", "9:30-10:00"))
-        item = self.tableWidget.verticalHeaderItem(5)
-        item.setText(_translate("Dialog", "10:00-10:30"))
-        item = self.tableWidget.verticalHeaderItem(6)
-        item.setText(_translate("Dialog", "10:30-11:00"))
-        item = self.tableWidget.verticalHeaderItem(7)
-        item.setText(_translate("Dialog", "11:00-11:30"))
-        item = self.tableWidget.verticalHeaderItem(8)
-        item.setText(_translate("Dialog", "11:30-12:00"))
-        item = self.tableWidget.verticalHeaderItem(9)
-        item.setText(_translate("Dialog", "12:00-12:30"))
-        item = self.tableWidget.verticalHeaderItem(10)
-        item.setText(_translate("Dialog", "12:30-13:00"))
-        item = self.tableWidget.verticalHeaderItem(11)
-        item.setText(_translate("Dialog", "13:00-13:30"))
-        item = self.tableWidget.verticalHeaderItem(12)
-        item.setText(_translate("Dialog", "13:30-14:00"))
-        item = self.tableWidget.verticalHeaderItem(13)
-        item.setText(_translate("Dialog", "14:00-14:30"))
-        item = self.tableWidget.verticalHeaderItem(14)
-        item.setText(_translate("Dialog", "14:30-15:00"))
-        item = self.tableWidget.verticalHeaderItem(15)
-        item.setText(_translate("Dialog", "15:00-15:30"))
-        item = self.tableWidget.verticalHeaderItem(16)
-        item.setText(_translate("Dialog", "15:30-16:00"))
-        item = self.tableWidget.verticalHeaderItem(17)
-        item.setText(_translate("Dialog", "16:00-16:30"))
-        item = self.tableWidget.verticalHeaderItem(18)
-        item.setText(_translate("Dialog", "16:30-17:00"))
-        item = self.tableWidget.verticalHeaderItem(19)
-        item.setText(_translate("Dialog", "17:00-17:30"))
-        item = self.tableWidget.verticalHeaderItem(20)
-        item.setText(_translate("Dialog", "17:30-18:00"))
-        item = self.tableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("Dialog", "월"))
-        item = self.tableWidget.horizontalHeaderItem(1)
-        item.setText(_translate("Dialog", "화"))
-        item = self.tableWidget.horizontalHeaderItem(2)
-        item.setText(_translate("Dialog", "수"))
-        item = self.tableWidget.horizontalHeaderItem(3)
-        item.setText(_translate("Dialog", "목"))
-        item = self.tableWidget.horizontalHeaderItem(4)
-        item.setText(_translate("Dialog", "금"))
-        self.label_4.setText(_translate("Dialog", "2022"))
-        self.label_4.setAlignment(Qt.AlignCenter)
-        self.label.setText(_translate("Dialog", "학년도"))
-        self.label_5.setText(_translate("Dialog", "1"))
-        self.label_5.setAlignment(Qt.AlignCenter)
-        self.label_2.setText(_translate("Dialog", "학기"))
-        self.label_3.setText(_translate("Dialog", "시간표"))
-        # self.pushButton.setText(_translate("Dialog", "배정"))
-        # self.pushButton_2.setText(_translate("Dialog", "저장"))
+        self.setWindowTitle(_translate("Dialog", "강의 배정"))
+        self.label.setText(_translate("Dialog", "2022 학년도 1 학기"))
 
     def page_data(self):
         global data, label_col
@@ -249,7 +119,6 @@ class Ui_Timetable(QDialog):
     def lesson_assign(self):
         a = Ui_Lesson_Assign()
         a.exec_()
-        #print('사용자 지정')
 
     def delete(self):
         print('삭제')
