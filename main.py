@@ -80,7 +80,7 @@ class Ui_MainWindow(QMainWindow):
     def lessonSchedule(self):
         page = Ui_Timetable()
         page.exec_()
-        # print("")
+        #print(professor_df['성명'])
 
 
     # 창 이동 메소드
