@@ -31,6 +31,15 @@ class Ui_Lesson_Assign(QDialog):
             ["저장", "img/floppy-disk.png", 40, 40, self.saveInfo],
             ["삭제", "img/delete.png", 40, 40, self.deleteInfo]
         ]
+
+        # 시작, 종료시간 combobox 정보
+        global time_start_arr, time_end_arr
+        time_start_arr = []
+        time_end_arr = []
+        for i in range(len(time_list)):
+            time_start_arr.append(time_list[i][1])
+            time_end_arr.append(time_list[i][2])
+
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
@@ -134,16 +143,12 @@ class Ui_Lesson_Assign(QDialog):
         self.comboBox_3 = QComboBox(self.gridLayoutWidget)
         self.comboBox_3.setObjectName("comboBox_3")
         self.gridLayout_2.addWidget(self.comboBox_3, 1, 4, 1, 1)
-        self.comboBox_3.addItems(
-            ['9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-             '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'])
+        self.comboBox_3.addItems(time_start_arr)
         # 종료 콤보박스
         self.comboBox_4 = QComboBox(self.gridLayoutWidget)
         self.comboBox_4.setObjectName("comboBox_4")
         self.gridLayout_2.addWidget(self.comboBox_4, 1, 5, 1, 1)
-        self.comboBox_4.addItems(
-            ['9:00', '9:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30', '14:00', '14:30',
-             '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00'])
+        self.comboBox_4.addItems(time_end_arr)
         # 강의실
         self.lineEdit_11 = QLineEdit(self.gridLayoutWidget)
         self.lineEdit_11.setObjectName("lineEdit_11")
@@ -198,18 +203,18 @@ class Ui_Lesson_Assign(QDialog):
 
         # 텍스트 출력
         self.retranslateUi()
-        QMetaObject.connectSlotsByName(self)
 
         # 라디오 버튼 연결시키기
         self.radioButton.toggled.connect(self.onClicked)
         self.radioButton_2.toggled.connect(self.onClicked2)
+        self.radioButton_2.click()
 
     # 대학원 라디오 버튼 연결 ( 대학원 데이터 불러오기 )
     def onClicked(self):
         global df
         radioBtn=self.sender()
         if radioBtn.isChecked():
-            self.tableWidget.clear()
+            self.tableWidget.setRowCount(0)
             # 대학원 파일을 불러온다
             df = lesson_assign_df[lesson_assign_df['대상학과'].str.contains('대학원')]
             df = df.reset_index()[['교수명','강좌명','분반','요일','시간ID','강의실명']]
@@ -227,15 +232,17 @@ class Ui_Lesson_Assign(QDialog):
             print(len(df.columns))
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df)):
+                row = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(row)
                 for j in range(len(df.columns)):
-                     self.tableWidget.setItem(i,j,QTableWidgetItem(df.iloc[i,j]))
+                     self.tableWidget.setItem(i,j,QTableWidgetItem(str(df.iloc[i,j])))
 
     # 학부 라디오 버튼 연결 ( 학부 데이터 불러오기 )
     def onClicked2(self):
         global df2
         radioBtn2=self.sender()
         if radioBtn2.isChecked():
-            self.tableWidget.clear()
+            self.tableWidget.setRowCount(0)
             # 학부 파일을 불러온다
             df2 = lesson_assign_df[~lesson_assign_df['대상학과'].str.contains('대학원')]
             df2 = df2.reset_index()[['교수명', '강좌명','분반', '요일', '시간ID', '강의실명']]
@@ -251,8 +258,10 @@ class Ui_Lesson_Assign(QDialog):
             # print(df2)
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df2)):
+                row = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(row)
                 for j in range(len(df2.columns)):
-                    self.tableWidget.setItem(i, j, QTableWidgetItem(df2.iloc[i, j]))
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
     # 텍스트 출력
     def retranslateUi(self):
@@ -273,7 +282,7 @@ class Ui_Lesson_Assign(QDialog):
         item = self.tableWidget.horizontalHeaderItem(1)
         item.setText(_translate("Dialog", "강의"))
         item = self.tableWidget.horizontalHeaderItem(2)
-        item.setText(_translate("Dialog", "시간"))
+        item.setText(_translate("Dialog", "분반"))
         item = self.tableWidget.horizontalHeaderItem(3)
         item.setText(_translate("Dialog", "요일"))
         item = self.tableWidget.horizontalHeaderItem(4)
