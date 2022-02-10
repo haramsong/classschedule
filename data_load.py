@@ -64,7 +64,8 @@ under_dataset_df['요일'] = under_dataset_df['강의시간'].str.slice(start=0,
 under_dataset_df['시간'] = under_dataset_df['강의시간'].str.slice(start=3)            # 슬라이싱으로 시간 컬럼 추가
 under_dataset_df = under_dataset_df.drop(['강의시간'], axis = 1)                     # 강의시간 컬럼 삭제
 under_dataset_list = under_dataset_df.values.tolist()                              # 학부 데이터셋을 리스트로 저장
-#print(under_dataset_df)
+
+print(under_dataset_df)
 
 
 # 대학원 데이터셋 추출
@@ -101,34 +102,77 @@ grad_dataset_df = pd.concat([grad_dataset_df2, grad_dataset_df5])
 grad_dataset_df = grad_dataset_df.reset_index(drop=True)  # index 재설정
 
 grad_dataset_list = grad_dataset_df.values.tolist()                                 # 대학원 데이터셋을 리스트로 저장
-#print(grad_dataset_df)
+print(grad_dataset_df)
 #print(grad_dataset_list)
 
 
-# 시간-> 시간id로 변경
+#학부 수업 시간-> 시간id로 변경
 #print(under_dataset_df['시간'].str.find('('))            # 결과  5
 #print(under_dataset_df['시간'].str.find(')'))            # 결과  8
 under_dataset_df['시작시간'] = under_dataset_df['시간'].str.slice(start = 0, stop = 5)
-
 under_dataset_df['수업시간'] = under_dataset_df['시간'].str.slice(start = 6, stop = 8)
 under_dataset_df['수업시간'] = under_dataset_df['수업시간'].astype(int)                     # under_dataset_df['수업시간'] series 타입변환 object -> int
 
-classtime = (under_dataset_df['수업시간'] // 30) + 1                                      # 학부 수업시간에 해당하는 시간ID의 개수
-#under_dataset_df['종료시간'] = under_dataset_df['시작시간'] + classtime
-#print(classtime)
-
-# 학부 수업 시작시간의 시간ID 반환
+#학부 수업 시작시간의 시간ID 반환
 for i in range(len(under_dataset_df)):
     for j in range(len(time_df)):
         if under_dataset_df.iloc[i, 4] == time_df.iloc[j, 1]:
-            under_dataset_df.iloc[i, 6] = time_df.iloc[j, 0]
+            under_dataset_df.iloc[i, 4] = time_df.iloc[j, 0]
 
-#print(under_dataset_df)
+classtime = (under_dataset_df['수업시간'] // 30) + 1                                      # 학부 수업시간에 해당하는 시간ID의 개수
+under_dataset_df['시간ID'] = 0
 
-#start_arr = under_dataset_df['시작시간'].values.tolist()
-#finish_arr = under_dataset_df['시작시간'] + classtime
+start_arr = under_dataset_df['시작시간'].values.tolist()
+finish_arr = under_dataset_df['시작시간'] + classtime
 
+time = []
+for i in range(len(start_arr)):
+    time2 = []
+    for j in range(start_arr[i], finish_arr[i]):
+        time2.append(str(j))
+    time_string = ",".join(time2)
+    time.append(time_string)
 
+under_dataset_df = under_dataset_df.drop(['시간', '시작시간', '수업시간', '시간ID'], axis = 1)                     # 강의시간 컬럼 삭제
+under_dataset_list = under_dataset_df.values.tolist()                              # 학부 데이터셋을 리스트로 저장
+
+for i in range(len(under_dataset_list)):
+    under_dataset_list[i].append(time[i])
+print(under_dataset_list)
+
+# #대학원 수업 시간-> 시간id로 변경
+# #print(grad_dataset_df['시간'].str.find('('))            # 결과  5
+# #print(grad_dataset_df['시간'].str.find(')'))            # 결과  9
+# grad_dataset_df['시작시간'] = grad_dataset_df['시간'].str.slice(start = 0, stop = 5)
+# grad_dataset_df['수업시간'] = grad_dataset_df['시간'].str.slice(start = 6, stop = 9)
+# grad_dataset_df['수업시간'] = grad_dataset_df['수업시간'].astype(int)                     # grad_dataset_df['수업시간'] series 타입변환 object -> int
+#
+# #대학원 수업 시작시간의 시간ID 반환
+# for i in range(len(grad_dataset_df)):
+#     for j in range(len(time_df)):
+#         if grad_dataset_df.iloc[i, 4] == time_df.iloc[j, 1]:
+#             grad_dataset_df.iloc[i, 4] = time_df.iloc[j, 0]
+#
+# classtime = (grad_dataset_df['수업시간'] // 30) + 1                                      # 학부 수업시간에 해당하는 시간ID의 개수
+# grad_dataset_df['시간ID'] = 0
+#
+# start_arr2 = grad_dataset_df['시작시간'].values.tolist()
+# finish_arr2 = grad_dataset_df['시작시간'] + classtime
+#
+# time = []
+# for i in range(len(start_arr2)):
+#     time2 = []
+#     for j in range(start_arr2[i], finish_arr2[i]):
+#         time2.append(str(j))
+#     time_string = ",".join(time2)
+#     time.append(time_string)
+#
+# grad_dataset_df = grad_dataset_df.drop(['시간', '시작시간', '수업시간', '시간ID'], axis = 1)                     # 강의시간 컬럼 삭제
+# grad_dataset_list = grad_dataset_df.values.tolist()                              # 학부 데이터셋을 리스트로 저장
+#
+# for i in range(len(grad_dataset_list)):
+#     grad_dataset_list[i].append(time[i])
+# print(grad_dataset_list)
 
 
 # github test
