@@ -34,8 +34,8 @@ class Ui_Lesson_Assign(QDialog):
 
         # 시작, 종료시간 combobox 정보
         global time_start_arr, time_end_arr
-        time_start_arr = []
-        time_end_arr = []
+        time_start_arr = [""]
+        time_end_arr = [""]
         for i in range(len(time_list)):
             time_start_arr.append(time_list[i][1])
             time_end_arr.append(time_list[i][2])
@@ -310,7 +310,7 @@ class Ui_Lesson_Assign(QDialog):
         time = []
         start = self.comboBox_3.currentIndex()
         end = self.comboBox_4.currentIndex()
-        for i in range(end - start):
+        for i in range(start+1,end+2):
             time.append(i)
         write_data.append(str(time)[1:-1])
         # print(write_data)
