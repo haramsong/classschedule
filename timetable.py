@@ -57,7 +57,7 @@ class Ui_Timetable(QDialog):
             self.tableWidget.setVerticalHeaderItem(i, item)
             item = self.tableWidget.verticalHeaderItem(i)
             # print(time_list[i])
-            time_text = time_list[i][1].strftime("%H:%M") + '-' + time_list[i][2].strftime("%H:%M")
+            time_text = time_list[i][1]+ '-' + time_list[i][2]
             item.setText(time_text)
 
         # 요일 입력
