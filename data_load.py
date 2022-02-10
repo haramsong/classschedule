@@ -31,7 +31,6 @@ professor_list = professor_df.values.tolist()
 time_list = time_df.values.tolist()
 global_list = global_df.values.tolist()
 
-
 # 데이터 저장할 때 필요한 column(to_excel)
 classroom_list_col = list([col for col in pd.read_excel('data/classroom_info.xlsx')])                # 강의실 column
 lesson_assign_list_col = list([col for col in pd.read_excel('data/lesson_assign.xlsx')])             # 강의 배정 column
