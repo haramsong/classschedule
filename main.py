@@ -1,5 +1,6 @@
 from dialog import *
 from timetable import *
+
 #꺄르르르르르ㅡㄹㅇ???
 # 메인 화면
 class Ui_MainWindow(QMainWindow):
@@ -79,8 +80,9 @@ class Ui_MainWindow(QMainWindow):
     # 강의 배정 창 이동 (아직 UI 작성 안됨)
     def lessonSchedule(self):
         page = Ui_Timetable()
+        # 교수명(강의명)
         page.exec_()
-        #print(professor_df['성명'])
+
 
 
     # 창 이동 메소드

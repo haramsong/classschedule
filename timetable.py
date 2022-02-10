@@ -68,6 +68,43 @@ class Ui_Timetable(QDialog):
             item.setText(horizontal_header_arr[i])
             self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
 
+        # 데이터 배치
+        #강의ID	분반	교수명	강좌명	요일	시간ID	강의실명	대상학과	년도	학기
+        # 월 수 -> [][0], [][2]
+        # 화 목 -> [][1], [][3]
+        # 금 -> [][4]
+        # 9:00 -> [1][]
+
+        # lesson_assign_list.append(['MA15642', 2, '최영준', '복소변수', '월, 수', '0,1,2', '607-208', '수학과2', 2022, 1])
+        # print(lesson_assign_list)
+
+        # 문제 2 : 합쳐져서 시간표가 안나옴
+        for i in range(5):
+            for j in range(18):
+                self.tableWidget.setItem(j, i, QTableWidgetItem(""))
+
+        txt = ""
+        pre = ""
+        for i in range(len(lesson_assign_list)):
+            for j in lesson_assign_list[i][5].split(","): #12,13,14,15,16
+                if self.tableWidget.item(int(j),0).text() != "":
+                    pre = self.tableWidget.item(int(j),0).text() + "\n"
+                txt = pre + lesson_assign_list[i][2] + "(" + lesson_assign_list[i][3] + ")"
+                if "월" in lesson_assign_list[i][4]:
+                    self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
+                if "화" in lesson_assign_list[i][4]:
+                    self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
+                if "수" in lesson_assign_list[i][4]:
+                    self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
+                if "목" in lesson_assign_list[i][4]:
+                    self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
+                if "금" in lesson_assign_list[i][4]:
+                    self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
+            txt = ""
+
+
+
+
         # 테이블 위젯 행렬 사이즈 조절
         self.tableWidget.verticalHeader().setDefaultSectionSize(60)
 
