@@ -83,24 +83,24 @@ class Ui_Timetable(QDialog):
             for j in range(18):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
-        txt = ""
         pre = ""
         for i in range(len(lesson_assign_list)):
-            for j in lesson_assign_list[i][5].split(","): #12,13,14,15,16
+            txt = ""
+            for j in lesson_assign_list[i][6].split(","): #12,13,14,15,16
                 if self.tableWidget.item(int(j),0).text() != "":
                     pre = self.tableWidget.item(int(j),0).text() + "\n"
-                txt = pre + lesson_assign_list[i][2] + "(" + lesson_assign_list[i][3] + ")"
-                if "월" in lesson_assign_list[i][4]:
+                txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
+                if "월" in lesson_assign_list[i][5]:
                     self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
-                if "화" in lesson_assign_list[i][4]:
+                if "화" in lesson_assign_list[i][5]:
                     self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
-                if "수" in lesson_assign_list[i][4]:
+                if "수" in lesson_assign_list[i][5]:
                     self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
-                if "목" in lesson_assign_list[i][4]:
+                if "목" in lesson_assign_list[i][5]:
                     self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
-                if "금" in lesson_assign_list[i][4]:
+                if "금" in lesson_assign_list[i][5]:
                     self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
-            txt = ""
+
 
 
 
@@ -114,6 +114,8 @@ class Ui_Timetable(QDialog):
         self.label.setGeometry(QRect(0, 10, 1050, 80))
         self.label.setAlignment(Qt.AlignCenter)
         global_funtion.fontSetting(self, self.label, "8H", 24, " ")
+        label_text = str(year_str) + '학년도 ' + str(semester_str) + '학기'
+        self.label.setText(label_text)
 
         # 버튼 설정
         self.verticalLayoutWidget = QWidget(self)
@@ -138,7 +140,7 @@ class Ui_Timetable(QDialog):
     def retranslateUi(self):
         _translate = QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "강의 배정"))
-        self.label.setText(_translate("Dialog", "2022 학년도 1 학기"))
+
 
     def page_data(self):
         global data, label_col
