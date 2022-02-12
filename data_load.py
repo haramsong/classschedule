@@ -2,9 +2,23 @@
 import pandas as pd
 
 from imports import *
-global today_QDate
+global today_QDate, first_semester_QDate, second_semester_QDate, year_str, semester_str
 
-today_QDate = QDate.currentDate()
+# 날짜에 관한 변수 지정
+today_QDate = QDate.currentDate()   # 오늘
+year_str = today_QDate.year()       # 이번 년도
+semester_str = 0                    # 학기 초기 값
+first_semester_QDate = QDate(year_str,2,7)      # 1학기 시작일(성적 이관 기준 : 2월 7일)
+second_semester_QDate = QDate(year_str,7,7)     # 2학기 시작일(성적 이관 기준: 7월 7일)
+
+# 1학기 혹은 2학기 둘중 하나기 때문에 당일 일자가 1학기 성적 이관과 2학기 성적 이관 사이에 있으면 1학기, 아닌 경우는 2학기
+if today_QDate > first_semester_QDate and today_QDate <= second_semester_QDate:
+    semester_str = 1
+else:
+    semester_str = 2
+# 다음 해로 넘어 갈 때, 1학기 시작일 이전인 경우 아직 까지는 이번 년도 시간표이기 때문에 year를 하나 빼줌
+if today_QDate <= first_semester_QDate:
+    year_str -= 1
 
 global classroom_df, lesson_assign_df, lesson_df, professor_df, time_df, global_df, under_dataset_df, grad_dataset_df
 global classroom_list, lesson_assign_list, lesson_list, professor_list, time_list, global_list, under_dataset_list, grad_dataset_list
@@ -24,6 +38,12 @@ lesson_assign_df.replace(np.NaN, '', inplace=True)
 lesson_df.replace(np.NaN, '', inplace=True)
 professor_df.replace(np.NaN, '', inplace=True)
 time_df.replace(np.NaN, '', inplace=True)
+
+# decimal 제거
+lesson_df['학기'] = lesson_df['학기'].astype(str).apply(lambda x: x.replace('.0',''))
+lesson_df['과정(학년)'] = lesson_df['과정(학년)'].astype(str).apply(lambda x: x.replace('.0',''))
+lesson_df['학점'] = lesson_df['학점'].astype(str).apply(lambda x: x.replace('.0',''))
+# print(lesson_df)
 
 classroom_list = classroom_df.values.tolist()
 lesson_assign_list = lesson_assign_df.values.tolist()

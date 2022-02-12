@@ -43,11 +43,13 @@ class Ui_Lesson_Assign(QDialog):
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
+        global header_arr
+        header_arr = ['교수명', '강좌명', '분반', '분류', '요일', '시작시간', '종료시간', '강의실명']
 
     # 화면 출력
     def setupUi(self):
         self.setObjectName("Dialog")
-        self.setFixedSize(818, 676)
+        self.setFixedSize(818, 750)
 
         # 그룹박스 만들기
         self.groupBox = QGroupBox(self)
@@ -60,6 +62,8 @@ class Ui_Lesson_Assign(QDialog):
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.horizontalLayout.setObjectName("horizontalLayout")
+
+
 
         # 라디오 버튼 2개 만들기
         self.radioButton_2 = QRadioButton(self.horizontalLayoutWidget)
@@ -77,13 +81,11 @@ class Ui_Lesson_Assign(QDialog):
 
         # 입력창(교수,강의,시작시간,종료시간 등등 ) 만드려고 그룹박스 내 그리드위젯 만들기
         self.gridLayoutWidget = QWidget(self.groupBox_2)
-        self.gridLayoutWidget.setGeometry(QRect(20, 20, 691, 61))
+        self.gridLayoutWidget.setGeometry(QRect(20, 20, 691, 100))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout_2 = QGridLayout(self.gridLayoutWidget)
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
-
-
 
         # 교수
         self.label_8 = QLabel(self.gridLayoutWidget)
@@ -100,26 +102,32 @@ class Ui_Lesson_Assign(QDialog):
         self.label_6.setAlignment(Qt.AlignCenter)
         self.label_6.setObjectName("label_6")
         self.gridLayout_2.addWidget(self.label_6, 0, 2, 1, 1)
+        # 분류
+        self.label_16 = QLabel(self.gridLayoutWidget)
+        self.label_16.setAlignment(Qt.AlignCenter)
+        self.label_16.setObjectName("label_6")
+        self.label_16.setText("분류")
+        self.gridLayout_2.addWidget(self.label_16, 0, 3, 1, 1)
         # 요일
         self.label_10 = QLabel(self.gridLayoutWidget)
         self.label_10.setAlignment(Qt.AlignCenter)
         self.label_10.setObjectName("label_10")
-        self.gridLayout_2.addWidget(self.label_10, 0, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.label_10, 2, 0, 1, 1)
         # 시작시간
         self.label_7 = QLabel(self.gridLayoutWidget)
         self.label_7.setAlignment(Qt.AlignCenter)
         self.label_7.setObjectName("label_7")
-        self.gridLayout_2.addWidget(self.label_7, 0, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.label_7, 2, 1, 1, 1)
         # 종료시간
         self.label_12 = QLabel(self.gridLayoutWidget)
         self.label_12.setAlignment(Qt.AlignCenter)
         self.label_12.setObjectName("label_12")
-        self.gridLayout_2.addWidget(self.label_12, 0, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.label_12, 2, 2, 1, 1)
         # 강의실
         self.label_13 = QLabel(self.gridLayoutWidget)
         self.label_13.setAlignment(Qt.AlignCenter)
         self.label_13.setObjectName("label_13")
-        self.gridLayout_2.addWidget(self.label_13, 0, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.label_13, 2, 3, 1, 1)
 
         # 교수 콤보박스
         self.comboBox = QComboBox(self.gridLayoutWidget)
@@ -130,56 +138,49 @@ class Ui_Lesson_Assign(QDialog):
         self.comboBox_2 = QComboBox(self.gridLayoutWidget)
         self.comboBox_2.setObjectName("comboBox_2")
         self.gridLayout_2.addWidget(self.comboBox_2, 1, 1, 1, 1)
-        self.comboBox_2.addItems(lesson_df['강좌명'])
         # 분반
         self.lineEdit_8 = QLineEdit(self.gridLayoutWidget)
         self.lineEdit_8.setObjectName("lineEdit_8")
         self.gridLayout_2.addWidget(self.lineEdit_8, 1, 2, 1, 1)
+        # 분류 콤보박스
+        self.comboBox_5 = QComboBox(self.gridLayoutWidget)
+        self.comboBox_5.setObjectName("comboBox_3")
+        self.gridLayout_2.addWidget(self.comboBox_5, 1, 3, 1, 1)
+        self.comboBox_5.addItems(["전공기초", "전공선택", "전공필수", "전공", "교양선택"])
         # 요일
         self.lineEdit_9 = QLineEdit(self.gridLayoutWidget)
         self.lineEdit_9.setObjectName("lineEdit_9")
-        self.gridLayout_2.addWidget(self.lineEdit_9, 1, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.lineEdit_9, 3, 0, 1, 1)
         # 시작 콤보박스
         self.comboBox_3 = QComboBox(self.gridLayoutWidget)
         self.comboBox_3.setObjectName("comboBox_3")
-        self.gridLayout_2.addWidget(self.comboBox_3, 1, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.comboBox_3, 3, 1, 1, 1)
         self.comboBox_3.addItems(time_start_arr)
         # 종료 콤보박스
         self.comboBox_4 = QComboBox(self.gridLayoutWidget)
         self.comboBox_4.setObjectName("comboBox_4")
-        self.gridLayout_2.addWidget(self.comboBox_4, 1, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.comboBox_4, 3, 2, 1, 1)
         self.comboBox_4.addItems(time_end_arr)
         # 강의실
         self.lineEdit_11 = QLineEdit(self.gridLayoutWidget)
         self.lineEdit_11.setObjectName("lineEdit_11")
-        self.gridLayout_2.addWidget(self.lineEdit_11, 1, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.lineEdit_11, 3, 3, 1, 1)
 
 
 
 
         # 테이블 위젯 만들기( 목록 띄우기 위함 )
         self.tableWidget =QTableWidget(self.groupBox_2)
-        self.tableWidget.setGeometry(QRect(30, 90, 571, 440))
+        self.tableWidget.setGeometry(QRect(30, 150, 571, 440))
         self.tableWidget.setObjectName("tableWidget")
         # 행과 열 만들기
-        self.tableWidget.setColumnCount(7)
-        self.tableWidget.setRowCount(50)
+        self.tableWidget.setColumnCount(8)
         # 테이블위젯 이름 넣으려고 만듬
-        item = QTableWidgetItem() # 교수
-        self.tableWidget.setHorizontalHeaderItem(0, item)
-        item = QTableWidgetItem() # 강의
-        self.tableWidget.setHorizontalHeaderItem(1, item)
-        item = QTableWidgetItem() # 시간
-        self.tableWidget.setHorizontalHeaderItem(2, item)
-        item = QTableWidgetItem() # 요일
-        self.tableWidget.setHorizontalHeaderItem(3, item)
-        item =QTableWidgetItem() # 시작시간
-        self.tableWidget.setHorizontalHeaderItem(4, item)
-        item = QTableWidgetItem()  # 종료시간
-        self.tableWidget.setHorizontalHeaderItem(5, item)
-        item = QTableWidgetItem()  # 강의실
-        self.tableWidget.setHorizontalHeaderItem(6, item)
-        self.tableWidget.horizontalHeader().setDefaultSectionSize(81)
+        for i in range(0,8):
+            item = QTableWidgetItem()  # 교수
+            item.setText(header_arr[i])
+            self.tableWidget.setHorizontalHeaderItem(i, item)
+            self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
         self.tableWidget.verticalHeader().hide()
 
 
@@ -191,7 +192,7 @@ class Ui_Lesson_Assign(QDialog):
 
         # 아이콘 배열
         self.verticalLayoutWidget = QWidget(self.groupBox_2)
-        self.verticalLayoutWidget.setGeometry(QRect(640, 85, 111, 451))
+        self.verticalLayoutWidget.setGeometry(QRect(640, 105, 111, 451))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -214,10 +215,19 @@ class Ui_Lesson_Assign(QDialog):
         global df
         radioBtn=self.sender()
         if radioBtn.isChecked():
+            self.comboBox_2.clear()
+            grad_lesson_arr = []
+            for i in range(len(lesson_list)):
+                if str(lesson_list[i][2]) != str(semester_str):
+                    continue
+                if str(lesson_list[i][3]) != '대학원':
+                    continue
+                grad_lesson_arr.append(lesson_list[i][1])
+            self.comboBox_2.addItems(grad_lesson_arr)
             self.tableWidget.setRowCount(0)
             # 대학원 파일을 불러온다
             df = lesson_assign_df[lesson_assign_df['대상학과'].str.contains('대학원')]
-            df = df.reset_index()[['교수명','강좌명','분반','요일','시간ID','강의실명']]
+            df = df.reset_index()[['교수명','강좌명','분반','분류','요일','시간ID','강의실명']]
             # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
             start=time_df.iloc[df['시간ID'].str.split(',').str[0]]['시작시간']
             start=start.reset_index()['시작시간']
@@ -226,7 +236,7 @@ class Ui_Lesson_Assign(QDialog):
             finish = time_df.iloc[df['시간ID'].str.split(',').str[-1]]['종료시간']
             finish = finish.reset_index()['종료시간']
             df = pd.concat([df, finish], axis=1)
-            df=df[['교수명','강좌명','분반','요일','시작시간','종료시간','강의실명']]
+            df=df[header_arr]
             print(df)
             print(len(df))
             print(len(df.columns))
@@ -242,10 +252,23 @@ class Ui_Lesson_Assign(QDialog):
         global df2
         radioBtn2=self.sender()
         if radioBtn2.isChecked():
+
+            # under_lesson_arr = []
+            # for i in range(len(lesson_list)):
+            #     if lesson_list[i][]
+            self.comboBox_2.clear()
+            under_lesson_arr = []
+            for i in range(len(lesson_list)):
+                if str(lesson_list[i][2]) != str(semester_str):
+                    continue
+                if str(lesson_list[i][3]) != '학부':
+                    continue
+                under_lesson_arr.append(lesson_list[i][1])
+            self.comboBox_2.addItems(under_lesson_arr)
             self.tableWidget.setRowCount(0)
             # 학부 파일을 불러온다
             df2 = lesson_assign_df[~lesson_assign_df['대상학과'].str.contains('대학원')]
-            df2 = df2.reset_index()[['교수명', '강좌명','분반', '요일', '시간ID', '강의실명']]
+            df2 = df2.reset_index()[['교수명', '강좌명','분반', '분류', '요일', '시간ID', '강의실명']]
             # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
             start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
             start2 = start2.reset_index()['시작시간']
@@ -254,7 +277,7 @@ class Ui_Lesson_Assign(QDialog):
             finish2 = time_df.iloc[df2['시간ID'].str.split(',').str[-1]]['종료시간']
             finish2 = finish2.reset_index()['종료시간']
             df2 = pd.concat([df2, finish2], axis=1)
-            df2 = df2[['교수명', '강좌명', '분반', '요일', '시작시간', '종료시간', '강의실명']]
+            df2 = df2[header_arr]
             # print(df2)
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df2)):
@@ -277,20 +300,6 @@ class Ui_Lesson_Assign(QDialog):
         self.label_11.setText(_translate("Dialog", "사용자지정 배정"))
         self.label_12.setText(_translate("Dialog", "종료시간"))
         self.label_13.setText(_translate("Dialog", "강의실"))
-        item = self.tableWidget.horizontalHeaderItem(0)
-        item.setText(_translate("Dialog", "교수"))
-        item = self.tableWidget.horizontalHeaderItem(1)
-        item.setText(_translate("Dialog", "강의"))
-        item = self.tableWidget.horizontalHeaderItem(2)
-        item.setText(_translate("Dialog", "분반"))
-        item = self.tableWidget.horizontalHeaderItem(3)
-        item.setText(_translate("Dialog", "요일"))
-        item = self.tableWidget.horizontalHeaderItem(4)
-        item.setText(_translate("Dialog", "강의실"))
-        item = self.tableWidget.horizontalHeaderItem(5)
-        item.setText(_translate("Dialog", "시작시간"))
-        item = self.tableWidget.horizontalHeaderItem(6)
-        item.setText(_translate("Dialog", "종료시간"))
 
 
     def saveInfo(self):
@@ -315,6 +324,7 @@ class Ui_Lesson_Assign(QDialog):
         write_data.append(str(time)[1:-1])
         # print(write_data)
         write_data = pd.DataFrame([write_data], columns=['교수명', '강좌명','시간ID'])
+
         lesson_assign_df=pd.concat([lesson_assign_df,write_data] , axis=0)
         lesson_assign_df.to_excel('data/lesson_assign.xlsx', index=False)
         global_funtion().message_box_1(QMessageBox.Information, "정보", "입력되었습니다", "확인")
