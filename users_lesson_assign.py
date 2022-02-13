@@ -28,7 +28,7 @@ class Ui_Lesson_Assign(QDialog):
         tool_button_arr = [
             ["입력", "img/add_person.png",40, 40, self.writeInfo],
             ["수정", "img/shuffle.png", 40, 40, self.changeInfo],
-            ["저장", "img/floppy-disk.png", 40, 40, self.saveInfo],
+            ["배정", "img/floppy-disk.png", 40, 40, self.saveInfo],
             ["삭제", "img/delete.png", 40, 40, self.deleteInfo]
         ]
 
@@ -40,11 +40,16 @@ class Ui_Lesson_Assign(QDialog):
             time_start_arr.append(time_list[i][1])
             time_end_arr.append(time_list[i][2])
 
-        with open("info_type.json", "r") as info:
-            configData = json.load(info)
+        # with open("info_type.json", "r") as info:
+        #     configData = json.load(info)
 
         global header_arr
         header_arr = ['교수명', '강좌명', '분반', '분류', '요일', '시작시간', '종료시간', '강의실명']
+
+    def jsonLoad(self):
+        global configData
+        with open("info_type.json", "r") as info:
+            configData = json.load(info)
 
     # 화면 출력
     def setupUi(self):
@@ -201,7 +206,6 @@ class Ui_Lesson_Assign(QDialog):
             self.toolButton = QToolButton(self.verticalLayoutWidget)
             global_funtion.tool_button_setting_widget(self, self.toolButton, self.verticalLayout, tool_button_arr[i])
 
-
         # 텍스트 출력
         self.retranslateUi()
 
@@ -210,9 +214,12 @@ class Ui_Lesson_Assign(QDialog):
         self.radioButton_2.toggled.connect(self.onClicked2)
         self.radioButton_2.click()
 
+        # TableWidget 클릭 메소드 연결
+        self.tableWidget.itemClicked.connect(self.tableClick)
+
     # 대학원 라디오 버튼 연결 ( 대학원 데이터 불러오기 )
     def onClicked(self):
-        global df
+        global df, radioBtn
         radioBtn=self.sender()
         if radioBtn.isChecked():
             self.comboBox_2.clear()
@@ -249,7 +256,7 @@ class Ui_Lesson_Assign(QDialog):
 
     # 학부 라디오 버튼 연결 ( 학부 데이터 불러오기 )
     def onClicked2(self):
-        global df2
+        global df2, radioBtn2
         radioBtn2=self.sender()
         if radioBtn2.isChecked():
 
@@ -286,6 +293,36 @@ class Ui_Lesson_Assign(QDialog):
                 for j in range(len(df2.columns)):
                     self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
+    # tableClick Event ( 테이블 위젯 클릭시 창에 정보 띄우기 )
+    def tableClick(self):
+        global curr_row, curr_col
+        curr_row = self.tableWidget.currentRow()  # 테이블 위젯에서 선택한 행 인덱스
+        curr_col = self.tableWidget.currentColumn()  # 테이블 위젯에서 선택한 열 인덱스
+
+        if radioBtn2.isChecked():  # 학부 라디오 버튼 체크시
+            df2_list = df2.values.tolist()
+            item = df2_list[curr_row]
+        else:  # 대학원 라디오 버튼 체크시
+            df_list = df.values.tolist()
+            item = df_list[curr_row]
+
+        # 교수명
+        self.comboBox.setCurrentText(item[0])
+        # 강좌명
+        self.comboBox_2.setCurrentText(item[1])
+        # 분반 ( str으로 변환 필요 )
+        self.lineEdit_8.setText(str(item[2]))
+        # 분류
+        self.comboBox_5.setCurrentText(item[3])
+        # 요일
+        self.lineEdit_9.setText(item[4])
+        # 시작시간
+        self.comboBox_3.setCurrentText(item[5])
+        # 종료시간
+        self.comboBox_4.setCurrentText(item[6])
+        # 강의실명
+        self.lineEdit_11.setText(item[7])
+
     # 텍스트 출력
     def retranslateUi(self):
         _translate = QCoreApplication.translate
@@ -302,11 +339,49 @@ class Ui_Lesson_Assign(QDialog):
         self.label_13.setText(_translate("Dialog", "강의실"))
 
 
-    def saveInfo(self):
-        print("")
+    def saveInfo(self):     # 배정 메소드
+        print("랜덤배정")
 
-    def deleteInfo(self):
-        print("")
+
+    def deleteInfo(self):   # 삭제 메소드
+        global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 삭제하시겠습니까?", "예", "아니오")
+        self.jsonLoad()
+        if configData['message'] == 'Y':
+            # 테이블 위젯에서 클릭한 셀 내용 삭제
+            self.tableWidget.takeItem(curr_row, curr_col)
+            count = 0
+            # lesson_assign.xlsx 에도 내용 삭제 --- 학부와 대학원 정보를 나눠서 불러온 다음 삭제해야함
+            if radioBtn2.isChecked():               # 학부 라디오 버튼 체크시
+                df2.iloc[curr_row, curr_col] = ""   # 학부 파일 df2 에서 해당 내용 삭제
+                # 아이디어 : lesson_assign_list 에서 학부 수업 찾아서 count 세어서 curr_row으로 처리
+                for i in range(len(lesson_assign_list)):
+                    if '대학원' not in lesson_assign_list[i][8]:
+                        count = count + 1           # count 값은 lesson_assign_list 중 학부 몇 번째임을 나타냄
+                        if count == curr_row + 1:
+                            lesson_assign_list[i][curr_col + 1] = ""
+                            break
+                print("학부 삭제")
+
+            else:  # 대학원 라디오 버튼 체크시
+                df.iloc[curr_row, curr_col] = ""  # 대학원 파일 df 에서 해당 내용 삭제
+                for i in range(len(lesson_assign_list)):
+                    if '대학원' in lesson_assign_list[i][8]:
+                        count = count + 1           # count 값은 lesson_assign_list 중 대학원 몇 번째임을 나타냄
+                        if count == curr_row + 1:
+                            lesson_assign_list[i][curr_col + 1] = ""
+                            break
+                print("대학원 삭제")
+
+            lesson_assign_df = pd.DataFrame(lesson_assign_list, columns=lesson_assign_list_col)
+            lesson_assign_df.to_excel('data/lesson_assign.xlsx', index=False)  # dataframe excel 저장
+
+        elif configData['message'] == 'N':
+            print("삭제 안함")
+            return
+
+        #self.close()
+        #self.__init__()
+        #self.exec_()
 
     # 입력하기
     def writeInfo(self):
@@ -332,7 +407,6 @@ class Ui_Lesson_Assign(QDialog):
         # print(time)
         # #print(write_data)
         # #print(lesson_assign_df)
-
 
 
     def changeInfo(self):
