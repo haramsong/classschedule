@@ -225,6 +225,7 @@ class Ui_Lesson_Assign(QDialog):
                 grad_lesson_arr.append(lesson_list[i][1])
             self.comboBox_2.addItems(grad_lesson_arr)
             self.tableWidget.setRowCount(0)
+
             # 대학원 파일을 불러온다
             df = lesson_assign_df[lesson_assign_df['대상학과'].str.contains('대학원')]
             df = df.reset_index()[['교수명','강좌명','분반','분류','요일','시간ID','강의실명']]
