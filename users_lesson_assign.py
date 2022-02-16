@@ -247,6 +247,7 @@ class Ui_Lesson_Assign(QDialog):
             # 대학원 파일을 불러온다
             df = lesson_assign_df_dae
             df = df.reset_index()[['교수명','강좌명','분반','분류','요일','시간ID','강의실명']]
+            df['분반'] = df['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
             # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
             start=time_df.iloc[df['시간ID'].str.split(',').str[0]]['시작시간']
             start=start.reset_index()['시작시간']
@@ -282,6 +283,7 @@ class Ui_Lesson_Assign(QDialog):
             # 학부 파일을 불러온다
             df2 = lesson_assign_df
             df2 = df2.reset_index()[['교수명', '강좌명','분반', '분류', '요일', '시간ID', '강의실명']]
+            df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
             # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
             start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
             start2 = start2.reset_index()['시작시간']
@@ -357,7 +359,6 @@ class Ui_Lesson_Assign(QDialog):
 
 
 
-
     def saveInfo(self):     # 배정 메소드
         print("랜덤배정")
 
@@ -394,6 +395,7 @@ class Ui_Lesson_Assign(QDialog):
 
         self.close()
         self.__init__()
+        self.tableData()
         self.exec_()
 
 
@@ -448,6 +450,7 @@ class Ui_Lesson_Assign(QDialog):
 
         self.close()
         self.__init__()
+        self.tableData()
         self.exec_()
 
 
@@ -519,10 +522,76 @@ class Ui_Lesson_Assign(QDialog):
 
         self.close()
         self.__init__()
+        self.tableData()
         self.exec_()
 
 
+    def tableData(self):
+        self.tableWidget.clear()
+        if self.radioButton.isChecked():
+            self.comboBox_2.clear()
+            grad_lesson_arr = []
+            for i in range(len(lesson_list)):
+                if str(lesson_list[i][2]) != str(semester_str):
+                    continue
+                if str(lesson_list[i][3]) != '대학원':
+                    continue
+                grad_lesson_arr.append(lesson_list[i][1])
+            self.comboBox_2.addItems(grad_lesson_arr)
+            self.tableWidget.setRowCount(0)
 
+            # 대학원 파일을 불러온다
+            df = lesson_assign_df_dae
+            df = df.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
+            df['분반'] = df['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+            # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
+            start = time_df.iloc[df['시간ID'].str.split(',').str[0]]['시작시간']
+            start = start.reset_index()['시작시간']
+            df = pd.concat([df, start], axis=1)
+            # 시간 id 중 가장 큰 숫자에 해당하는 time 종료시간으로 불러오기
+            finish = time_df.iloc[df['시간ID'].str.split(',').str[-1]]['종료시간']
+            finish = finish.reset_index()['종료시간']
+            df = pd.concat([df, finish], axis=1)
+            df = df[header_arr]
+            # print("라디오버튼시", df)
+            # 테이블 위젯에 데이터 집어넣기
+            for i in range(len(df)):
+                row = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(row)
+                for j in range(len(df.columns)):
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
+        else:
+            if self.radioButton_2.isChecked():
+                self.comboBox_2.clear()
+                under_lesson_arr = []
+                for i in range(len(lesson_list)):
+                    if str(lesson_list[i][2]) != str(semester_str):
+                        continue
+                    if str(lesson_list[i][3]) != '학부':
+                        continue
+                    under_lesson_arr.append(lesson_list[i][1])
+                self.comboBox_2.addItems(under_lesson_arr)
+                self.tableWidget.setRowCount(0)
+                # 학부 파일을 불러온다
+                df2 = lesson_assign_df
+                df2 = df2.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
+                df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+                # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
+                start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
+                start2 = start2.reset_index()['시작시간']
+                df2 = pd.concat([df2, start2], axis=1)
+                # 종료 id 중 가장 큰 숫자에 해당하는 time 종료시간으로 불러오기
+                finish2 = time_df.iloc[df2['시간ID'].str.split(',').str[-1]]['종료시간']
+                finish2 = finish2.reset_index()['종료시간']
+                df2 = pd.concat([df2, finish2], axis=1)
+                df2 = df2[header_arr]
+                # print("라디오버튼시", df2)
+                # 테이블 위젯에 데이터 집어넣기
+                for i in range(len(df2)):
+                    row = self.tableWidget.rowCount()
+                    self.tableWidget.insertRow(row)
+                    for j in range(len(df2.columns)):
+                        self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
 
 
