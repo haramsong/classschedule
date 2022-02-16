@@ -83,23 +83,23 @@ class Ui_Timetable(QDialog):
             for j in range(18):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
-        pre = ""
-        for i in range(len(lesson_assign_list)):
-            txt = ""
-            for j in lesson_assign_list[i][6].split(","): #12,13,14,15,16
-                if self.tableWidget.item(int(j),0).text() != "":
-                    pre = self.tableWidget.item(int(j),0).text() + "\n"
-                txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
-                if "월" in lesson_assign_list[i][5]:
-                    self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
-                if "화" in lesson_assign_list[i][5]:
-                    self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
-                if "수" in lesson_assign_list[i][5]:
-                    self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
-                if "목" in lesson_assign_list[i][5]:
-                    self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
-                if "금" in lesson_assign_list[i][5]:
-                    self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
+        # pre = ""
+        # for i in range(len(lesson_assign_list)):
+        #     txt = ""
+        #     for j in lesson_assign_list[i][6].split(","): #12,13,14,15,16
+        #         if self.tableWidget.item(int(j),0).text() != "":
+        #             pre = self.tableWidget.item(int(j),0).text() + "\n"
+        #         txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
+        #         if "월" in lesson_assign_list[i][5]:
+        #             self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
+        #         if "화" in lesson_assign_list[i][5]:
+        #             self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
+        #         if "수" in lesson_assign_list[i][5]:
+        #             self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
+        #         if "목" in lesson_assign_list[i][5]:
+        #             self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
+        #         if "금" in lesson_assign_list[i][5]:
+        #             self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
 
 
         # 테이블 위젯 행렬 사이즈 조절

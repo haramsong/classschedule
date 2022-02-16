@@ -20,13 +20,14 @@ else:
 if today_QDate <= first_semester_QDate:
     year_str -= 1
 
-global classroom_df, lesson_assign_df, lesson_df, professor_df, time_df, global_df, under_dataset_df, grad_dataset_df
-global classroom_list, lesson_assign_list, lesson_list, professor_list, time_list, global_list, under_dataset_list, grad_dataset_list
-global classroom_list_col, lesson_assign_list_col, lesson_list_col, professor_list_col, time_list_col, global_list_col
+global classroom_df, lesson_assign_df,lesson_assign_df_dae, lesson_df, professor_df, time_df, global_df, under_dataset_df, grad_dataset_df
+global classroom_list, lesson_assign_list,lesson_assign_list_dae, lesson_list, professor_list, time_list, global_list, under_dataset_list, grad_dataset_list
+global classroom_list_col, lesson_assign_list_col,lesson_assign_list_col_dae, lesson_list_col, professor_list_col, time_list_col, global_list_col
 
 # 로컬 마스터데이터 로드 (위치 : data 폴더 안 excel 파일)
 classroom_df = pd.read_excel('data/classroom_info.xlsx')
 lesson_assign_df = pd.read_excel('data/lesson_assign.xlsx')
+lesson_assign_df_dae = pd.read_excel('data/lesson_assign_dae.xlsx')
 lesson_df = pd.read_excel('data/lesson_info.xlsx')
 professor_df = pd.read_excel('data/professor_info.xlsx')
 time_df = pd.read_excel('data/time_period.xlsx')
@@ -35,6 +36,7 @@ global_df = pd.read_excel('data/global_master.xlsx')
 # nan값 제거
 classroom_df.replace(np.NaN, '', inplace=True)
 lesson_assign_df.replace(np.NaN, '', inplace=True)
+lesson_assign_df_dae.replace(np.NaN, '', inplace=True)
 lesson_df.replace(np.NaN, '', inplace=True)
 professor_df.replace(np.NaN, '', inplace=True)
 time_df.replace(np.NaN, '', inplace=True)
@@ -47,6 +49,7 @@ lesson_df['학점'] = lesson_df['학점'].astype(str).apply(lambda x: x.replace(
 
 classroom_list = classroom_df.values.tolist()
 lesson_assign_list = lesson_assign_df.values.tolist()
+lesson_assign_list_dae = lesson_assign_df_dae.values.tolist()
 lesson_list = lesson_df.values.tolist()
 professor_list = professor_df.values.tolist()
 time_list = time_df.values.tolist()
@@ -55,6 +58,7 @@ global_list = global_df.values.tolist()
 # 데이터 저장할 때 필요한 column(to_excel)
 classroom_list_col = list([col for col in pd.read_excel('data/classroom_info.xlsx')])                # 강의실 column
 lesson_assign_list_col = list([col for col in pd.read_excel('data/lesson_assign.xlsx')])             # 강의 배정 column
+lesson_assign_list_col_dae = list([col for col in pd.read_excel('data/lesson_assign_dae.xlsx')])
 lesson_list_col = list([col for col in pd.read_excel('data/lesson_info.xlsx')])                      # 강의 column
 professor_list_col = list([col for col in pd.read_excel('data/professor_info.xlsx')])                # 교수 column
 time_list_col = list([col for col in pd.read_excel('data/time_period.xlsx')])                        # 시간표 column
