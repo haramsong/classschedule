@@ -74,17 +74,29 @@ class Ui_Dialog(QDialog):
         # 입력 Form 생성 - lineedit, combobox 생성
         if configData['info_type'] == "lesson":  # 강의 정보
             # lineedit
-            for i in [0, 1, 3, 5]:
+            for i in [0, 5]:
                 line_arr[i] = QLineEdit(self.gridLayoutWidget)
                 self.gridLayout.addWidget(line_arr[i], i, 1, 1, 1)  # (i,1) 번째 LineEdit
 
-            #combobox
+            # combobox
+            line_arr[1] = QComboBox(self.gridLayoutWidget)
+            line_arr[1].addItems(['1', '2'])
+            line_arr[1].setStyleSheet("QComboBox { padding-left : 2px; }")
+            self.gridLayout.addWidget(line_arr[1], 1, 1, 1, 1)  # (2,1) 번째 QComboBox
+
             line_arr[2] = QComboBox(self.gridLayoutWidget)
-            line_arr[2].addItems(['전공기초', '전공선택', '전공필수', '공통', '석사', '박사'])
+            line_arr[2].addItems(['학부', '대학원'])
+            line_arr[2].setStyleSheet("QComboBox { padding-left : 2px; }")
             self.gridLayout.addWidget(line_arr[2], 2, 1, 1, 1)  # (2,1) 번째 QComboBox
+
+            line_arr[3] = QComboBox(self.gridLayoutWidget)
+            line_arr[3].addItems(['', '1', '2', '3', '4'])
+            line_arr[3].setStyleSheet("QComboBox { padding-left : 2px; }")
+            self.gridLayout.addWidget(line_arr[3], 3, 1, 1, 1)  # (2,1) 번째 QComboBox
 
             line_arr[4] = QComboBox(self.gridLayoutWidget)
             line_arr[4].addItems(['3', '2', '1'])
+            line_arr[4].setStyleSheet("QComboBox { padding-left : 2px; }")
             self.gridLayout.addWidget(line_arr[4], 4, 1, 1, 1)  # (4,1) 번째 QComboBox
 
         elif configData['info_type'] == "professor":    # 교수 정보
@@ -96,6 +108,7 @@ class Ui_Dialog(QDialog):
             # combobox
             line_arr[1] = QComboBox(self.gridLayoutWidget)
             line_arr[1].addItems(['교수', '부교수', '조교수'])
+            line_arr[1].setStyleSheet("QComboBox { padding-left : 2px; }")
             self.gridLayout.addWidget(line_arr[1], 1, 1, 1, 1)  # (1,1) 번째 QComboBox
 
         elif configData['info_type'] == 'classroom':    # 강의실 정보
@@ -117,11 +130,12 @@ class Ui_Dialog(QDialog):
         row = self.listWidget.currentRow()
         item = ""
         if configData['info_type'] == "lesson":  # 강의 정보
-            for i in [0, 1, 3, 5]:               # lineedit에 해당
+            for i in [0, 5]:               # lineedit에 해당
                 line_arr[i].setText(str(data[row][i+1]))
 
-            for i in [2, 4]:                     # combobox에 해당
+            for i in [1, 2, 3, 4]:                     # combobox에 해당
                 item = str(data[row][i+1])
+                print(item)
                 line_arr[i].setCurrentText(item)    # setting current item
 
         elif configData['info_type'] == "professor":  # 교수 정보
@@ -204,9 +218,9 @@ class Ui_Dialog(QDialog):
         new_data = []
         if configData['info_type'] == "lesson":  # 강의 정보
             new_data.append(line_arr[0].text())
-            new_data.append(line_arr[1].text())
+            new_data.append(line_arr[1].currentText())
             new_data.append(line_arr[2].currentText())
-            new_data.append(line_arr[3].text())
+            new_data.append(line_arr[3].currentText())
             new_data.append(line_arr[4].currentText())
             new_data.append(line_arr[5].text())
 
@@ -276,9 +290,9 @@ class Ui_Dialog(QDialog):
                     if configData['info_type'] == "lesson":  # 강의 정보
                         # 입력폼으로 수정한 내용을 changed_data에 담는다
                         changed_data.append(line_arr[0].text())
-                        changed_data.append(line_arr[1].text())
+                        changed_data.append(line_arr[1].currentText())
                         changed_data.append(line_arr[2].currentText())
-                        changed_data.append(line_arr[3].text())
+                        changed_data.append(line_arr[3].curentText())
                         changed_data.append(line_arr[4].currentText())
                         changed_data.append(line_arr[5].text())
 
