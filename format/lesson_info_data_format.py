@@ -29,7 +29,7 @@ for i in range(len(lesson_list) + 1, -1 , -1):
     if i in lesson_del_idx:
         lesson_list.pop(i)
 print(lesson_list)
-#iiiiii
+
 # 수학과는 학년 나눔
 for i in range(len(lesson_list)):
     grade_str = ""
