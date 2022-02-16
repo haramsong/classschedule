@@ -14,6 +14,7 @@ from dialog import *
 from data_load import *
 import json
 from users_lesson_assign import *
+from PyQt5 import QtGui
 
 # 시간표 창 만들기
 class Ui_Timetable(QDialog):
@@ -28,7 +29,7 @@ class Ui_Timetable(QDialog):
         # 버튼 관련 설정
         tool_button_arr = [
             ["사용자 지정", "img/edit.png", 50, 50, self.lesson_assign],
-            ["삭제", "img/delete.png", 50, 50, self.delete]
+            # ["삭제", "img/delete.png", 50, 50, self.delete]
         ]
 
         # json load
@@ -42,9 +43,9 @@ class Ui_Timetable(QDialog):
         self.setObjectName("Dialog")
         self.setFixedSize(1050, 700)
 
-        # 테이블 위젯 설정( 시간표)
+        # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
-        self.tableWidget.setGeometry(QRect(160, 100, 850, 530))
+        self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
@@ -78,7 +79,6 @@ class Ui_Timetable(QDialog):
         # lesson_assign_list.append(['MA15642', 2, '최영준', '복소변수', '월, 수', '0,1,2', '607-208', '수학과2', 2022, 1])
         # print(lesson_assign_list)
 
-        # 문제 2 : 합쳐져서 시간표가 안나옴
         for i in range(5):
             for j in range(18):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
@@ -102,9 +102,6 @@ class Ui_Timetable(QDialog):
         #             self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
 
 
-
-
-
         # 테이블 위젯 행렬 사이즈 조절
         self.tableWidget.verticalHeader().setDefaultSectionSize(60)
 
@@ -114,16 +111,29 @@ class Ui_Timetable(QDialog):
         self.label.setGeometry(QRect(0, 10, 1050, 80))
         self.label.setAlignment(Qt.AlignCenter)
         global_funtion.fontSetting(self, self.label, "8H", 24, " ")
-        label_text = str(year_str) + '학년도 ' + str(semester_str) + '학기'
-        self.label.setText(label_text)
+        # label_text = str(year_str) + '학년도 ' + str(semester_str) + '학기'
+
 
         # 버튼 설정
         self.verticalLayoutWidget = QWidget(self)
-        self.verticalLayoutWidget.setGeometry(QRect(60, 80, 160, 420))
+        self.verticalLayoutWidget.setGeometry(QRect(220, -160, 160, 420))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
+
+        ############################ 수정
+        # Combobox
+        self.yearSelect = QComboBox(self)
+        self.yearSelect.setGeometry(QRect(800, 60, 200, 30))
+
+        font = QtGui.QFont('Arial', 10, QtGui.QFont.Bold)
+
+        self.yearSelect.setFont(font)
+        self.yearSelect.addItems(['2020학년도 1학기', '2020학년도 2학기'])  # 데이터를 불러와서 year 정보 수정하기
+
+        # self.yearSelect.setStyleSheet("QComboBox { padding-left : 2px; }")
+        self.yearSelect.currentIndexChanged.connect(self.comboboxClicked)
 
         # 버튼 생성
         for i in range(len(tool_button_arr)):
@@ -132,12 +142,13 @@ class Ui_Timetable(QDialog):
 
         # 텍스트 출력
         self.retranslateUi()
-        QMetaObject.connectSlotsByName(self)
 
         self.page_data()
         self.jsonload()
 
     def retranslateUi(self):
+        label_text = self.yearSelect.currentText()
+        self.label.setText(label_text)
         _translate = QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "강의 배정"))
 
@@ -154,13 +165,16 @@ class Ui_Timetable(QDialog):
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
+    def comboboxClicked(self, i):
+        label_text = self.yearSelect.currentText()
+        self.label.setText(label_text)
 
     def lesson_assign(self):
         a = Ui_Lesson_Assign()
         a.exec_()
 
-    def delete(self):
-        print('삭제')
+    # def delete(self):
+    #     print('삭제')
 
 if __name__ == "__main__":
     import sys
