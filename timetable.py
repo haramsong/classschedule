@@ -101,31 +101,6 @@ class Ui_Timetable(QDialog):
                 if "금" in lesson_assign_list[i][5]:
                     self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
 
-        ############################ 수정
-        # Combobox
-        self.yearSelect = QComboBox(self)
-        # self.yearSelect.setEditable(True)
-
-        # self.yearSelect_ledit = self.yearSelect.lineEdit() # 추가된 내용을 lineEdit 기능을 활용
-        # self.yearSelect_ledit.setAlignment(Qt.AlignCenter) # 추가된 내용 가운데 정렬
-        #self.yearSelect_ledit.setReadOnly(True) # yearSelect edit 비활성
-        font = QtGui.QFont('Arial', 10, QtGui.QFont.Bold)
-
-        self.yearSelect.setFont(font)
-        self.yearSelect.addItems(['2020학년도 1학기', '2020학년도 2학기']) # 데이터를 불러와서 year 정보 수정하기
-        self.yearSelect.resize(200, 30)
-        self.yearSelect.move(800, 40)
-        # self.yearSelect.setStyleSheet("QComboBox { padding-left : 2px; }")
-        # self.gridLayout.addWidget(self.yearSelect, 1, 1, 1, 1)  # (2,1) 번째 QComboBox
-
-        # self.semesterSelect = QtWidgets.QComboBox(self)
-        # self.semesterSelect.addItems(['1학기', '2학기'])
-        # self.semesterSelect = QComboBox(self.gridLayoutWidget)
-        # self.semesterSelect.addItems(['1학기', '2학기'])
-        # self.semesterSelect.setStyleSheet("QComboBox { padding-left : 2px; }")
-        # self.gridLayout.addWidget(self.yearSelect, 2, 1, 1, 1)  # (2,1) 번째 QComboBox
-
-
 
         # 테이블 위젯 행렬 사이즈 조절
         self.tableWidget.verticalHeader().setDefaultSectionSize(60)
@@ -137,8 +112,7 @@ class Ui_Timetable(QDialog):
         self.label.setAlignment(Qt.AlignCenter)
         global_funtion.fontSetting(self, self.label, "8H", 24, " ")
         # label_text = str(year_str) + '학년도 ' + str(semester_str) + '학기'
-        label_text = self.yearSelect.currentText()
-        self.label.setText(label_text)
+
 
         # 버튼 설정
         self.verticalLayoutWidget = QWidget(self)
@@ -148,6 +122,19 @@ class Ui_Timetable(QDialog):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
+        ############################ 수정
+        # Combobox
+        self.yearSelect = QComboBox(self)
+        self.yearSelect.setGeometry(QRect(800, 60, 200, 30))
+
+        font = QtGui.QFont('Arial', 10, QtGui.QFont.Bold)
+
+        self.yearSelect.setFont(font)
+        self.yearSelect.addItems(['2020학년도 1학기', '2020학년도 2학기'])  # 데이터를 불러와서 year 정보 수정하기
+
+        # self.yearSelect.setStyleSheet("QComboBox { padding-left : 2px; }")
+        self.yearSelect.currentIndexChanged.connect(self.comboboxClicked)
+
         # 버튼 생성
         for i in range(len(tool_button_arr)):
             self.toolButton = QToolButton(self.verticalLayoutWidget)
@@ -155,12 +142,13 @@ class Ui_Timetable(QDialog):
 
         # 텍스트 출력
         self.retranslateUi()
-        QMetaObject.connectSlotsByName(self)
 
         self.page_data()
         self.jsonload()
 
     def retranslateUi(self):
+        label_text = self.yearSelect.currentText()
+        self.label.setText(label_text)
         _translate = QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "강의 배정"))
 
@@ -177,6 +165,9 @@ class Ui_Timetable(QDialog):
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
+    def comboboxClicked(self, i):
+        label_text = self.yearSelect.currentText()
+        self.label.setText(label_text)
 
     def lesson_assign(self):
         a = Ui_Lesson_Assign()
