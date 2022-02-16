@@ -43,7 +43,7 @@ class Ui_Timetable(QDialog):
         self.setObjectName("Dialog")
         self.setFixedSize(1050, 700)
 
-        # 테이블 위젯 설정( 시간표)
+        # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
         self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
         self.tableWidget.setObjectName("tableWidget")
