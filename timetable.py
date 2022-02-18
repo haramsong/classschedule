@@ -15,6 +15,8 @@ from data_load import *
 import json
 from users_lesson_assign import *
 from PyQt5 import QtGui
+import os
+import pandas as pd
 
 # 시간표 창 만들기
 class Ui_Timetable(QDialog):
@@ -127,10 +129,19 @@ class Ui_Timetable(QDialog):
         self.yearSelect = QComboBox(self)
         self.yearSelect.setGeometry(QRect(800, 60, 200, 30))
 
+
+        subdir_names = os.listdir('data/class_dataset')
         font = QtGui.QFont('Arial', 10, QtGui.QFont.Bold)
 
         self.yearSelect.setFont(font)
-        self.yearSelect.addItems(['2020학년도 1학기', '2020학년도 2학기'])  # 데이터를 불러와서 year 정보 수정하기
+
+        self.yearSelect.addItem(str(year_str)+"학년도 "+str(semester_str)+"학기")
+        for i in list(reversed(subdir_names)):
+            y = i[0:4]
+            s = i[5]
+            n = y+"학년도 "+s+ "학기"
+            self.yearSelect.addItem(n)
+        # self.yearSelect.addItems(['2020학년도 1학기', '2020학년도 2학기'])  # 데이터를 불러와서 year 정보 수정하기
 
         # self.yearSelect.setStyleSheet("QComboBox { padding-left : 2px; }")
         self.yearSelect.currentIndexChanged.connect(self.comboboxClicked)
