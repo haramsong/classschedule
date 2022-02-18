@@ -23,7 +23,7 @@ class Ui_Lesson_Assign(QDialog):
 
     # 데이터 불러오기
     def get_init_data(self):
-        global tool_button_arr, configData
+        global tool_button_arr, configData, refresh_button_arr
             # 버튼 관련 설정
         tool_button_arr = [
             ["입력", "img/add_person.png",40, 40, self.writeInfo],
@@ -32,6 +32,7 @@ class Ui_Lesson_Assign(QDialog):
             ["배정", "img/arange2.png", 40, 40, self.saveInfo]
         ]
 
+        refresh_button_arr = ["새로고침",50,40,40,40, "img/refresh.png", 40, 40, self.refreshInfo]
         # 시작, 종료시간 combobox 정보
         global time_start_arr, time_end_arr
         time_start_arr = [""]
@@ -44,9 +45,8 @@ class Ui_Lesson_Assign(QDialog):
         #     configData = json.load(info)
 
         # 테이블 위젯 이름 깔끔하게 넣기 위해 설정
-        global header_arr , column_arr
+        global header_arr
         header_arr = ['교수명', '강좌명', '분반', '분류', '요일', '시작시간', '종료시간', '강의실명']
-        column_arr=['강의ID','교수명', '강좌명', '분반', '분류', '요일', '시간ID','강의실명','대상학과','년도','학기']
 
     def jsonLoad(self):
         global configData
@@ -184,6 +184,8 @@ class Ui_Lesson_Assign(QDialog):
         self.lineEdit_11.setObjectName("lineEdit_11")
         self.gridLayout_2.addWidget(self.lineEdit_11, 3, 4, 1, 1)
 
+        self.toolButton = QToolButton(self)
+        global_funtion.tool_button_setting(self, self.toolButton, refresh_button_arr)
 
         # 테이블 위젯 만들기( 목록 띄우기 위함 )
         self.tableWidget =QTableWidget(self.groupBox_2)
@@ -228,12 +230,50 @@ class Ui_Lesson_Assign(QDialog):
         # TableWidget 클릭 메소드 연결
         self.tableWidget.itemClicked.connect(self.tableClick)
 
+    def refreshInfo(self):
+        self.close()
+        self.__init__()
+        self.exec_()
+
+
+    def df_dae_load(self):
+        global df
+        df = lesson_assign_df_dae
+        df = df.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
+        df['분반'] = df['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+        # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
+        start = time_df.iloc[df['시간ID'].str.split(',').str[0]]['시작시간']
+        start = start.reset_index()['시작시간']
+        df = pd.concat([df, start], axis=1)
+        # 시간 id 중 가장 큰 숫자에 해당하는 time 종료시간으로 불러오기
+        finish = time_df.iloc[df['시간ID'].str.split(',').str[-1]]['종료시간']
+        finish = finish.reset_index()['종료시간']
+        df = pd.concat([df, finish], axis=1)
+        df = df[header_arr]
+
+    def df_load(self):
+        global df2
+        df2 = lesson_assign_under_df
+        df2 = df2.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
+        df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+        # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
+        start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
+        start2 = start2.reset_index()['시작시간']
+        df2 = pd.concat([df2, start2], axis=1)
+        # 종료 id 중 가장 큰 숫자에 해당하는 time 종료시간으로 불러오기
+        finish2 = time_df.iloc[df2['시간ID'].str.split(',').str[-1]]['종료시간']
+        finish2 = finish2.reset_index()['종료시간']
+        df2 = pd.concat([df2, finish2], axis=1)
+        df2 = df2[header_arr]
+
     # 대학원 라디오 버튼 연결 ( 대학원 데이터 불러오기 )
     def onClicked(self):
         global df, radioBtn
-        radioBtn=self.sender()
+        radioBtn = self.sender()
         if radioBtn.isChecked():
-            self.comboBox_2.clear()
+            self.lineEdit_8.setText("")
+            self.lineEdit_9.setText("")
+            self.lineEdit_11.setText("")
             grad_lesson_arr = []
             for i in range(len(lesson_list)):
                 if str(lesson_list[i][2]) != str(semester_str):
@@ -245,32 +285,23 @@ class Ui_Lesson_Assign(QDialog):
             self.tableWidget.setRowCount(0)
 
             # 대학원 파일을 불러온다
-            df = lesson_assign_df_dae
-            df = df.reset_index()[['교수명','강좌명','분반','분류','요일','시간ID','강의실명']]
-            df['분반'] = df['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
-            # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
-            start=time_df.iloc[df['시간ID'].str.split(',').str[0]]['시작시간']
-            start=start.reset_index()['시작시간']
-            df=pd.concat([df, start], axis=1)
-            # 시간 id 중 가장 큰 숫자에 해당하는 time 종료시간으로 불러오기
-            finish = time_df.iloc[df['시간ID'].str.split(',').str[-1]]['종료시간']
-            finish = finish.reset_index()['종료시간']
-            df = pd.concat([df, finish], axis=1)
-            df=df[header_arr]
-            #print("라디오버튼시", df)
+            self.df_dae_load()
+            # print("라디오버튼시", df)
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df)):
                 row = self.tableWidget.rowCount()
                 self.tableWidget.insertRow(row)
                 for j in range(len(df.columns)):
-                     self.tableWidget.setItem(i,j,QTableWidgetItem(str(df.iloc[i,j])))
+                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
 
     # 학부 라디오 버튼 연결 ( 학부 데이터 불러오기 )
     def onClicked2(self):
         global df2, radioBtn2
-        radioBtn2=self.sender()
+        radioBtn2 = self.sender()
         if radioBtn2.isChecked():
-            self.comboBox_2.clear()
+            self.lineEdit_8.setText("")
+            self.lineEdit_9.setText("")
+            self.lineEdit_11.setText("")
             under_lesson_arr = []
             for i in range(len(lesson_list)):
                 if str(lesson_list[i][2]) != str(semester_str):
@@ -281,28 +312,14 @@ class Ui_Lesson_Assign(QDialog):
             self.comboBox_2.addItems(under_lesson_arr)
             self.tableWidget.setRowCount(0)
             # 학부 파일을 불러온다
-            df2 = lesson_assign_df
-            df2 = df2.reset_index()[['교수명', '강좌명','분반', '분류', '요일', '시간ID', '강의실명']]
-            df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
-            # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
-            start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
-            start2 = start2.reset_index()['시작시간']
-            df2 = pd.concat([df2, start2], axis=1)
-            # 종료 id 중 가장 큰 숫자에 해당하는 time 종료시간으로 불러오기
-            finish2 = time_df.iloc[df2['시간ID'].str.split(',').str[-1]]['종료시간']
-            finish2 = finish2.reset_index()['종료시간']
-            df2 = pd.concat([df2, finish2], axis=1)
-            df2 = df2[header_arr]
-            #print("라디오버튼시", df2)
+            self.df_load()
+            # print("라디오버튼시", df2)
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df2)):
                 row = self.tableWidget.rowCount()
                 self.tableWidget.insertRow(row)
                 for j in range(len(df2.columns)):
-                    self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
-
-
-
+                        self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
     # tableClick Event ( 테이블 위젯 클릭시 창에 정보 띄우기 )
     def tableClick(self):
@@ -310,11 +327,13 @@ class Ui_Lesson_Assign(QDialog):
         curr_row = self.tableWidget.currentRow()  # 테이블 위젯에서 선택한 행 인덱스
         curr_col = self.tableWidget.currentColumn()  # 테이블 위젯에서 선택한 열 인덱스
         if radioBtn2.isChecked():  #학부 라디오 버튼 체크시 , df2 = 학부 파일
+            self.df_load()
             df2_list = df2.values.tolist()
             item = df2_list[curr_row]
             #print(df2_list)
             #print(curr_row)
         else:  # 대학원 라디오 버튼 체크시 , df = 대학원 파일
+            self.df_dae_load()
             df_list = df.values.tolist()
             item = df_list[curr_row]
             #print(df_list)
@@ -365,18 +384,19 @@ class Ui_Lesson_Assign(QDialog):
 
 
     def deleteInfo(self):  # 삭제 메소드
+        global lesson_assign_under_df, lesson_assign_df_dae
         global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 삭제하시겠습니까?", "예", "아니오")
         self.jsonLoad()
         if configData['message'] == 'Y':
             # self.tableWidget.removeRow(curr_row)    # 테이블 위젯에서 클릭한 행 전체 내용 삭제
             if radioBtn2.isChecked():  # 학부 라디오 버튼이 체크 되어있을 때, 학부 파일 lesson_assign에서 해당 행 삭제
-                del lesson_assign_list[curr_row]  # lesson_assign_list 에서 선택한 행 삭제
+                del lesson_assign_under_list[curr_row]  # lesson_assign_list 에서 선택한 행 삭제
                 print("학부 삭제")
                 # print(lesson_assign_list)
 
-                lesson_assign_df = pd.DataFrame(lesson_assign_list, columns=lesson_assign_list_col)  # 삭제된 내용을 다시 저장
-                lesson_assign_df.to_excel('data/lesson_assign.xlsx', index=False)
-                # print(lesson_assign_df)
+                lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)  # 삭제된 내용을 다시 저장
+                lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
+                # print(lesson_assign_under_df)
 
             else:  # 대학원 라디오 버튼 체크시, 대학원 파일 lesson_assign_grad 에서 해당 행 삭제
                 del lesson_assign_list_dae[curr_row]  # lesson_assign_grad_list 에서 선택한 행 삭제
@@ -388,15 +408,14 @@ class Ui_Lesson_Assign(QDialog):
                 print(lesson_assign_df_dae)
 
             global_funtion().message_box_1(QMessageBox.Information, "정보", "삭제되었습니다", "확인")  # 삭제완료 메세지 출력
-
+            self.tableData()
         elif configData['message'] == 'N':
             print("삭제 안함")
             return
 
-        self.close()
-        self.__init__()
-        self.tableData()
-        self.exec_()
+        # self.close()
+
+        # self.exec_()
 
 
 
@@ -404,7 +423,7 @@ class Ui_Lesson_Assign(QDialog):
 
     # 입력하기
     def writeInfo(self):
-        global write_data , lesson_assign_df , lesson_assign_df_dae
+        global write_data , lesson_assign_under_df , lesson_assign_df_dae
         # array에 현재 해당하는 교수, 강의명 입력
         write_data=[]
         write_data.append(self.comboBox.currentText())      # 교수
@@ -433,9 +452,9 @@ class Ui_Lesson_Assign(QDialog):
         print(write_data)
 
         if radioBtn2.isChecked():
-            lesson_assign_df=pd.concat([lesson_assign_df,write_data] , axis=0)
-            lesson_assign_df.to_excel('data/lesson_assign.xlsx', index=False)
-            lesson_assign_df.replace(np.NaN, '', inplace=True)
+            lesson_assign_under_df=pd.concat([lesson_assign_under_df,write_data] , axis=0)
+            lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
+            lesson_assign_under_df.replace(np.NaN, '', inplace=True)
         else:
             lesson_assign_df_dae = pd.concat([lesson_assign_df_dae,write_data], axis=0)
             lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
@@ -448,10 +467,9 @@ class Ui_Lesson_Assign(QDialog):
         # print(write_data)
         print(lesson_assign_list)
 
-        self.close()
-        self.__init__()
+        # self.__init__()
         self.tableData()
-        self.exec_()
+        # self.exec_()
 
 
 
@@ -459,13 +477,14 @@ class Ui_Lesson_Assign(QDialog):
 
     # 수정하기
     def changeInfo(self):
+        global lesson_assign_under_df, lesson_assign_df_dae
         global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 수정하시겠습니까?", "예", "아니오")
         self.jsonLoad()
-        global changed_data , column_arr
+        global changed_data
         # #print(df2_list[curr_row])
         if configData['message'] == 'Y':
             if radioBtn2.isChecked(): # 학부 버튼 클릭 시
-                for i in range(len(lesson_assign_list)):  # data 개수만큼 for문
+                for i in range(len(lesson_assign_under_list)):  # data 개수만큼 for문
                     if i == curr_row:
                     # 위젯list에서 선택한 row와 i번째 data가 일치하면
                         changed_data = []
@@ -485,10 +504,10 @@ class Ui_Lesson_Assign(QDialog):
                                 time.append(j)
                             changed_data.append(str(time)[1:-1])
                         changed_data.append(self.lineEdit_11.text())
-                        lesson_assign_list[i][1:8]=changed_data
-                        df = pd.DataFrame(lesson_assign_list, columns=column_arr)
+                        lesson_assign_under_list[i]=changed_data
+                        lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
                     #print(df)
-                        df.to_excel('data/lesson_assign.xlsx', index=False)
+                        lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
             else:
                 for i in range(len(lesson_assign_list_dae)):  # data 개수만큼 for문
                     if i == curr_row:
@@ -511,23 +530,30 @@ class Ui_Lesson_Assign(QDialog):
                             changed_data.append(str(time)[1:-1])
                         changed_data.append(self.lineEdit_11.text())
                         lesson_assign_list_dae[i][1:8]=changed_data
-                        df_dae = pd.DataFrame(lesson_assign_list_dae, columns=column_arr)
+                        lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
                         print(df_dae)
-                        df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
+                        lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
 
             global_funtion().message_box_1(QMessageBox.Information, "정보", "수정되었습니다", "확인")
         elif configData['message'] == 'N':
             print("no")
             return
 
-        self.close()
-        self.__init__()
+        # self.close()
+        # self.__init__()
         self.tableData()
-        self.exec_()
+        # self.exec_()
+
 
 
     def tableData(self):
         self.tableWidget.clear()
+        for i in range(0,8):
+            item = QTableWidgetItem()  # 교수
+            item.setText(header_arr[i])
+            self.tableWidget.setHorizontalHeaderItem(i, item)
+            self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+        print('a')
         if self.radioButton.isChecked():
             self.comboBox_2.clear()
             grad_lesson_arr = []
@@ -541,7 +567,9 @@ class Ui_Lesson_Assign(QDialog):
             self.tableWidget.setRowCount(0)
 
             # 대학원 파일을 불러온다
+            # lesson_assign_df_dae = pd.read_excel('data/lesson_assign_dae.xlsx')
             df = lesson_assign_df_dae
+            df.replace(np.NaN, '', inplace=True)
             df = df.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
             df['분반'] = df['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
             # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
@@ -573,7 +601,10 @@ class Ui_Lesson_Assign(QDialog):
                 self.comboBox_2.addItems(under_lesson_arr)
                 self.tableWidget.setRowCount(0)
                 # 학부 파일을 불러온다
-                df2 = lesson_assign_df
+                lesson_assign_under_df = pd.read_excel('data/lesson_assign_under.xlsx')
+                df2 = lesson_assign_under_df
+                df2.replace(np.NaN, '', inplace=True)
+                print(df2)
                 df2 = df2.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
                 df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
                 # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
