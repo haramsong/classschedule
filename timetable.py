@@ -42,25 +42,6 @@ class Ui_Timetable(QDialog):
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
 
-        # # 시간대 표시
-        # for i in range(len(time_list) - 1):
-        #     row = self.tableWidget.rowCount()
-        #     self.tableWidget.insertRow(row)
-        #     item = QTableWidgetItem()
-        #     self.tableWidget.setVerticalHeaderItem(i, item)
-        #     item = self.tableWidget.verticalHeaderItem(i)
-        #     # print(time_list[i])
-        #     time_text = time_list[i][1]+ '-' + time_list[i][2]
-        #     item.setText(time_text)
-        #
-        # # 요일 입력
-        # for i in range(len(horizontal_header_arr)):
-        #     item = QTableWidgetItem()
-        #     self.tableWidget.setHorizontalHeaderItem(i, item)
-        #     item = self.tableWidget.horizontalHeaderItem(i)
-        #     item.setText(horizontal_header_arr[i])
-        #     self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
-
 
         # 테이블 위젯 행렬 사이즈 조절
         self.tableWidget.verticalHeader().setDefaultSectionSize(60)
