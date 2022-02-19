@@ -82,7 +82,6 @@ class Ui_Timetable(QDialog):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        ############################ 수정
         # Combobox
         self.yearSelect = QComboBox(self)
         self.yearSelect.setGeometry(QRect(800, 60, 200, 30))
