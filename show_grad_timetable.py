@@ -60,7 +60,7 @@ class Ui_ShowGradTimetable(QDialog):
             self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
 
         # 데이터 배치
-        #강의ID	분반	교수명	강좌명	요일	시간ID	강의실명	대상학과	년도	학기
+        # 교수명 강좌명 분반 분류 요일 시간ID 강의실명
         # 월 수 -> [][0], [][2]
         # 화 목 -> [][1], [][3]
         # 금 -> [][4]
@@ -74,6 +74,8 @@ class Ui_ShowGradTimetable(QDialog):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
 ## lesson_assign_list_dae 바꾸기
+        lesson_assign_list_dae = lesson_assign_df_dae.values.tolist()
+
         pre = ""
         for i in range(len(lesson_assign_list_dae)):
             txt = ""
