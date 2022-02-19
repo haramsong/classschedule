@@ -42,57 +42,6 @@ class Ui_Timetable(QDialog):
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
 
-        # 시간대 표시
-        for i in range(len(time_list)):
-            row = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(row)
-            item = QTableWidgetItem()
-            self.tableWidget.setVerticalHeaderItem(i, item)
-            item = self.tableWidget.verticalHeaderItem(i)
-            # print(time_list[i])
-            time_text = time_list[i][1]+ '-' + time_list[i][2]
-            item.setText(time_text)
-
-        # 요일 입력
-        for i in range(len(horizontal_header_arr)):
-            item = QTableWidgetItem()
-            self.tableWidget.setHorizontalHeaderItem(i, item)
-            item = self.tableWidget.horizontalHeaderItem(i)
-            item.setText(horizontal_header_arr[i])
-            self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
-
-        # 데이터 배치
-        #강의ID	분반	교수명	강좌명	요일	시간ID	강의실명	대상학과	년도	학기
-        # 월 수 -> [][0], [][2]
-        # 화 목 -> [][1], [][3]
-        # 금 -> [][4]
-        # 9:00 -> [1][]
-
-        # lesson_assign_list.append(['MA15642', 2, '최영준', '복소변수', '월, 수', '0,1,2', '607-208', '수학과2', 2022, 1])
-        # print(lesson_assign_list)
-
-        for i in range(5):
-            for j in range(18):
-                self.tableWidget.setItem(j, i, QTableWidgetItem(""))
-
-        # pre = ""
-        # for i in range(len(lesson_assign_list)):
-        #     txt = ""
-        #     for j in lesson_assign_list[i][6].split(","): #12,13,14,15,16
-        #         if self.tableWidget.item(int(j),0).text() != "":
-        #             pre = self.tableWidget.item(int(j),0).text() + "\n"
-        #         txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
-        #         if "월" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
-        #         if "화" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
-        #         if "수" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
-        #         if "목" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
-        #         if "금" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
-
 
         # 테이블 위젯 행렬 사이즈 조절
         self.tableWidget.verticalHeader().setDefaultSectionSize(60)
@@ -114,7 +63,6 @@ class Ui_Timetable(QDialog):
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
-        ############################ 수정
         # Combobox
         self.yearSelect = QComboBox(self)
         self.yearSelect.setGeometry(QRect(800, 60, 200, 30))
@@ -135,6 +83,19 @@ class Ui_Timetable(QDialog):
 
         # self.yearSelect.setStyleSheet("QComboBox { padding-left : 2px; }")
         self.yearSelect.currentIndexChanged.connect(self.comboboxClicked)
+
+        # 데이터 배치
+        #강의ID	분반	교수명	강좌명	요일	시간ID	강의실명	대상학과	년도	학기
+        # 월 수 -> [][0], [][2]
+        # 화 목 -> [][1], [][3]
+        # 금 -> [][4]
+        # 9:00 -> [1][]
+
+        # lesson_assign_list.append(['MA15642', 2, '최영준', '복소변수', '월, 수', '0,1,2', '607-208', '수학과2', 2022, 1])
+        print(lesson_assign_list)
+
+
+        self.table_fill()
 
         # 버튼 생성
         for i in range(len(tool_button_arr)):
@@ -169,10 +130,58 @@ class Ui_Timetable(QDialog):
     def comboboxClicked(self, i):
         label_text = self.yearSelect.currentText()
         self.label.setText(label_text)
+        self.table_fill()
 
     def lesson_assign(self):
         a = Ui_Lesson_Assign()
         a.exec_()
+
+    def table_fill(self):
+        self.tableWidget.clear()
+        self.tableWidget.setRowCount(0)
+
+        # 시간대 표시
+        for i in range(len(time_list) - 1):
+            row = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(row)
+            item = QTableWidgetItem()
+            self.tableWidget.setVerticalHeaderItem(i, item)
+            item = self.tableWidget.verticalHeaderItem(i)
+            # print(time_list[i])
+            time_text = time_list[i][1]+ '-' + time_list[i][2]
+            item.setText(time_text)
+
+        # 요일 입력
+        for i in range(len(horizontal_header_arr)):
+            item = QTableWidgetItem()
+            self.tableWidget.setHorizontalHeaderItem(i, item)
+            item = self.tableWidget.horizontalHeaderItem(i)
+            item.setText(horizontal_header_arr[i])
+            self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
+
+        for i in range(5):
+            for j in range(18):
+                self.tableWidget.setItem(j, i, QTableWidgetItem(""))
+
+        pre = ""
+        for i in range(len(lesson_assign_list)):
+            txt = ""
+            if (str(lesson_assign_list[i][9]) == self.yearSelect.currentText()[0:4]) and (str(lesson_assign_list[i][10]) == self.yearSelect.currentText()[8]):
+                for j in lesson_assign_list[i][6].split(","): #12,13,14,15,16
+                    print(self.tableWidget.item(int(j), 0).text())
+                    if self.tableWidget.item(int(j),0).text() != "":
+                        pre = self.tableWidget.item(int(j),0).text() + "\n"
+                    txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
+                    if "월" in lesson_assign_list[i][5]:
+                        self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
+                    if "화" in lesson_assign_list[i][5]:
+                        self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
+                    if "수" in lesson_assign_list[i][5]:
+                        self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
+                    if "목" in lesson_assign_list[i][5]:
+                        self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
+                    if "금" in lesson_assign_list[i][5]:
+                        self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
 
     # def delete(self):
     #     print('삭제')
