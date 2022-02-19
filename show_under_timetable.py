@@ -1,4 +1,5 @@
 #from PyQt5 import QtCore, QtGui, QtWidgets
+import pandas as pd
 
 from dialog import *
 from data_load import *
@@ -30,6 +31,7 @@ class Ui_ShowUnderTimetable(QDialog):
 
     # 화면 출력
     def setupUi(self):
+        global temp_lesson_assign_under_list
         self.setObjectName("Dialog")
         self.setFixedSize(1050, 700)
 
@@ -74,6 +76,8 @@ class Ui_ShowUnderTimetable(QDialog):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
 ## lesson_assign_under_list로 바꾸기
+        lesson_assign_under_list = lesson_assign_under_df.values.tolist()
+
         pre = ""
         for i in range(len(lesson_assign_under_list)):
             txt = ""
@@ -91,7 +95,6 @@ class Ui_ShowUnderTimetable(QDialog):
                     self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
                 if "금" in lesson_assign_under_list[i][4]:
                     self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
-
 
         # 테이블 위젯 행렬 사이즈 조절
         self.tableWidget.verticalHeader().setDefaultSectionSize(60)
@@ -151,7 +154,7 @@ class Ui_ShowUnderTimetable(QDialog):
         data=[]
 
         if configData['info_type'] == "lesson_assign":
-            data=lesson_assign_list
+            data= lesson_assign_list
             label_col = lesson_assign_list_col
 
         #

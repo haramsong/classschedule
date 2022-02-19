@@ -25,7 +25,7 @@ class Ui_Lesson_Assign(QDialog):
             ["저장", "img/floppy-disk", 40, 40, self.saveInfo]
         ]
 
-        tool_button_arr2 = ["시간표 미리보기", 691, 671, 40, 50, "img/lesson_schedule.png", 50, 50, self.showTimetable]
+        tool_button_arr2 = ["시간표 미리보기", 770, 700, 40, 50, "img/lesson_schedule.png", 50, 50, self.showTimetable]
 
         refresh_button_arr = ["새로고침",50,40,40,40, "img/refresh.png", 40, 40, self.refreshInfo]
 
@@ -382,100 +382,81 @@ class Ui_Lesson_Assign(QDialog):
 
 
 
-    def saveInfo(self):     # 저장 메소드
-        print("저장")
-
-
-
-    def deleteInfo(self):  # 삭제 메소드
-        global lesson_assign_under_df, lesson_assign_df_dae
-        global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 삭제하시겠습니까?", "예", "아니오")
-        self.jsonLoad()
-        if configData['message'] == 'Y':
-            # self.tableWidget.removeRow(curr_row)    # 테이블 위젯에서 클릭한 행 전체 내용 삭제
-            if radioBtn2.isChecked():  # 학부 라디오 버튼이 체크 되어있을 때, 학부 파일 lesson_assign에서 해당 행 삭제
-                del lesson_assign_under_list[curr_row]  # lesson_assign_list 에서 선택한 행 삭제
-                print("학부 삭제")
-                # print(lesson_assign_list)
-
-                lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)  # 삭제된 내용을 다시 저장
-                lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
-                # print(lesson_assign_under_df)
-
-            else:  # 대학원 라디오 버튼 체크시, 대학원 파일 lesson_assign_grad 에서 해당 행 삭제
-                del lesson_assign_list_dae[curr_row]  # lesson_assign_grad_list 에서 선택한 행 삭제
-                print(lesson_assign_list_dae)
-                print("대학원 삭제")
-
-                lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
-                lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)  # dataframe excel
-                print(lesson_assign_df_dae)
-
-            global_funtion().message_box_1(QMessageBox.Information, "정보", "삭제되었습니다", "확인")  # 삭제완료 메세지 출력
-            self.tableData()
-        elif configData['message'] == 'N':
-            print("삭제 안함")
-            return
-
-        # self.close()
-
-        # self.exec_()
-
     # 입력하기
     def writeInfo(self):
-        global write_data , lesson_assign_under_df , lesson_assign_df_dae
-        # array에 현재 해당하는 교수, 강의명 입력
-        write_data=[]
-        write_data.append(self.comboBox.currentText())      # 교수
+        global write_data , lesson_assign_under_df , lesson_assign_df_dae, lesson_assign_under_list, lesson_assign_list_dae
+        # 데이터순서: 교수 강의 분반 분류 요일 시작시간 종료시간 강의실
+        # write_data=[]
+        # write_data.append(self.comboBox.currentText())      # 교수
+        # write_data.append(self.comboBox_2.currentText())    # 강의명
+        # write_data.append(self.lineEdit_8.text())           # 분반
+        # write_data.append(self.comboBox_5.currentText())    # 교과분류
+        # write_data.append(self.lineEdit_9.text())           # 요일
+
+        # # 시작시간 종료시간 담는 코드
+        # time = []
+        # start = self.comboBox_3.currentIndex()  # 시작시간의 시간ID
+        # end = self.comboBox_4.currentIndex()    # 종료시간의 시간ID
+
+        # if start == 0 & end == 0: # 시작시간 종료시간 선택 안함
+        #     time.append(23)
+        #     write_data.append(str(time)[1:-1])  # 시간ID
+        #
+        # else: # 시작시간 종료시간 선택함
+        #     for i in range(start - 1, end):
+        #         time.append(i)
+        #     write_data.append(str(time)[1:-1])  # 시간ID
+        #
+        # write_data.append(self.lineEdit_11.text())          # 강의실
+        # print("write_data-list", write_data)    # list
+
+        write_data = []
+        write_data.append(self.comboBox.currentText())  # 교수
         write_data.append(self.comboBox_2.currentText())  # 강의명
-        write_data.append(self.lineEdit_8.text()) # 분반
-        write_data.append(self.comboBox_5.currentText()) # 교과분류
-        write_data.append(self.lineEdit_9.text()) # 요일
-        write_data.append(self.lineEdit_11.text()) # 강의실
-        # 종료 index에서 시작 Index까지의 값 담기
+        write_data.append(self.lineEdit_8.text())  # 분반
+        write_data.append(self.comboBox_5.currentText())  # 교과분류
+        write_data.append(self.lineEdit_9.text())  # 요일
+        write_data.append(self.lineEdit_11.text())  # 강의실
+        # 시작시간 종료시간 담는 코드
         time = []
-        start = self.comboBox_3.currentIndex()              # 시작시간의 시간ID
-        end = self.comboBox_4.currentIndex()
-        #print(start)
-        #print(end)
-        # 종료시간의 시간ID
-        if start == 0 & end ==0:
+        start = self.comboBox_3.currentIndex()  # 시작시간의 시간ID
+        end = self.comboBox_4.currentIndex()  # 종료시간의 시간ID
+        if start == 0 & end == 0:  # 시작시간 종료시간 선택 안함
             time.append(23)
-            write_data.append(str(time)[1:-1])
-        else:
-            for i in range(start-1, end):
+            write_data.append(str(time)[1:-1])  # 시간ID
+        else:  # 시작시간 종료시간 선택함
+            for i in range(start - 1, end):
                 time.append(i)
-            write_data.append(str(time)[1:-1])
+            write_data.append(str(time)[1:-1])  # 시간ID
 
         write_data = pd.DataFrame([write_data], columns=['교수명', '강좌명','분반','분류','요일', '강의실명','시간ID'])
-        write_data=write_data[['교수명', '강좌명','분반','분류','요일', '시간ID','강의실명']]
-        print(write_data)
+        write_data = write_data[['교수명', '강좌명','분반','분류','요일', '시간ID','강의실명']]
 
         if radioBtn2.isChecked():
-            lesson_assign_under_df=pd.concat([lesson_assign_under_df,write_data] , axis=0)
-            lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
+            # lesson_assign_under_list.append(write_data)
+            # print("1",lesson_assign_under_list)
+            lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
+            lesson_assign_under_df = pd.concat([lesson_assign_under_df,write_data] , axis=0)
             lesson_assign_under_df.replace(np.NaN, '', inplace=True)
+            lesson_assign_under_list = lesson_assign_under_df.values.tolist()
+
         else:
+            # lesson_assign_list_dae.append(write_data)
+            # print("1",lesson_assign_list_dae)
+            lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae , columns=lesson_assign_list_col_dae)
             lesson_assign_df_dae = pd.concat([lesson_assign_df_dae,write_data], axis=0)
-            lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
             lesson_assign_df_dae.replace(np.NaN, '', inplace=True)
-            #print(lesson_assign_df_dae)
+            lesson_assign_list_dae = lesson_assign_df_dae.values.tolist()
 
         global_funtion().message_box_1(QMessageBox.Information, "정보", "입력되었습니다", "확인")
 
-        # print(time)
-        # print(write_data)
-        print(lesson_assign_list)
-
-        # self.__init__()
         self.tableData()
-        # self.exec_()
-
 
 
     # 수정하기
     def changeInfo(self):
-        global lesson_assign_under_df, lesson_assign_df_dae
+        global lesson_assign_under_list, lesson_assign_list_dae, curr_row
+
         global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 수정하시겠습니까?", "예", "아니오")
         self.jsonLoad()
         global changed_data
@@ -486,73 +467,118 @@ class Ui_Lesson_Assign(QDialog):
                     if i == curr_row:
                     # 위젯list에서 선택한 row와 i번째 data가 일치하면
                         changed_data = []
-                        changed_data.append(self.comboBox.currentText())
-                        changed_data.append(self.comboBox_2.currentText())
-                        changed_data.append(self.lineEdit_8.text())
-                        changed_data.append(self.comboBox_5.currentText())
-                        changed_data.append(self.lineEdit_9.text())
+                        changed_data.append(self.comboBox.currentText())        # 교수
+                        changed_data.append(self.comboBox_2.currentText())      # 강의명
+                        changed_data.append(self.lineEdit_8.text())             # 분반
+                        changed_data.append(self.comboBox_5.currentText())      # 교과분류
+                        changed_data.append(self.lineEdit_9.text())             # 요일
+                        # 시작시간 종료시간 담는 코드
                         time = []
-                        start = self.comboBox_3.currentIndex()  # 시작시간의 시간ID
-                        end = self.comboBox_4.currentIndex()
-                        if start == 0 & end == 0:
+                        start = self.comboBox_3.currentIndex()          # 시작시간의 시간ID
+                        end = self.comboBox_4.currentIndex()            # 종료시간의 시간ID
+
+                        if start == 0 & end == 0:                       # 시작시간 종료시간 선택 안함
                             time.append(23)
-                            changed_data.append(str(time)[1:-1])
-                        else:
+                            changed_data.append(str(time)[1:-1])        # 시간ID
+                        else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
                                 time.append(j)
-                            changed_data.append(str(time)[1:-1])
-                        changed_data.append(self.lineEdit_11.text())
-                        lesson_assign_under_list[i]=changed_data
-                        lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
-                    #print(df)
-                        lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
-            else:
+                            changed_data.append(str(time)[1:-1])        # 시간ID
+                        changed_data.append(self.lineEdit_11.text())    # 강의실
+                        lesson_assign_under_list[i] = changed_data
+                        #lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
+                        #lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
+            else: #대학원 라디오버튼 클릭시
                 for i in range(len(lesson_assign_list_dae)):  # data 개수만큼 for문
                     if i == curr_row:
                     # 위젯list에서 선택한 row와 i번째 data가 일치하면
                         changed_data = []
-                        changed_data.append(self.comboBox.currentText())
-                        changed_data.append(self.comboBox_2.currentText())
-                        changed_data.append(self.lineEdit_8.text())
-                        changed_data.append(self.comboBox_5.currentText())
-                        changed_data.append(self.lineEdit_9.text())
+                        changed_data.append(self.comboBox.currentText())    # 교수
+                        changed_data.append(self.comboBox_2.currentText())  # 강의명
+                        changed_data.append(self.lineEdit_8.text())         # 분반
+                        changed_data.append(self.comboBox_5.currentText())  # 교과분류
+                        changed_data.append(self.lineEdit_9.text())         # 요일
+                        # 시작시간 종료시간 담는 코드
                         time = []
-                        start = self.comboBox_3.currentIndex()  # 시작시간의 시간ID
-                        end = self.comboBox_4.currentIndex()
-                        if start == 0 & end == 0:
+                        start = self.comboBox_3.currentIndex()          # 시작시간의 시간ID
+                        end = self.comboBox_4.currentIndex()            # 종료시간의 시간ID
+
+                        if start == 0 & end == 0:                       # 시작시간 종료시간 선택 안함
                             time.append(23)
-                            changed_data.append(str(time)[1:-1])
-                        else:
+                            changed_data.append(str(time)[1:-1])        # 시간ID
+                        else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
                                 time.append(j)
-                            changed_data.append(str(time)[1:-1])
-                        changed_data.append(self.lineEdit_11.text())
-                        lesson_assign_list_dae[i][1:8]=changed_data
-                        lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
-                        lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
+                            changed_data.append(str(time)[1:-1])        # 시간ID
+                        changed_data.append(self.lineEdit_11.text())    # 강의실
+                        lesson_assign_list_dae[i][1:8] = changed_data
+                        #lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
+                        #lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
 
             global_funtion().message_box_1(QMessageBox.Information, "정보", "수정되었습니다", "확인")
         elif configData['message'] == 'N':
             print("no")
             return
 
-        # self.close()
-        # self.__init__()
         self.tableData()
-        # self.exec_()
+
+    # 삭제 메소드
+    def deleteInfo(self):
+        global lesson_assign_under_list, lesson_assign_list_dae
+        global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 삭제하시겠습니까?", "예", "아니오")
+        self.jsonLoad()
+        if configData['message'] == 'Y':
+            if radioBtn2.isChecked():  # 학부 라디오 버튼이 체크 되어있을 때, 학부 파일 lesson_assign에서 해당 행 삭제
+                del lesson_assign_under_list[curr_row]  # lesson_assign_list 에서 선택한 행 삭제
+                print("학부 삭제")
+
+                #lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)  # 삭제된 내용을 다시 저장
+                #lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
+                # print(lesson_assign_under_df)
+
+            else:  # 대학원 라디오 버튼 체크시, 대학원 파일 lesson_assign_grad 에서 해당 행 삭제
+                del lesson_assign_list_dae[curr_row]  # lesson_assign_grad_list 에서 선택한 행 삭제
+                print("대학원 삭제")
+
+                #lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
+                #lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)  # dataframe excel
+                #print(lesson_assign_df_dae)
+
+            global_funtion().message_box_1(QMessageBox.Information, "정보", "삭제되었습니다", "확인")  # 삭제완료 메세지 출력
+            self.tableData()
+
+        elif configData['message'] == 'N':
+            print("삭제 안함")
+            return
+
 
     # 랜덤 배정
     def randomAssign(self):
         print("")
 
+
+    # 저장 메소드
+    def saveInfo(self):
+        global lesson_assign_under_df, lesson_assign_df_dae
+        global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 저장하시겠습니까?", "예", "아니오")
+        self.jsonLoad()
+        if configData['message'] == 'Y':
+            if radioBtn2.isChecked():  # 학부 라디오 버튼이 체크 되어있을 때, 학부 파일 lesson_assign_under_list 를 데이터프레임으로 저장
+                lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
+                lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
+                print(lesson_assign_under_df)
+            else:  # 대학원 라디오 버튼 체크시, 대학원 파일 lesson_assign_list_dae 를 데이터프레임으로 저장
+                lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
+                lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
+                print(lesson_assign_df_dae)
+
     # 시간표 미리보기
     def showTimetable(self):
         global radioBtn, radioBtn2
-        if radioBtn2.isChecked():#학부 라디오버튼 체크시
+        if radioBtn2.isChecked():   #학부 라디오버튼 체크시
             Ui_ShowUnderTimetable().exec_()
-        elif radioBtn.isChecked():#대학원 라디오버튼 체크시
+        elif radioBtn.isChecked():  #대학원 라디오버튼 체크시
             Ui_ShowGradTimetable().exec_()
-
 
 
     def tableData(self):
@@ -576,7 +602,7 @@ class Ui_Lesson_Assign(QDialog):
             self.tableWidget.setRowCount(0)
 
             # 대학원 파일을 불러온다
-            # lesson_assign_df_dae = pd.read_excel('data/lesson_assign_dae.xlsx')
+            lesson_assign_df_dae=pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
             df = lesson_assign_df_dae
             df.replace(np.NaN, '', inplace=True)
             df = df.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
@@ -590,7 +616,6 @@ class Ui_Lesson_Assign(QDialog):
             finish = finish.reset_index()['종료시간']
             df = pd.concat([df, finish], axis=1)
             df = df[header_arr]
-            # print("라디오버튼시", df)
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df)):
                 row = self.tableWidget.rowCount()
@@ -611,10 +636,9 @@ class Ui_Lesson_Assign(QDialog):
                 self.tableWidget.setRowCount(0)
 
                 # 학부 파일을 불러온다
-                lesson_assign_under_df = pd.read_excel('data/lesson_assign_under.xlsx')
+                lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
                 df2 = lesson_assign_under_df
                 df2.replace(np.NaN, '', inplace=True)
-                print(df2)
                 df2 = df2.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
                 df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
                 # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
@@ -626,7 +650,6 @@ class Ui_Lesson_Assign(QDialog):
                 finish2 = finish2.reset_index()['종료시간']
                 df2 = pd.concat([df2, finish2], axis=1)
                 df2 = df2[header_arr]
-                # print("라디오버튼시", df2)
                 # 테이블 위젯에 데이터 집어넣기
                 for i in range(len(df2)):
                     row = self.tableWidget.rowCount()
