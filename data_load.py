@@ -92,7 +92,6 @@ under_dataset_df['요일'] = under_dataset_df['강의시간'].str.slice(start=0,
 under_dataset_df['시간'] = under_dataset_df['강의시간'].str.slice(start=3)            # 슬라이싱으로 시간 컬럼 추가
 under_dataset_df = under_dataset_df.drop(['강의시간'], axis = 1)                     # 강의시간 컬럼 삭제
 under_dataset_list = under_dataset_df.values.tolist()                              # 학부 데이터셋을 리스트로 저장
-print(under_dataset_list)
 
 #print(under_dataset_df)
 
@@ -165,7 +164,6 @@ for i in range(len(start_arr)):
 
 under_dataset_df = under_dataset_df.drop(['시간', '시작시간', '수업시간', '시간ID'], axis = 1)                     # 강의시간 컬럼 삭제
 under_dataset_list = under_dataset_df.values.tolist()                              # 학부 데이터셋을 리스트로 저장
-print(under_dataset_list)
 
 for i in range(len(under_dataset_list)):
     under_dataset_list[i].append(time[i])

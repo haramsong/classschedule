@@ -600,6 +600,7 @@ class Ui_Lesson_Assign(QDialog):
                     under_lesson_arr.append(lesson_list[i][1])
                 self.comboBox_2.addItems(under_lesson_arr)
                 self.tableWidget.setRowCount(0)
+
                 # 학부 파일을 불러온다
                 lesson_assign_under_df = pd.read_excel('data/lesson_assign_under.xlsx')
                 df2 = lesson_assign_under_df
@@ -623,13 +624,6 @@ class Ui_Lesson_Assign(QDialog):
                     self.tableWidget.insertRow(row)
                     for j in range(len(df2.columns)):
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
-
-
-
-
-
-
-
 
 if __name__ == "__main__":
     import sys
