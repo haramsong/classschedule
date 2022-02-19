@@ -377,7 +377,7 @@ class Ui_Dialog(QDialog):
                 df.to_excel('data/classroom_info.xlsx', index=False)    # dataframe excel 저장
 
             print("삭제완료")
-            global_funtion().message_box_1(QMessageBox.Information, "정보", "등록되었습니다", "확인")  # 삭제완료 메세지 출력
+            global_funtion().message_box_1(QMessageBox.Information, "정보", "삭제되었습니다", "확인")  # 삭제완료 메세지 출력
 
         elif configData['message'] == 'N':
             print("no")
