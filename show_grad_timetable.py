@@ -7,7 +7,7 @@ from users_lesson_assign import *
 from PyQt5 import QtGui
 
 # 시간표 창 만들기
-class Ui_Timetable(QDialog):
+class Ui_ShowGradTimetable(QDialog):
     def __init__(self):
         super().__init__()
         self.get_init_data()
@@ -18,8 +18,8 @@ class Ui_Timetable(QDialog):
         global tool_button_arr, configData, horizontal_header_arr
         # 버튼 관련 설정
         tool_button_arr = [
-            ["사용자 지정", "img/edit.png", 50, 50, self.lesson_assign],
-            # ["삭제", "img/delete.png", 50, 50, self.delete]
+            ["시간표 저장", "img/floppy-disk.png", 50, 50, self.saveTimetable],
+            ["시간표 삭제", "img/delete.png", 50, 50, self.delete]
         ]
 
         # json load
@@ -73,23 +73,25 @@ class Ui_Timetable(QDialog):
             for j in range(18):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
-        # pre = ""
-        # for i in range(len(lesson_assign_list)):
-        #     txt = ""
-        #     for j in lesson_assign_list[i][6].split(","): #12,13,14,15,16
-        #         if self.tableWidget.item(int(j),0).text() != "":
-        #             pre = self.tableWidget.item(int(j),0).text() + "\n"
-        #         txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
-        #         if "월" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
-        #         if "화" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
-        #         if "수" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
-        #         if "목" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
-        #         if "금" in lesson_assign_list[i][5]:
-        #             self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
+## lesson_assign_list_dae 바꾸기
+        pre = ""
+        for i in range(len(lesson_assign_list_dae)):
+            txt = ""
+            for j in lesson_assign_list_dae[i][5].split(","): #12,13,14,15,16
+                if self.tableWidget.item(int(j),0).text() != "":
+                    pre = self.tableWidget.item(int(j),0).text() + "\n"
+                txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
+                if "월" in lesson_assign_list_dae[i][4]:
+                    self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
+                if "화" in lesson_assign_list_dae[i][4]:
+                    self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
+                if "수" in lesson_assign_list_dae[i][4]:
+                    self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
+                if "목" in lesson_assign_list_dae[i][4]:
+                    self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
+                if "금" in lesson_assign_list_dae[i][4]:
+                    self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
+
 
 
         # 테이블 위젯 행렬 사이즈 조절
@@ -105,12 +107,19 @@ class Ui_Timetable(QDialog):
 
 
         # 버튼 설정
-        self.verticalLayoutWidget = QWidget(self)
-        self.verticalLayoutWidget.setGeometry(QRect(220, -160, 160, 420))
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.horizontalLayoutWidget = QWidget(self)
+        self.horizontalLayoutWidget.setGeometry(QRect(70, 0, 100, 100))
+
+        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
+        self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+
+        # 버튼 생성
+        for i in range(len(tool_button_arr)):
+            self.toolButton = QToolButton(self.horizontalLayoutWidget)
+            global_funtion.tool_button_setting_widget(self, self.toolButton, self.horizontalLayout, tool_button_arr[i])
+
 
         ############################ 수정
         # Combobox
@@ -124,11 +133,6 @@ class Ui_Timetable(QDialog):
 
         # self.yearSelect.setStyleSheet("QComboBox { padding-left : 2px; }")
         self.yearSelect.currentIndexChanged.connect(self.comboboxClicked)
-
-        # 버튼 생성
-        for i in range(len(tool_button_arr)):
-            self.toolButton = QToolButton(self.verticalLayoutWidget)
-            global_funtion.tool_button_setting_widget(self, self.toolButton, self.verticalLayout, tool_button_arr[i])
 
         # 텍스트 출력
         self.retranslateUi()
@@ -146,25 +150,40 @@ class Ui_Timetable(QDialog):
     def page_data(self):
         global data, label_col
         data=[]
+
         if configData['info_type'] == "lesson_assign":
-            data=lesson_assign_list
-            label_col = lesson_assign_list_col
+            data=lesson_assign_list_dae
+            label_col = lesson_assign_list_col_dae
+
+        # if configData['info_type'] == 'under':#학부 라디오 버튼 체크시
+        #     data= lesson_assign_under_list
+        #     label_col = lesson_assign_under_list_col
+        #
+        # elif configData['info_type'] == 'grad':#대학원 라디오 버튼 체크시
+        #     data = lesson_assign_list_dae
+        #     label_col = lesson_assign_list_col_dae
+
 
     def jsonload(self):
         global configData
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
-    def comboboxClicked(self, i):
+
+    def comboboxClicked(self, i):# 시간표 미리보기에서도 이 기능이 쓰이는지 모르겠음
         label_text = self.yearSelect.currentText()
         self.label.setText(label_text)
 
-    def lesson_assign(self):
-        a = Ui_Lesson_Assign()
-        a.exec_()
 
-    # def delete(self):
-    #     print('삭제')
+    def saveTimetable(self):# 시간표 미리보기 결과 마음에 들면 lesson_assign에 저장 -> 시간표 확정
+        print("")
+
+    def delete(self):# 시간표 미리보기 결과 마음에 안들어서 삭제
+        print('삭제')
+        for i in range(5):
+            for j in range(18):
+                self.tableWidget.setItem(j, i, QTableWidgetItem(""))
+
 
 if __name__ == "__main__":
     import sys
