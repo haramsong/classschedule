@@ -20,13 +20,14 @@ else:
 if today_QDate <= first_semester_QDate:
     year_str -= 1
 
-global classroom_df, lesson_assign_df,lesson_assign_df_dae, lesson_df, professor_df, time_df, global_df, under_dataset_df, grad_dataset_df
-global classroom_list, lesson_assign_list,lesson_assign_list_dae, lesson_list, professor_list, time_list, global_list, under_dataset_list, grad_dataset_list
-global classroom_list_col, lesson_assign_list_col,lesson_assign_list_col_dae, lesson_list_col, professor_list_col, time_list_col, global_list_col
+global classroom_df, lesson_assign_df,lesson_assign_under_df,lesson_assign_df_dae, lesson_df, professor_df, time_df, global_df, under_dataset_df, grad_dataset_df
+global classroom_list, lesson_assign_list,lesson_assign_under_list,lesson_assign_list_dae, lesson_list, professor_list, time_list, global_list, under_dataset_list, grad_dataset_list
+global classroom_list_col, lesson_assign_list_col,lesson_assign_under_list_col,lesson_assign_list_col_dae, lesson_list_col, professor_list_col, time_list_col, global_list_col
 
 # 로컬 마스터데이터 로드 (위치 : data 폴더 안 excel 파일)
 classroom_df = pd.read_excel('data/classroom_info.xlsx')
 lesson_assign_df = pd.read_excel('data/lesson_assign.xlsx')
+lesson_assign_under_df = pd.read_excel('data/lesson_assign_under.xlsx')
 lesson_assign_df_dae = pd.read_excel('data/lesson_assign_dae.xlsx')
 lesson_df = pd.read_excel('data/lesson_info.xlsx')
 professor_df = pd.read_excel('data/professor_info.xlsx')
@@ -36,6 +37,7 @@ global_df = pd.read_excel('data/global_master.xlsx')
 # nan값 제거
 classroom_df.replace(np.NaN, '', inplace=True)
 lesson_assign_df.replace(np.NaN, '', inplace=True)
+lesson_assign_under_df.replace(np.NaN, '', inplace=True)
 lesson_assign_df_dae.replace(np.NaN, '', inplace=True)
 lesson_df.replace(np.NaN, '', inplace=True)
 professor_df.replace(np.NaN, '', inplace=True)
@@ -49,6 +51,7 @@ lesson_df['학점'] = lesson_df['학점'].astype(str).apply(lambda x: x.replace(
 
 classroom_list = classroom_df.values.tolist()
 lesson_assign_list = lesson_assign_df.values.tolist()
+lesson_assign_under_list = lesson_assign_under_df.values.tolist()
 lesson_assign_list_dae = lesson_assign_df_dae.values.tolist()
 lesson_list = lesson_df.values.tolist()
 professor_list = professor_df.values.tolist()
@@ -58,6 +61,7 @@ global_list = global_df.values.tolist()
 # 데이터 저장할 때 필요한 column(to_excel)
 classroom_list_col = list([col for col in pd.read_excel('data/classroom_info.xlsx')])                # 강의실 column
 lesson_assign_list_col = list([col for col in pd.read_excel('data/lesson_assign.xlsx')])             # 강의 배정 column
+lesson_assign_under_list_col = list([col for col in pd.read_excel('data/lesson_assign_under.xlsx')])             # 강의 배정 column
 lesson_assign_list_col_dae = list([col for col in pd.read_excel('data/lesson_assign_dae.xlsx')])
 lesson_list_col = list([col for col in pd.read_excel('data/lesson_info.xlsx')])                      # 강의 column
 professor_list_col = list([col for col in pd.read_excel('data/professor_info.xlsx')])                # 교수 column
@@ -79,8 +83,9 @@ for file in file_list:                          # class_dataset 파일 내의 �
 dataset_df = dataset_df.reset_index(drop=True)  # index 재설정
 
 # 학부 데이터셋 추출
-under_dataset_df = dataset_df[dataset_df['대상학과'].str.contains('수학과')]
-under_dataset_df = under_dataset_df[['성명', '교과목명', '강의시간']]
+under_dataset_df = dataset_df[dataset_df['대상학과'].str.contains('수학과')]           # 학부수업은 대상학과 '수학과ㅇ'로 표현됨
+under_dataset_classroom_df = under_dataset_df['강의실']                              # 강의실 데이터프레임을 under_dataset_classroom_df로 추출
+under_dataset_df = under_dataset_df[['성명', '교과목명', '강의시간']]                   # 성명, 교과목명, 강의시간으로 under_dataset_df 추출
 under_dataset_df = under_dataset_df.reset_index(drop=True)                          # index 재설정
 
 # 요일과 시간 데이터 추출
@@ -88,14 +93,14 @@ under_dataset_df['요일'] = under_dataset_df['강의시간'].str.slice(start=0,
 under_dataset_df['시간'] = under_dataset_df['강의시간'].str.slice(start=3)            # 슬라이싱으로 시간 컬럼 추가
 under_dataset_df = under_dataset_df.drop(['강의시간'], axis = 1)                     # 강의시간 컬럼 삭제
 under_dataset_list = under_dataset_df.values.tolist()                              # 학부 데이터셋을 리스트로 저장
-
-#print(under_dataset_df)
+#print(under_dataset_list)
 
 
 # 대학원 데이터셋 추출
-grad_dataset_df = dataset_df[dataset_df['대상학과'].str.contains('대학원')]
-grad_dataset_df = grad_dataset_df[['성명', '교과목명', '강의시간']]
-grad_dataset_df = grad_dataset_df.reset_index(drop=True)  # index 재설정
+grad_dataset_df = dataset_df[dataset_df['대상학과'].str.contains('대학원')]           # 대학원 수업은 '대학원수학전공'으로 표기됨
+grad_dataset_classroom_df = grad_dataset_df['강의실']                               # 대학원 강의실을 데이터프레임으로 추출 grad_dataset_classroom_df
+grad_dataset_df = grad_dataset_df[['성명', '교과목명', '강의시간']]                    # 성명, 교과목명, 강의시간을 grad_dataset_df 로 추출
+grad_dataset_df = grad_dataset_df.reset_index(drop=True)                           # index 재설정
 
 # 대학원 데이터 중 요일/시작시간/(분) 으로 된 데이터 ( 예: 수15:00(150), 월,수15:00(75) )
 grad_dataset_df2 = grad_dataset_df[grad_dataset_df['강의시간'].str.contains(':')]
@@ -126,16 +131,14 @@ grad_dataset_df = pd.concat([grad_dataset_df2, grad_dataset_df5])
 grad_dataset_df = grad_dataset_df.reset_index(drop=True)  # index 재설정
 
 grad_dataset_list = grad_dataset_df.values.tolist()                                 # 대학원 데이터셋을 리스트로 저장
-#print(grad_dataset_df)
-#print(grad_dataset_list)
 
 
 #학부 수업 시간-> 시간id로 변경
-#print(under_dataset_df['시간'].str.find('('))            # 결과  5
-#print(under_dataset_df['시간'].str.find(')'))            # 결과  8
-under_dataset_df['시작시간'] = under_dataset_df['시간'].str.slice(start = 0, stop = 5)
-under_dataset_df['수업시간'] = under_dataset_df['시간'].str.slice(start = 6, stop = 8)
-under_dataset_df['수업시간'] = under_dataset_df['수업시간'].astype(int)                     # under_dataset_df['수업시간'] series 타입변환 object -> int
+under_dataset_df['시작시간'] = under_dataset_df['시간'].str.split('(').str[0]
+under_dataset_df['수업시간'] = under_dataset_df['시간'].str.split('(').str[1]
+under_dataset_df['수업시간'] = under_dataset_df['수업시간'].str.split(')').str[0]
+under_dataset_df['수업시간'] = under_dataset_df['수업시간'].astype(int)
+
 
 #학부 수업 시작시간의 시간ID 반환
 for i in range(len(under_dataset_df)):
@@ -147,7 +150,7 @@ classtime = (under_dataset_df['수업시간'] // 30) + 1                        
 under_dataset_df['시간ID'] = 0
 
 start_arr = under_dataset_df['시작시간'].values.tolist()
-finish_arr = under_dataset_df['시작시간'] + classtime
+finish_arr = under_dataset_df['시작시간'].astype(int) + classtime
 
 time = []
 for i in range(len(start_arr)):
@@ -157,12 +160,16 @@ for i in range(len(start_arr)):
     time_string = ",".join(time2)
     time.append(time_string)
 
-under_dataset_df = under_dataset_df.drop(['시간', '시작시간', '수업시간', '시간ID'], axis = 1)                     # 강의시간 컬럼 삭제
-under_dataset_list = under_dataset_df.values.tolist()                              # 학부 데이터셋을 리스트로 저장
+under_dataset_df = under_dataset_df.drop(['시간', '시작시간', '수업시간', '시간ID'], axis = 1)           # 강의시간 컬럼 삭제
+under_dataset_list = under_dataset_df.values.tolist()                                               # 학부 데이터셋을 리스트로 저장
+
+under_classroom_arr = under_dataset_classroom_df.values.tolist()
 
 for i in range(len(under_dataset_list)):
     under_dataset_list[i].append(time[i])
-#print(under_dataset_list)
+    under_dataset_list[i].append(under_classroom_arr[i])
+
+print(under_dataset_list)
 
 #대학원 수업 시간-> 시간id로 변경
 grad_dataset_df['시작시간'] = grad_dataset_df['시간'].str.split('(').str[0]
@@ -181,7 +188,7 @@ classtime = (grad_dataset_df['수업시간'] // 30) + 1                         
 grad_dataset_df['시간ID'] = 0
 
 start_arr2 = grad_dataset_df['시작시간'].values.tolist()
-finish_arr2 = grad_dataset_df['시작시간'] + classtime
+finish_arr2 = grad_dataset_df['시작시간'].astype(int) + classtime
 
 time = []
 for i in range(len(start_arr2)):
@@ -194,9 +201,15 @@ for i in range(len(start_arr2)):
 grad_dataset_df = grad_dataset_df.drop(['시간', '시작시간', '수업시간', '시간ID'], axis = 1)                 # 강의시간 컬럼 삭제
 grad_dataset_list = grad_dataset_df.values.tolist()                                                     # 학부 데이터셋을 리스트로 저장
 
+grad_dataset_list = grad_dataset_df.values.tolist()                                               # 학부 데이터셋을 리스트로 저장
+
+grad_classroom_arr = grad_dataset_classroom_df.values.tolist()
+
 for i in range(len(grad_dataset_list)):
     grad_dataset_list[i].append(time[i])
+    grad_dataset_list[i].append(grad_classroom_arr[i])
 
+# 교수 순번에 따라서 sort
 under_data_sort_list = []
 grad_data_sort_list = []
 for i in range(len(professor_list)):
