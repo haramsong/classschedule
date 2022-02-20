@@ -327,13 +327,12 @@ class Ui_Lesson_Assign(QDialog):
 
     # tableClick Event ( 테이블 위젯 클릭시 창에 정보 띄우기 )
     def tableClick(self):
-        global curr_row, curr_col, df2_list, df_list
+        global curr_row, curr_col, lesson_assign_list, lesson_assign_list_dae
         curr_row = self.tableWidget.currentRow()  # 테이블 위젯에서 선택한 행 인덱스
         curr_col = self.tableWidget.currentColumn()  # 테이블 위젯에서 선택한 열 인덱스
         if radioBtn2.isChecked():  #학부 라디오 버튼 체크시 , df2 = 학부 파일
             self.df_load()
-            df2_list = df2.values.tolist()
-            item = df2_list[curr_row]
+            item = lesson_assign_list[curr_row]
             #print(df2_list)
             #print(curr_row)
         else:  # 대학원 라디오 버튼 체크시 , df = 대학원 파일
@@ -422,7 +421,7 @@ class Ui_Lesson_Assign(QDialog):
         start = self.comboBox_3.currentIndex()  # 시작시간의 시간ID
         end = self.comboBox_4.currentIndex()  # 종료시간의 시간ID
         if start == 0 & end == 0:  # 시작시간 종료시간 선택 안함
-            time.append(23)
+            time.append(26)
             write_data.append(str(time)[1:-1])  # 시간ID
         else:  # 시작시간 종료시간 선택함
             for i in range(start - 1, end):
