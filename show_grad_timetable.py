@@ -62,12 +62,14 @@ class Ui_ShowGradTimetable(QDialog):
         # 9:00 -> [1][]
 
         for i in range(5):
-            for j in range(18):
+            for j in range(len(time_list)-1):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
         pre = ""
         for i in range(len(lesson_assign_list_dae)):
             txt = ""
+            if lesson_assign_list_dae[i][4] == '' or lesson_assign_list_dae[i][5] == '':
+                continue
             for j in lesson_assign_list_dae[i][5].split(","): #12,13,14,15,16
                 if self.tableWidget.item(int(j),0).text() != "":
                     pre = self.tableWidget.item(int(j),0).text() + "\n"

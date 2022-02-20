@@ -5,6 +5,7 @@ from show_under_timetable import *
 from show_grad_timetable import *
 import json
 import os
+import random
 
 # 사용자 지정 창 만들기
 class Ui_Lesson_Assign(QDialog):
@@ -190,7 +191,7 @@ class Ui_Lesson_Assign(QDialog):
 
         # 테이블 위젯 만들기( 목록 띄우기 위함 )
         self.tableWidget =QTableWidget(self.groupBox_2)
-        self.tableWidget.setGeometry(QRect(30, 150, 571, 440))
+        self.tableWidget.setGeometry(QRect(30, 150, 571, 540))
         self.tableWidget.setObjectName("tableWidget")
         # 행과 열 만들기
         self.tableWidget.setColumnCount(8)
@@ -245,6 +246,7 @@ class Ui_Lesson_Assign(QDialog):
         df = pd.DataFrame(lesson_assign_list_dae, columns = lesson_assign_list_col_dae)
         df = df.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
         df['분반'] = df['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+        df['시간ID'] = df['시간ID'].astype(str)
         # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
         start = time_df.iloc[df['시간ID'].str.split(',').str[0]]['시작시간']
         start = start.reset_index()['시작시간']
@@ -260,6 +262,7 @@ class Ui_Lesson_Assign(QDialog):
         df2= pd.DataFrame(lesson_assign_under_list, columns = lesson_assign_under_list_col)
         df2 = df2.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
         df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+        df2['시간ID'] = df2['시간ID'].astype(str)
         # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
         start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
         start2 = start2.reset_index()['시작시간']
@@ -288,13 +291,13 @@ class Ui_Lesson_Assign(QDialog):
                 grad_lesson_arr.append(lesson_list[i][1])
             self.comboBox_2.addItems(grad_lesson_arr)
             self.tableWidget.setRowCount(0)
-
             # 대학원 파일을 불러온다
             self.df_dae_load()
+            self.tableWidget.setRowCount(len(df))
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df)):
-                row = self.tableWidget.rowCount()
-                self.tableWidget.insertRow(row)
+                # row = self.tableWidget.rowCount()
+                # self.tableWidget.insertRow(row)
                 for j in range(len(df.columns)):
                     self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
 
@@ -318,10 +321,11 @@ class Ui_Lesson_Assign(QDialog):
             self.tableWidget.setRowCount(0)
             # 학부 파일을 불러온다
             self.df_load()
+            self.tableWidget.setRowCount(len(df2))
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df2)):
-                row = self.tableWidget.rowCount()
-                self.tableWidget.insertRow(row)
+                # row = self.tableWidget.rowCount()
+                # self.tableWidget.insertRow(row)
                 for j in range(len(df2.columns)):
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
@@ -395,13 +399,27 @@ class Ui_Lesson_Assign(QDialog):
         else:                                       # 시작시간 종료시간 선택함
             for i in range(start - 1, end):
                 time.append(i)
-            write_data.append(str(time)[1:-1])      # 시간ID
+            time_arr = []
+            for ele in time:
+                ele.replace(' ', '')
+                time_arr.append(ele)
+            write_data.append(str(time_arr)[1:-1])      # 시간ID
         write_data.append(self.lineEdit_11.text())  # 강의실
 
         if radioBtn2.isChecked():                   # 학부 라디오버튼 체크시
+            for i in range(len(lesson_assign_under_list)):
+                if lesson_assign_under_list[i][0] == write_data[0] and lesson_assign_under_list[i][1] == write_data[1] and \
+                    str(lesson_assign_under_list[i][2]) == write_data[2] and lesson_assign_under_list[i][3] == write_data[3]:
+                    global_funtion().message_box_1(QMessageBox.Information, "경고", "중복된 데이터를 입력할 수 없습니다.", "확인")
+                    return
             lesson_assign_under_list.append(write_data)
             print("1",lesson_assign_under_list)
         else:                                       # 대학원 라디오버튼 체크시
+            for i in range(len(lesson_assign_list_dae)):
+                if lesson_assign_list_dae[i][0] == write_data[0] and lesson_assign_list_dae[i][1] == write_data[1] and \
+                    str(lesson_assign_list_dae[i][2]) == write_data[2] and lesson_assign_list_dae[i][3] == write_data[3]:
+                    global_funtion().message_box_1(QMessageBox.Information, "경고", "중복된 데이터를 입력할 수 없습니다.", "확인")
+                    return
             lesson_assign_list_dae.append(write_data)
             print("1",lesson_assign_list_dae)
         global_funtion().message_box_1(QMessageBox.Information, "정보", "입력되었습니다", "확인")
@@ -428,12 +446,16 @@ class Ui_Lesson_Assign(QDialog):
                         start = self.comboBox_3.currentIndex()          # 시작시간의 시간ID
                         end = self.comboBox_4.currentIndex()            # 종료시간의 시간ID
                         if start == 0 & end == 0:                       # 시작시간 종료시간 선택 안함
-                            time.append(23)
+                            time.append(26)
                             changed_data.append(str(time)[1:-1])        # 시간ID
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
                                 time.append(j)
-                            changed_data.append(str(time)[1:-1])        # 시간ID
+                            time_arr = []
+                            for ele in time:
+                                ele.replace(' ','')
+                                time_arr.append(ele)
+                            changed_data.append(str(time_arr)[1:-1])        # 시간ID
                         changed_data.append(self.lineEdit_11.text())    # 강의실
                         lesson_assign_under_list[i] = changed_data
 
@@ -456,7 +478,11 @@ class Ui_Lesson_Assign(QDialog):
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
                                 time.append(j)
-                            changed_data.append(str(time)[1:-1])        # 시간ID
+                            time_arr = []
+                            for ele in time:
+                                ele.replace(' ', '')
+                                time_arr.append(ele)
+                            changed_data.append(str(time_arr)[1:-1])        # 시간ID
                         changed_data.append(self.lineEdit_11.text())    # 강의실
                         lesson_assign_list_dae[i][1:8] = changed_data
             global_funtion().message_box_1(QMessageBox.Information, "정보", "수정되었습니다", "확인")
@@ -487,7 +513,299 @@ class Ui_Lesson_Assign(QDialog):
 
     # 랜덤 배정
     def randomAssign(self):
-        print("")
+        global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr
+        random_code = 0
+        # 모든 강의가 요일, 시간이 다 차있을 때 랜덤 배정 x
+        if self.radioButton_2.isChecked():
+            for i in range(len(lesson_assign_under_list)):
+                if lesson_assign_under_list[i][4] != '':
+                    continue
+                random_code += 1
+            if random_code == 0:
+                global_funtion().message_box_1(QMessageBox.Information, "정보", "랜덤 배정할 강의가 없습니다", "확인")
+                return
+        else:
+            for i in range(len(lesson_assign_list_dae)):
+                if lesson_assign_list_dae[i][4] != '':
+                    continue
+                random_code += 1
+            if random_code == 0:
+                global_funtion().message_box_1(QMessageBox.Information, "정보", "랜덤 배정할 강의가 없습니다", "확인")
+                return
+
+        # 요일, 시간 체크 arr 생성
+        self.jsonLoad()
+        if configData['random'] == 'N':
+            lesson_assign_arr = []
+            for i in range(len(time_list) - 1):
+                lesson_assign_arr.append([])
+                for j in range(0,5):
+                    lesson_assign_arr[i].append([])
+            configData['random'] = 'Y'
+            json.dumps(configData, indent="\t")
+
+            with open('info_type.json', 'w', encoding='utf-8') as make_file:
+                json.dump(configData, make_file, indent="\t")
+
+            print(lesson_assign_arr)
+
+        # 학부 랜덤 배정
+        if self.radioButton_2.isChecked():
+            # 교수님 순번별로 다시 sort
+            professor_sorted_assign_list = []
+            for i in range(len(professor_list)):
+                for j in range(len(lesson_assign_under_list)):
+                    if professor_dictionary[i] == lesson_assign_under_list[j][0]:
+                        professor_sorted_assign_list.append(lesson_assign_under_list[j])
+            print(professor_sorted_assign_list)
+
+            # print(lesson_assign_under_list)
+            for i in range(len(professor_sorted_assign_list)):
+                check_arr = []
+                if professor_sorted_assign_list[i][4] == '':
+                    continue
+                for j in professor_sorted_assign_list[i][5].split(","):  # 12,13,14,15,16
+                    check_arr = [professor_sorted_assign_list[i][0], professor_sorted_assign_list[i][6], lesson_dictionary[professor_sorted_assign_list[i][1]]]
+                    print(check_arr)
+                    if "월" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][0].append(check_arr)
+                    if "화" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][1].append(check_arr)
+                    if "수" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][2].append(check_arr)
+                    if "목" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][3].append(check_arr)
+                    if "금" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][4].append(check_arr)
+                print(lesson_assign_arr)
+
+            print('professor_sorted_assign_list')
+            print(professor_sorted_assign_list)
+
+            # 랜덤 배정 start
+            for i in range(len(professor_sorted_assign_list)):
+                idx = 0
+                # 요일 비지 않았으면 랜덤 배정 x
+                if professor_sorted_assign_list[i][4] != '':
+                    continue
+
+                # 랜덤
+                for j in range(len(under_data_sort_list)):
+                    # 새로오신 교수님은 데이터셋에 없음... 그래서 아쉽지만 continue....
+                    if len(under_data_sort_list[j]) == 0:
+                        continue
+                    if professor_sorted_assign_list[i][0] != under_data_sort_list[j][0][0]:
+                        continue
+                    professor_arr = []
+                    for k in range(len(under_data_sort_list[j])):
+                        # 과목 일치하는게 있으면 과목 일치하는 것으로만 random
+                        if professor_sorted_assign_list[i][1] == under_data_sort_list[j][k][1]:
+                            professor_arr.append(under_data_sort_list[j][k])
+                    class_arr = []
+                    # 과목 일치하는 게 있으면
+                    if len(professor_arr) != 0:
+                        idx = random.randrange(0, len(professor_arr))
+                        class_arr = professor_arr[idx]
+                    # 과목 일치하는 게 없으면
+                    else:
+                        idx = random.randrange(0, len(under_data_sort_list[j]))
+                        class_arr = under_data_sort_list[j][idx]
+                    print("class_arr")
+                    print(class_arr)
+                    # for k in range(0, 10):
+                    #     if class_arr[4]
+                    diff_arr = []
+                    diff_arr = [class_arr[0], class_arr[4], lesson_dictionary[professor_sorted_assign_list[i][1]]]
+                    overlap_stack = 0
+                    for k in class_arr[3].split(','):
+                        if "월" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[int(k)][0])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[int(k)][0][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][0].append(diff_arr)
+                        if "화" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[int(k)][1])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[int(k)][1][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][1].append(diff_arr)
+                        if "수" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[int(k)][2])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[int(k)][2][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][2].append(diff_arr)
+                        if "목" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[int(k)][3])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[int(k)][3][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][3].append(diff_arr)
+                        if "금" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[int(k)][4])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[int(k)][4][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][4].append(diff_arr)
+                        if overlap_stack == 1:
+                            break
+                    if overlap_stack == 1:
+                        break
+                # if overlap_stack == 1:
+                #     break
+                # else:
+                professor_sorted_assign_list[i][4] = class_arr[2]
+                professor_sorted_assign_list[i][5] = class_arr[3]
+                professor_sorted_assign_list[i][6] = diff_arr[1]
+            lesson_assign_under_list = professor_sorted_assign_list
+            # 학부 랜덤 배정
+        else:
+            # 교수님 순번별로 다시 sort
+            professor_sorted_assign_list = []
+            for i in range(len(professor_list)):
+                for j in range(len(lesson_assign_list_dae)):
+                    if professor_dictionary[i] == lesson_assign_list_dae[j][0]:
+                        professor_sorted_assign_list.append(lesson_assign_list_dae[j])
+            print(professor_sorted_assign_list)
+
+            # print(lesson_assign_under_list)
+            for i in range(len(professor_sorted_assign_list)):
+                check_arr = []
+                if professor_sorted_assign_list[i][4] == '':
+                    continue
+                for j in professor_sorted_assign_list[i][5].split(","):  # 12,13,14,15,16
+                    check_arr = [professor_sorted_assign_list[i][0], professor_sorted_assign_list[i][6],
+                                 lesson_dictionary[professor_sorted_assign_list[i][1]]]
+                    print(check_arr)
+                    if "월" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][0].append(check_arr)
+                    if "화" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][1].append(check_arr)
+                    if "수" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][2].append(check_arr)
+                    if "목" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][3].append(check_arr)
+                    if "금" in professor_sorted_assign_list[i][4]:
+                        lesson_assign_arr[int(j)][4].append(check_arr)
+                print(lesson_assign_arr)
+
+            # 랜덤 배정 start
+            for i in range(len(professor_sorted_assign_list)):
+                idx = 0
+                # 요일 비지 않았으면 랜덤 배정 x
+                if professor_sorted_assign_list[i][4] != '':
+                    continue
+
+                # 랜덤
+                for j in range(len(under_data_sort_list)):
+                    # 새로오신 교수님은 데이터셋에 없음... 그래서 아쉽지만 continue....
+                    if len(under_data_sort_list[j]) == 0:
+                        continue
+                    class_arr = []
+                    if professor_sorted_assign_list[i][0] != under_data_sort_list[j][0][0]:
+                        continue
+                    professor_arr = []
+                    for k in range(len(under_data_sort_list[j])):
+                        # 과목 일치하는게 있으면 과목 일치하는 것으로만 random
+                        if professor_sorted_assign_list[i][1] == under_data_sort_list[j][k][1]:
+                            professor_arr.append(under_data_sort_list[j][k])
+                    # 과목 일치하는 게 있으면
+                    if len(professor_arr) != 0:
+                        idx = random.randrange(0, len(professor_arr))
+                        class_arr = professor_arr[idx]
+                    # 과목 일치하는 게 없으면
+                    else:
+                        idx = random.randrange(0, len(under_data_sort_list[j]))
+                        class_arr = under_data_sort_list[j][idx]
+                    print("class_arr")
+                    print(class_arr)
+                    # for k in range(0, 10):
+                    #     if class_arr[4]
+                    diff_arr = []
+                    diff_arr = [class_arr[0], class_arr[4], lesson_dictionary[class_arr[1]]]
+                    overlap_stack = 0
+                    for k in class_arr[3].split(','):
+                        if "월" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[k][0])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[k][0][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][0].append(diff_arr)
+                        if "화" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[k][1])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[k][1][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][1].append(diff_arr)
+                        if "수" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[k][2])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[k][2][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][2].append(diff_arr)
+                        if "목" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[k][3])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[k][3][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][3].append(diff_arr)
+                        if "금" in class_arr[2]:
+                            for l in range(len(lesson_assign_arr[k][4])):
+                                for m in range(len(diff_arr)):
+                                    if lesson_assign_arr[k][4][l][m] == diff_arr[m]:
+                                        overlap_stack = 1
+                                    if overlap_stack == 1:
+                                        break
+                                if overlap_stack == 1:
+                                    break
+                            lesson_assign_arr[int(j)][4].append(diff_arr)
+                        if overlap_stack == 1:
+                            break
+                    if overlap_stack == 1:
+                        break
+                    else:
+                        under_data_sort_list[j][4] = class_arr[2]
+                        under_data_sort_list[j][5] = class_arr[3]
+                        under_data_sort_list[j][6] = diff_arr[1]
+            lesson_assign_under_list = under_data_sort_list
+
 
     # 저장 메소드
     def saveInfo(self):
@@ -499,10 +817,12 @@ class Ui_Lesson_Assign(QDialog):
                 lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
                 lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
                 print("lesson_assign_under_df", lesson_assign_under_df)
+                global_funtion().message_box_1(QMessageBox.Information, "정보", "저장되었습니다", "확인")
             else:  # 대학원 라디오 버튼 체크시, 대학원 파일 lesson_assign_list_dae 를 데이터프레임으로 저장
                 lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
                 lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
                 print("lesson_assign_df_dae", lesson_assign_df_dae)
+                global_funtion().message_box_1(QMessageBox.Information, "정보", "저장되었습니다", "확인")
 
     # 시간표 미리보기
     def showTimetable(self):
@@ -514,6 +834,7 @@ class Ui_Lesson_Assign(QDialog):
 
     # 추가,수정, 삭제된 사항을 table에 새로 띄우기
     def tableData(self):
+        global df, df2
         self.tableWidget.clear()        # 테이블위젯 초기화
         for i in range(0,8):            # 데이터 7개: 교수명 강의명 분반 분류 요일 시작시간 종료시간 강의실명
             item = QTableWidgetItem()   # 교수
@@ -540,6 +861,7 @@ class Ui_Lesson_Assign(QDialog):
             df.replace(np.NaN, '', inplace=True)
             df = df.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
             df['분반'] = df['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+            df['시간ID'] = df['시간ID'].astype(str)
             # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
             start = time_df.iloc[df['시간ID'].str.split(',').str[0]]['시작시간']
             start = start.reset_index()['시작시간']
@@ -549,10 +871,13 @@ class Ui_Lesson_Assign(QDialog):
             finish = finish.reset_index()['종료시간']
             df = pd.concat([df, finish], axis=1)
             df = df[header_arr]
+            print('df')
+            print(df)
+            self.tableWidget.setRowCount(len(df))
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df)):
-                row = self.tableWidget.rowCount()
-                self.tableWidget.insertRow(row)
+                # row = self.tableWidget.rowCount()
+                # self.tableWidget.insertRow(row)
                 for j in range(len(df.columns)):
                     self.tableWidget.setItem(i, j, QTableWidgetItem(str(df.iloc[i, j])))
 
@@ -574,6 +899,7 @@ class Ui_Lesson_Assign(QDialog):
                 df2.replace(np.NaN, '', inplace=True)
                 df2 = df2.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
                 df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+                df2['시간ID'] = df2['시간ID'].astype(str)
                 # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
                 start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
                 start2 = start2.reset_index()['시작시간']
@@ -583,10 +909,13 @@ class Ui_Lesson_Assign(QDialog):
                 finish2 = finish2.reset_index()['종료시간']
                 df2 = pd.concat([df2, finish2], axis=1)
                 df2 = df2[header_arr]
+                print('df2')
+                print(df2)
                 # 테이블 위젯에 데이터 집어넣기
+                self.tableWidget.setRowCount(len(df2))
                 for i in range(len(df2)):
-                    row = self.tableWidget.rowCount()
-                    self.tableWidget.insertRow(row)
+                    # row = self.tableWidget.rowCount()
+                    # self.tableWidget.insertRow(row)
                     for j in range(len(df2.columns)):
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
