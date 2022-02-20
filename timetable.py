@@ -160,7 +160,7 @@ class Ui_Timetable(QDialog):
             self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
 
         for i in range(5):
-            for j in range(18):
+            for j in range(len(time_list)-1):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
         pre = ""

@@ -1,4 +1,5 @@
 {
-	"info_type": "classroom",
-	"message": "Y"
+	"info_type": "lesson",
+	"message": "Y",
+	"random": "Y"
 }
