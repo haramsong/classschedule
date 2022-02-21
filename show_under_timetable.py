@@ -31,11 +31,11 @@ class Ui_ShowUnderTimetable(QDialog):
     def setupUi(self):
         # global temp_under_timetable_list
         self.setObjectName("Dialog")
-        self.setFixedSize(1050, 700)
+        self.setFixedSize(1110, 800)
 
         # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
-        self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
+        self.tableWidget.setGeometry(QRect(20, 100, 1080, 650))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
