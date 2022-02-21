@@ -107,7 +107,7 @@ class Ui_ShowUnderTimetable(QDialog):
                 pre = ""
 
         # 테이블 위젯 행렬 사이즈 조절
-        self.tableWidget.verticalHeader().setDefaultSectionSize(60)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(80)
 
         # 라벨 설정
         self.label = QLabel(self) # 학년도
