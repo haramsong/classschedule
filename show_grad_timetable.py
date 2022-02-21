@@ -24,7 +24,7 @@ class Ui_ShowGradTimetable(QDialog):
         horizontal_header_arr = ['월', '화', '수', '목', '금']
         
 
-        grad_timetable_df = pd.read_excel('data/lesson_assign_grad_tableview.xlsx')
+        grad_timetable_df = pd.read_excel('data/lesson_assign_dae_tableview.xlsx')
         grad_timetable_df.replace(np.NaN, '', inplace=True)
         grad_timetable_list = grad_timetable_df.values.tolist()
 
