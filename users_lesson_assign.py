@@ -486,12 +486,14 @@ class Ui_Lesson_Assign(QDialog):
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
                                 time.append(j)
-                            time_arr = []
-                            for ele in time:
-                                ele.replace(' ','')
-                                time_arr.append(ele)
-                            changed_data.append(str(time_arr)[1:-1])        # 시간ID
+                            # time_arr = []
+                            # for ele in time:
+                            #     ele.replace(' ','')
+                            #     time_arr.append(ele)
+                            # changed_data.append(str(time_arr)[1:-1])        # 시간ID
+                            changed_data.append(str(time)[1:-1])
                         changed_data.append(self.lineEdit_11.text())    # 강의실
+                        print(changed_data)
                         lesson_assign_under_list[i] = changed_data
 
             else: #대학원 라디오버튼 클릭시
@@ -513,11 +515,12 @@ class Ui_Lesson_Assign(QDialog):
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
                                 time.append(j)
-                            time_arr = []
-                            for ele in time:
-                                ele.replace(' ', '')
-                                time_arr.append(ele)
-                            changed_data.append(str(time_arr)[1:-1])        # 시간ID
+                            # time_arr = []
+                            # for ele in time:
+                            #     ele.replace(' ', '')
+                            #     time_arr.append(ele)
+                            # changed_data.append(str(time_arr)[1:-1])        # 시간ID
+                            changed_data.append(str(time)[1:-1])
                         changed_data.append(self.lineEdit_11.text())    # 강의실
                         lesson_assign_list_dae[i][1:8] = changed_data
             global_funtion().message_box_1(QMessageBox.Information, "정보", "수정되었습니다", "확인")
