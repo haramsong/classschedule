@@ -165,23 +165,36 @@ class Ui_Timetable(QDialog):
 
         pre = ""
         for i in range(len(lesson_assign_list)):
-            txt = ""
             if (str(lesson_assign_list[i][9]) == self.yearSelect.currentText()[0:4]) and (str(lesson_assign_list[i][10]) == self.yearSelect.currentText()[8]):
                 for j in lesson_assign_list[i][6].split(","): #12,13,14,15,16
+                    txt = ""
                     print(self.tableWidget.item(int(j), 0).text())
-                    if self.tableWidget.item(int(j),0).text() != "":
-                        pre = self.tableWidget.item(int(j),0).text() + "\n"
-                    txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
                     if "월" in lesson_assign_list[i][5]:
+                        if self.tableWidget.item(int(j), 0).text() != "":
+                            pre = self.tableWidget.item(int(j), 0).text() + "\n"
+                        txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
                         self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
                     if "화" in lesson_assign_list[i][5]:
+                        if self.tableWidget.item(int(j), 1).text() != "":
+                            pre = self.tableWidget.item(int(j), 1).text() + "\n"
+                        txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
                         self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
                     if "수" in lesson_assign_list[i][5]:
+                        if self.tableWidget.item(int(j), 2).text() != "":
+                            pre = self.tableWidget.item(int(j), 2).text() + "\n"
+                        txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
                         self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
                     if "목" in lesson_assign_list[i][5]:
+                        if self.tableWidget.item(int(j), 3).text() != "":
+                            pre = self.tableWidget.item(int(j), 3).text() + "\n"
+                        txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
                         self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
                     if "금" in lesson_assign_list[i][5]:
+                        if self.tableWidget.item(int(j), 4).text() != "":
+                            pre = self.tableWidget.item(int(j), 4).text() + "\n"
+                        txt = pre + lesson_assign_list[i][1] + "(" + lesson_assign_list[i][2] + ")"
                         self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
+                    pre = ''
 
     # def delete(self):
     #     print('삭제')

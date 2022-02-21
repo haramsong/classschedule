@@ -25,6 +25,8 @@ class Ui_MainWindow(QMainWindow):
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
+        configData['random'] = 'N'
+
     # 화면 출력
     def setupUi(self):
         self.setFixedSize(550, 250)                         # 출력 사이즈
@@ -79,6 +81,11 @@ class Ui_MainWindow(QMainWindow):
 
     # 강의 배정 창 이동 (아직 UI 작성 안됨)
     def lessonSchedule(self):
+        json.dumps(configData, indent="\t")
+
+        with open('info_type.json', 'w', encoding='utf-8') as make_file:
+            json.dump(configData, make_file, indent="\t")
+
         page = Ui_Timetable()
         # 교수명(강의명)
         page.exec_()
