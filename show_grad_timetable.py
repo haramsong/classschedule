@@ -15,13 +15,18 @@ class Ui_ShowGradTimetable(QDialog):
 
     # 데이터 불러오기
     def get_init_data(self):
-        global configData, horizontal_header_arr
+        global configData, horizontal_header_arr, grad_timetable_list
 
         # json load
         with open("info_type.json", "r") as info:
             configData = json.load(info)
 
         horizontal_header_arr = ['월', '화', '수', '목', '금']
+        
+
+        grad_timetable_df = pd.read_excel('data/lesson_assign_grad_tableview.xlsx')
+        grad_timetable_df.replace(np.NaN, '', inplace=True)
+        grad_timetable_list = grad_timetable_df.values.tolist()
 
     # 화면 출력
     def setupUi(self):
@@ -34,6 +39,7 @@ class Ui_ShowGradTimetable(QDialog):
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
+        self.tableWidget.clear()
 
         # 시간대 표시
         for i in range(len(time_list) - 1):
@@ -66,35 +72,35 @@ class Ui_ShowGradTimetable(QDialog):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
         pre = ""
-        for i in range(len(lesson_assign_list_dae)):
-            if lesson_assign_list_dae[i][4] == '' or lesson_assign_list_dae[i][5] == '':
+        for i in range(len(grad_timetable_list)):
+            if grad_timetable_list[i][4] == '' or grad_timetable_list[i][5] == '':
                 continue
-            for j in lesson_assign_list_dae[i][5].split(","): #12,13,14,15,16
+            for j in grad_timetable_list[i][5].split(","): #12,13,14,15,16
                 txt = ""
-                if "월" in lesson_assign_list_dae[i][4]:
+                if "월" in grad_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 0).text() != "":
                         pre = self.tableWidget.item(int(j), 0).text() + "\n"
-                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
+                    txt = pre + grad_timetable_list[i][0] + "(" + grad_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
-                if "화" in lesson_assign_list_dae[i][4]:
+                if "화" in grad_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 1).text() != "":
                         pre = self.tableWidget.item(int(j), 1).text() + "\n"
-                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
+                    txt = pre + grad_timetable_list[i][0] + "(" + grad_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
-                if "수" in lesson_assign_list_dae[i][4]:
+                if "수" in grad_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 2).text() != "":
                         pre = self.tableWidget.item(int(j), 2).text() + "\n"
-                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
+                    txt = pre + grad_timetable_list[i][0] + "(" + grad_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
-                if "목" in lesson_assign_list_dae[i][4]:
+                if "목" in grad_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 3).text() != "":
                         pre = self.tableWidget.item(int(j), 3).text() + "\n"
-                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
+                    txt = pre + grad_timetable_list[i][0] + "(" + grad_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
-                if "금" in lesson_assign_list_dae[i][4]:
+                if "금" in grad_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 4).text() != "":
                         pre = self.tableWidget.item(int(j), 4).text() + "\n"
-                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
+                    txt = pre + grad_timetable_list[i][0] + "(" + grad_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
                 pre = ''
 
@@ -126,7 +132,7 @@ class Ui_ShowGradTimetable(QDialog):
     #     data=[]
     #
     #     if configData['info_type'] == "lesson_assign":
-    #         data=lesson_assign_list_dae
+    #         data=grad_timetable_list
     #         label_col = lesson_assign_list_col_dae
 
     def jsonload(self):

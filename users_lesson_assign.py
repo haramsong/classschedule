@@ -31,6 +31,8 @@ class Ui_Lesson_Assign(QDialog):
         refresh_button_arr = ["새로고침",50,40,40,40, "img/refresh.png", 40, 40, self.refreshInfo]
         reset_button_arr = ["초기화",750,40,40,40, "img/reset.png", 40, 40, self.resetInfo]
 
+        global under_timetable_list, grad_timetable_list
+        under_timetable_list = lesson_assign_under_list
 
         # 시작, 종료시간 combobox 정보
         global time_start_arr, time_end_arr
@@ -196,7 +198,7 @@ class Ui_Lesson_Assign(QDialog):
 
         # 테이블 위젯 만들기( 목록 띄우기 위함 )
         self.tableWidget =QTableWidget(self.groupBox_2)
-        self.tableWidget.setGeometry(QRect(30, 150, 571, 540))
+        self.tableWidget.setGeometry(QRect(30, 150, 571, 380))
         self.tableWidget.setObjectName("tableWidget")
         # 행과 열 만들기
         self.tableWidget.setColumnCount(8)
@@ -247,6 +249,7 @@ class Ui_Lesson_Assign(QDialog):
 
     def resetInfo(self):
         global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr, lesson_assign_under_list_origin, lesson_assign_list_dae_origin
+        global professor_sorted_assign_list
         global_funtion().message_box_2(QMessageBox.Question, "경고", "저장을 안하고 초기화 시 등록했던 데이터가 삭제됩니다. 초기화하시겠습니까?", "예", "아니오")
         self.jsonLoad()
         if configData['message'] == 'Y':
@@ -259,8 +262,9 @@ class Ui_Lesson_Assign(QDialog):
 
             global_funtion().message_box_1(QMessageBox.Information, "확인", "초기화되었습니다.", "확인")
             if self.radioButton_2.isChecked():
-                print('lesson_assign_under_list_origin')
-                print(lesson_assign_under_list_origin)
+                # print('lesson_assign_under_list_origin')
+                professor_sorted_assign_list = []
+                # print(lesson_assign_under_list_origin)
                 lesson_assign_under_list = lesson_assign_under_list_origin
                 lesson_assign_under_df_origin = pd.read_excel('data/lesson_assign_under.xlsx')
                 lesson_assign_under_df_origin.replace(np.NaN, '', inplace=True)
@@ -448,7 +452,12 @@ class Ui_Lesson_Assign(QDialog):
                     global_funtion().message_box_1(QMessageBox.Information, "경고", "중복된 데이터를 입력할 수 없습니다.", "확인")
                     return
             lesson_assign_under_list.append(write_data)
-            print("1",lesson_assign_under_list)
+            # list.sort(lesson_assign_under_list, key=lambda k: (k[0]))  # data array의 0번째 index를 기준으로 sort
+            df_write = pd.DataFrame(lesson_assign_under_list,
+                                    columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+            df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                              index=False)  # dataframe excel 저장
+            # print("1",lesson_assign_under_list)
         else:                                       # 대학원 라디오버튼 체크시
             for i in range(len(lesson_assign_list_dae)):
                 if lesson_assign_list_dae[i][0] == write_data[0] and lesson_assign_list_dae[i][1] == write_data[1] and \
@@ -456,8 +465,14 @@ class Ui_Lesson_Assign(QDialog):
                     global_funtion().message_box_1(QMessageBox.Information, "경고", "중복된 데이터를 입력할 수 없습니다.", "확인")
                     return
             lesson_assign_list_dae.append(write_data)
-            print("1",lesson_assign_list_dae)
+            # list.sort(lesson_assign_list_dae, key=lambda k: (k[0]))  # data array의 0번째 index를 기준으로 sort
+            df_write = pd.DataFrame(lesson_assign_list_dae,
+                                    columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
+            df_write.to_excel('data/lesson_assign_grad_tableview.xlsx',
+                              index=False)  # dataframe excel 저장
+            # print("1",lesson_assign_list_dae)
         global_funtion().message_box_1(QMessageBox.Information, "정보", "입력되었습니다", "확인")
+
 
         self.tableData()
 
@@ -493,8 +508,12 @@ class Ui_Lesson_Assign(QDialog):
                             # changed_data.append(str(time_arr)[1:-1])        # 시간ID
                             changed_data.append(str(time)[1:-1])
                         changed_data.append(self.lineEdit_11.text())    # 강의실
-                        print(changed_data)
+                        # print(changed_data)
                         lesson_assign_under_list[i] = changed_data
+                        df_write = pd.DataFrame(lesson_assign_under_list,
+                                                columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+                        df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                                          index=False)  # dataframe excel 저장
 
             else: #대학원 라디오버튼 클릭시
                 for i in range(len(lesson_assign_list_dae)):    # data 개수만큼 for문
@@ -523,10 +542,14 @@ class Ui_Lesson_Assign(QDialog):
                             changed_data.append(str(time)[1:-1])
                         changed_data.append(self.lineEdit_11.text())    # 강의실
                         lesson_assign_list_dae[i][1:8] = changed_data
+                        df_write = pd.DataFrame(lesson_assign_list_dae,
+                                                columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
+                        df_write.to_excel('data/lesson_assign_grad_tableview.xlsx',
+                                          index=False)  # dataframe excel 저장
             global_funtion().message_box_1(QMessageBox.Information, "정보", "수정되었습니다", "확인")
 
         elif configData['message'] == 'N':
-            print("no")
+            # print("no")
             return
 
         self.tableData()
@@ -539,19 +562,27 @@ class Ui_Lesson_Assign(QDialog):
         if configData['message'] == 'Y':
             if radioBtn2.isChecked():                   # 학부 라디오 버튼이 체크 되어있을 때
                 del lesson_assign_under_list[curr_row]  # lesson_assign_list 에서 선택한 행 삭제
+                df_write = pd.DataFrame(lesson_assign_under_list,
+                                        columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+                df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                                  index=False)  # dataframe excel 저장
             else:                                       # 대학원 라디오 버튼 체크시
                 del lesson_assign_list_dae[curr_row]    # lesson_assign_grad_list 에서 선택한 행 삭제
+                df_write = pd.DataFrame(lesson_assign_list_dae,
+                                        columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
+                df_write.to_excel('data/lesson_assign_grad_tableview.xlsx',
+                                  index=False)  # dataframe excel 저장
             global_funtion().message_box_1(QMessageBox.Information, "정보", "삭제되었습니다", "확인")
 
         elif configData['message'] == 'N':
-            print("삭제 안함")
+            # print("삭제 안함")
             return
 
         self.tableData()
 
     # 랜덤 배정
     def randomAssign(self):
-        global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr
+        global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr, professor_sorted_assign_list
         random_code = 0
         random_denied_list = []
         # 모든 강의가 요일, 시간이 다 차있을 때 랜덤 배정 x
@@ -586,17 +617,18 @@ class Ui_Lesson_Assign(QDialog):
             with open('info_type.json', 'w', encoding='utf-8') as make_file:
                 json.dump(configData, make_file, indent="\t")
 
-            print(lesson_assign_arr)
+            # print(lesson_assign_arr)
 
         # 학부 랜덤 배정
         if self.radioButton_2.isChecked():
             # 교수님 순번별로 다시 sort
+            global professor_sorted_assign_list
             professor_sorted_assign_list = []
             for i in range(len(professor_list)):
                 for j in range(len(lesson_assign_under_list)):
                     if professor_dictionary[i] == lesson_assign_under_list[j][0]:
                         professor_sorted_assign_list.append(lesson_assign_under_list[j])
-            print(professor_sorted_assign_list)
+            # print(professor_sorted_assign_list)
 
             # print(lesson_assign_under_list)
             for i in range(len(professor_sorted_assign_list)):
@@ -605,7 +637,7 @@ class Ui_Lesson_Assign(QDialog):
                     continue
                 for j in professor_sorted_assign_list[i][5].split(","):  # 12,13,14,15,16
                     check_arr = [professor_sorted_assign_list[i][0], professor_sorted_assign_list[i][6], lesson_dictionary[professor_sorted_assign_list[i][1]]]
-                    print(check_arr)
+                    # print(check_arr)
                     if "월" in professor_sorted_assign_list[i][4]:
                         lesson_assign_arr[int(j)][0].append(check_arr)
                     if "화" in professor_sorted_assign_list[i][4]:
@@ -616,10 +648,10 @@ class Ui_Lesson_Assign(QDialog):
                         lesson_assign_arr[int(j)][3].append(check_arr)
                     if "금" in professor_sorted_assign_list[i][4]:
                         lesson_assign_arr[int(j)][4].append(check_arr)
-                print(lesson_assign_arr)
+                # print(lesson_assign_arr)
 
-            print('professor_sorted_assign_list')
-            print(professor_sorted_assign_list)
+            # print('professor_sorted_assign_list')
+            # print(professor_sorted_assign_list)
 
             # 랜덤 배정 start
             for i in range(len(professor_sorted_assign_list)):
@@ -650,8 +682,8 @@ class Ui_Lesson_Assign(QDialog):
                     else:
                         idx = random.randrange(0, len(under_data_sort_list[j]))
                         class_arr = under_data_sort_list[j][idx]
-                    print("class_arr")
-                    print(class_arr)
+                    # print("class_arr")
+                    # print(class_arr)
                     # for k in range(0, 10):
                     #     if class_arr[4]
                     diff_arr = []
@@ -722,9 +754,17 @@ class Ui_Lesson_Assign(QDialog):
             print('lesson_assign_arr')
             for i in range(len(lesson_assign_arr)):
                 print(lesson_assign_arr[i])
-            print('random_denied_list')
-            print(random_denied_list)
+            # print('random_denied_list')
+            # print(random_denied_list)
+            print('professor_sorted_assign_list')
+            print(professor_sorted_assign_list)
             lesson_assign_under_list = professor_sorted_assign_list
+            print('lesson_assign_under_list')
+            print(lesson_assign_under_list)
+            df_write = pd.DataFrame(lesson_assign_under_list,
+                                    columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+            df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                              index=False)  # dataframe excel 저장
             # 학부 랜덤 배정
         else:
             # 교수님 순번별로 다시 sort
@@ -861,7 +901,11 @@ class Ui_Lesson_Assign(QDialog):
             print(lesson_assign_arr)
             print('random_denied_list')
             print(random_denied_list)
-            lesson_assign_under_list = under_data_sort_list
+            lesson_assign_under_list = professor_sorted_assign_list
+            df_write = pd.DataFrame(lesson_assign_under_list,
+                                    columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+            df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                              index=False)  # dataframe excel 저장
 
         global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
         self.tableData()
@@ -876,19 +920,24 @@ class Ui_Lesson_Assign(QDialog):
                 lesson_assign_under_df = pd.DataFrame(lesson_assign_under_list, columns=lesson_assign_under_list_col)
                 lesson_assign_under_df.to_excel('data/lesson_assign_under.xlsx', index=False)
                 print("lesson_assign_under_df", lesson_assign_under_df)
+                lesson_assign_under_df.to_excel('data/lesson_assign_under_tableview.xlsx',
+                                  index=False)  # dataframe excel 저장
                 global_funtion().message_box_1(QMessageBox.Information, "정보", "저장되었습니다", "확인")
             else:  # 대학원 라디오 버튼 체크시, 대학원 파일 lesson_assign_list_dae 를 데이터프레임으로 저장
                 lesson_assign_df_dae = pd.DataFrame(lesson_assign_list_dae, columns=lesson_assign_list_col_dae)
                 lesson_assign_df_dae.to_excel('data/lesson_assign_dae.xlsx', index=False)
                 print("lesson_assign_df_dae", lesson_assign_df_dae)
+                lesson_assign_df_dae.to_excel('data/lesson_assign_grad_tableview.xlsx',
+                                                index=False)  # dataframe excel 저장
                 global_funtion().message_box_1(QMessageBox.Information, "정보", "저장되었습니다", "확인")
 
     # 시간표 미리보기
     def showTimetable(self):
-        global radioBtn, radioBtn2
+        global radioBtn, radioBtn2, under_timetable_list, grad_timetable_list
         if radioBtn2.isChecked():   # 학부 라디오버튼 체크시
             Ui_ShowUnderTimetable().exec_()
         elif radioBtn.isChecked():  # 대학원 라디오버튼 체크시
+            grad_timetable_list = lesson_assign_list_dae
             Ui_ShowGradTimetable().exec_()
 
     # 추가,수정, 삭제된 사항을 table에 새로 띄우기
@@ -930,8 +979,8 @@ class Ui_Lesson_Assign(QDialog):
             finish = finish.reset_index()['종료시간']
             df = pd.concat([df, finish], axis=1)
             df = df[header_arr]
-            print('df')
-            print(df)
+            # print('df')
+            # print(df)
             self.tableWidget.setRowCount(len(df))
             # 테이블 위젯에 데이터 집어넣기
             for i in range(len(df)):
@@ -968,8 +1017,8 @@ class Ui_Lesson_Assign(QDialog):
                 finish2 = finish2.reset_index()['종료시간']
                 df2 = pd.concat([df2, finish2], axis=1)
                 df2 = df2[header_arr]
-                print('df2')
-                print(df2)
+                # print('df2')
+                # print(df2)
                 # 테이블 위젯에 데이터 집어넣기
                 self.tableWidget.setRowCount(len(df2))
                 for i in range(len(df2)):
