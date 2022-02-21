@@ -34,6 +34,8 @@ class Ui_Lesson_Assign(QDialog):
         global under_timetable_list, grad_timetable_list
         under_timetable_list = lesson_assign_under_list
 
+        global count
+        count = 100
         # 시작, 종료시간 combobox 정보
         global time_start_arr, time_end_arr
         time_start_arr = [""]
@@ -251,6 +253,10 @@ class Ui_Lesson_Assign(QDialog):
         global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr, lesson_assign_under_list_origin, lesson_assign_list_dae_origin
         global professor_sorted_assign_list
         global_funtion().message_box_2(QMessageBox.Question, "경고", "저장을 안하고 초기화 시 등록했던 데이터가 삭제됩니다. 초기화하시겠습니까?", "예", "아니오")
+
+        global count
+        count = 100
+
         self.jsonLoad()
         if configData['message'] == 'Y':
             if configData['random'] == 'Y':
@@ -582,9 +588,12 @@ class Ui_Lesson_Assign(QDialog):
 
     # 랜덤 배정
     def randomAssign(self):
-        global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr, professor_sorted_assign_list
+        global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr, professor_sorted_assign_list, count
         random_code = 0
         random_denied_list = []
+        if count == 0:
+            global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
+            return
         # 모든 강의가 요일, 시간이 다 차있을 때 랜덤 배정 x
         if self.radioButton_2.isChecked():
             for i in range(len(lesson_assign_under_list)):
@@ -906,9 +915,10 @@ class Ui_Lesson_Assign(QDialog):
                                     columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
             df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
                               index=False)  # dataframe excel 저장
-
-        global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
         self.tableData()
+        count -= 1
+        self.randomAssign()
+
 
     # 저장 메소드
     def saveInfo(self):
