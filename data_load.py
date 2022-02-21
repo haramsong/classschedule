@@ -20,6 +20,8 @@ else:
 if today_QDate <= first_semester_QDate:
     year_str -= 1
 
+
+
 global classroom_df, lesson_assign_df,lesson_assign_under_df,lesson_assign_df_dae, lesson_df, professor_df, time_df, global_df, under_dataset_df, grad_dataset_df
 global classroom_list, lesson_assign_list,lesson_assign_under_list,lesson_assign_list_dae, lesson_list, professor_list, time_list, global_list, under_dataset_list, grad_dataset_list
 global classroom_list_col, lesson_assign_list_col,lesson_assign_under_list_col,lesson_assign_list_col_dae, lesson_list_col, professor_list_col, time_list_col, global_list_col
@@ -78,6 +80,21 @@ lesson_list_col = list([col for col in pd.read_excel('data/lesson_info.xlsx')]) 
 professor_list_col = list([col for col in pd.read_excel('data/professor_info.xlsx')])                # 교수 column
 time_list_col = list([col for col in pd.read_excel('data/time_period.xlsx')])                        # 시간표 column
 global_list_col = list([col for col in pd.read_excel('data/global_master.xlsx')])                    # 시간표 column
+
+global under_timetable_df, grad_timetable_df, under_timetable_list, grad_timetable_list
+
+lesson_assign_under_df_origin.to_excel('data/lesson_assign_under_tableview.xlsx', index=False)       # dataframe excel 저장
+lesson_assign_df_dae_origin.to_excel('data/lesson_assign_dae_tableview.xlsx', index=False)       # dataframe excel 저장
+
+under_timetable_df = pd.read_excel('data/lesson_assign_under_tableview.xlsx')
+grad_timetable_df = pd.read_excel('data/lesson_assign_dae_tableview.xlsx')
+
+under_timetable_df.replace(np.NaN, '', inplace=True)
+grad_timetable_df.replace(np.NaN, '', inplace=True)
+
+under_timetable_list = under_timetable_df.values.tolist()
+grad_timetable_list = grad_timetable_df.values.tolist()
+
 
 
 # 데이터셋 로드 (위치 : data 폴더 안 class_dataset excel 파일)

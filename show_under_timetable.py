@@ -15,7 +15,7 @@ class Ui_ShowUnderTimetable(QDialog):
 
     # 데이터 불러오기
     def get_init_data(self):
-        global configData, horizontal_header_arr
+        global configData, horizontal_header_arr, under_timetable_list
 
         # json load
         with open("info_type.json", "r") as info:
@@ -23,9 +23,13 @@ class Ui_ShowUnderTimetable(QDialog):
 
         horizontal_header_arr = ['월', '화', '수', '목', '금']
 
+        under_timetable_df = pd.read_excel('data/lesson_assign_under_tableview.xlsx')
+        under_timetable_df.replace(np.NaN, '', inplace=True)
+        under_timetable_list = under_timetable_df.values.tolist()
+
     # 화면 출력
     def setupUi(self):
-        global temp_lesson_assign_under_list
+        # global temp_under_timetable_list
         self.setObjectName("Dialog")
         self.setFixedSize(1050, 700)
 
@@ -35,6 +39,7 @@ class Ui_ShowUnderTimetable(QDialog):
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
+        self.tableWidget.clear()
 
         # 시간대 표시
         for i in range(len(time_list) - 1):
@@ -66,38 +71,38 @@ class Ui_ShowUnderTimetable(QDialog):
             for j in range(len(time_list)-1):
                 self.tableWidget.setItem(j, i, QTableWidgetItem(""))
 
-        print("미리보기", lesson_assign_under_list )
+        print("미리보기", under_timetable_list )
         pre = ""
-        for i in range(len(lesson_assign_under_list)):
+        for i in range(len(under_timetable_list)):
             txt = ""
-            if lesson_assign_under_list[i][5] == '' or lesson_assign_under_list[i][4] == '':
+            if under_timetable_list[i][5] == '' or under_timetable_list[i][4] == '':
                 continue
-            for j in lesson_assign_under_list[i][5].split(","): #12,13,14,15,16
+            for j in under_timetable_list[i][5].split(","): #12,13,14,15,16
                 txt = ""
-                if "월" in lesson_assign_under_list[i][4]:
+                if "월" in under_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 0).text() != "":
                         pre = self.tableWidget.item(int(j), 0).text() + "\n"
-                    txt = pre + lesson_assign_under_list[i][0] + "(" + lesson_assign_under_list[i][1] + ")"
+                    txt = pre + under_timetable_list[i][0] + "(" + under_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
-                if "화" in lesson_assign_under_list[i][4]:
+                if "화" in under_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 1).text() != "":
                         pre = self.tableWidget.item(int(j), 1).text() + "\n"
-                    txt = pre + lesson_assign_under_list[i][0] + "(" + lesson_assign_under_list[i][1] + ")"
+                    txt = pre + under_timetable_list[i][0] + "(" + under_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
-                if "수" in lesson_assign_under_list[i][4]:
+                if "수" in under_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 2).text() != "":
                         pre = self.tableWidget.item(int(j), 2).text() + "\n"
-                    txt = pre + lesson_assign_under_list[i][0] + "(" + lesson_assign_under_list[i][1] + ")"
+                    txt = pre + under_timetable_list[i][0] + "(" + under_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
-                if "목" in lesson_assign_under_list[i][4]:
+                if "목" in under_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 3).text() != "":
                         pre = self.tableWidget.item(int(j), 3).text() + "\n"
-                    txt = pre + lesson_assign_under_list[i][0] + "(" + lesson_assign_under_list[i][1] + ")"
+                    txt = pre + under_timetable_list[i][0] + "(" + under_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
-                if "금" in lesson_assign_under_list[i][4]:
+                if "금" in under_timetable_list[i][4]:
                     if self.tableWidget.item(int(j), 4).text() != "":
                         pre = self.tableWidget.item(int(j), 4).text() + "\n"
-                    txt = pre + lesson_assign_under_list[i][0] + "(" + lesson_assign_under_list[i][1] + ")"
+                    txt = pre + under_timetable_list[i][0] + "(" + under_timetable_list[i][1] + ")"
                     self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
                 pre = ""
 

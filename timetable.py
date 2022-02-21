@@ -57,7 +57,7 @@ class Ui_Timetable(QDialog):
 
         # 버튼 설정
         self.verticalLayoutWidget = QWidget(self)
-        self.verticalLayoutWidget.setGeometry(QRect(220, -160, 160, 420))
+        self.verticalLayoutWidget.setGeometry(QRect(60, -160, 160, 420))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -69,15 +69,25 @@ class Ui_Timetable(QDialog):
 
 
         subdir_names = os.listdir('data/class_dataset')
+        print(subdir_names)
         font = QtGui.QFont('Arial', 10, QtGui.QFont.Bold)
 
         self.yearSelect.setFont(font)
 
         self.yearSelect.addItem(str(year_str)+"학년도 "+str(semester_str)+"학기")
-        for i in list(reversed(subdir_names)):
+        year_arr = []
+        for i in list(subdir_names):
+            ar = []
             y = i[0:4]
             s = i[5]
-            n = y+"학년도 "+s+ "학기"
+            ar.append(y)
+            ar.append(s)
+            year_arr.append(ar)
+        print(year_arr)
+        list.sort(year_arr, key=lambda k: (k[0], k[1]))
+        print(year_arr)
+        for i in list(reversed(year_arr)):
+            n = i[0]+"학년도 " + i[1] + "학기"
             self.yearSelect.addItem(n)
         # self.yearSelect.addItems(['2020학년도 1학기', '2020학년도 2학기'])  # 데이터를 불러와서 year 정보 수정하기
 
