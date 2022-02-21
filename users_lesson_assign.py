@@ -16,7 +16,7 @@ class Ui_Lesson_Assign(QDialog):
 
     # 데이터 불러오기
     def get_init_data(self):
-        global tool_button_arr, tool_button_arr2, configData, refresh_button_arr
+        global tool_button_arr, tool_button_arr2, configData, refresh_button_arr, reset_button_arr
         # 버튼 관련 설정
         tool_button_arr = [
             ["입력", "img/plus.png",40, 40, self.writeInfo],
@@ -29,6 +29,8 @@ class Ui_Lesson_Assign(QDialog):
         tool_button_arr2 = ["시간표 미리보기", 770, 700, 40, 50, "img/lesson_schedule.png", 50, 50, self.showTimetable]
 
         refresh_button_arr = ["새로고침",50,40,40,40, "img/refresh.png", 40, 40, self.refreshInfo]
+        reset_button_arr = ["초기화",750,40,40,40, "img/reset.png", 40, 40, self.resetInfo]
+
 
         # 시작, 종료시간 combobox 정보
         global time_start_arr, time_end_arr
@@ -185,6 +187,9 @@ class Ui_Lesson_Assign(QDialog):
         self.toolButton = QToolButton(self)
         global_funtion.tool_button_setting(self, self.toolButton, refresh_button_arr)
 
+        self.toolButton = QToolButton(self)
+        global_funtion.tool_button_setting(self, self.toolButton, reset_button_arr)
+
         # 시간표 보여주기 showShedule 버튼
         self.toolButton = QToolButton(self)
         global_funtion.tool_button_setting(self, self.toolButton, tool_button_arr2)
@@ -240,6 +245,36 @@ class Ui_Lesson_Assign(QDialog):
         self.__init__()
         self.exec_()
 
+    def resetInfo(self):
+        global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr, lesson_assign_under_list_origin, lesson_assign_list_dae_origin
+        global_funtion().message_box_2(QMessageBox.Question, "경고", "저장을 안하고 초기화 시 등록했던 데이터가 삭제됩니다. 초기화하시겠습니까?", "예", "아니오")
+        self.jsonLoad()
+        if configData['message'] == 'Y':
+            if configData['random'] == 'Y':
+                lesson_assign_arr = []
+                configData['random'] = 'N'
+                json.dumps(configData, indent="\t")
+                with open('info_type.json', 'w', encoding='utf-8') as make_file:
+                    json.dump(configData, make_file, indent="\t")
+
+            global_funtion().message_box_1(QMessageBox.Information, "확인", "초기화되었습니다.", "확인")
+            if self.radioButton_2.isChecked():
+                print('lesson_assign_under_list_origin')
+                print(lesson_assign_under_list_origin)
+                lesson_assign_under_list = lesson_assign_under_list_origin
+                lesson_assign_under_df_origin = pd.read_excel('data/lesson_assign_under.xlsx')
+                lesson_assign_under_df_origin.replace(np.NaN, '', inplace=True)
+                lesson_assign_under_list_origin = lesson_assign_under_df_origin.values.tolist()
+                self.df_load()
+            else:
+                lesson_assign_list_dae = lesson_assign_list_dae_origin
+                lesson_assign_df_dae_origin = pd.read_excel('data/lesson_assign_dae.xlsx')
+                lesson_assign_df_dae_origin.replace(np.NaN, '', inplace=True)
+                lesson_assign_list_dae_origin = lesson_assign_df_dae_origin.values.tolist()
+                self.df_dae_load
+            self.tableData()
+        else:
+            global_funtion().message_box_1(QMessageBox.Information, "확인", "저장을 해주시길 바랍니다.", "확인")
 
     def df_dae_load(self):
         global df
