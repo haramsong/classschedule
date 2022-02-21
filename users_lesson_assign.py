@@ -324,7 +324,8 @@ class Ui_Lesson_Assign(QDialog):
 
     # 대학원 라디오 버튼 연결 ( 대학원 데이터 불러오기 )
     def onClicked(self):
-        global df, radioBtn
+        global df, radioBtn, count
+        count = 100
         self.comboBox_2.clear()
         radioBtn = self.sender()
         if radioBtn.isChecked():
@@ -350,7 +351,8 @@ class Ui_Lesson_Assign(QDialog):
 
     # 학부 라디오 버튼 연결 ( 학부 데이터 불러오기 )
     def onClicked2(self):
-        global df2, radioBtn2
+        global df2, radioBtn2, count
+        count = 100
         self.comboBox_2.clear()
         radioBtn2 = self.sender()
         if radioBtn2.isChecked():
@@ -600,9 +602,9 @@ class Ui_Lesson_Assign(QDialog):
                 df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
                                   index=False)  # dataframe excel 저장
             else:
-                df_write = pd.DataFrame(lesson_assign_under_list,
-                                        columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
-                df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                df_write = pd.DataFrame(lesson_assign_list_dae,
+                                        columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
+                df_write.to_excel('data/lesson_assign_dae_tableview.xlsx',
                                   index=False)  # dataframe excel 저장
             global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
             return
@@ -778,7 +780,6 @@ class Ui_Lesson_Assign(QDialog):
                         break
                 if overlap_stack == 1:
                     continue
-                    random_denied_list.append(professor_sorted_assign_list[i])
                 else:
                     professor_sorted_assign_list[i][4] = class_arr[2]
                     professor_sorted_assign_list[i][5] = class_arr[3]
@@ -803,7 +804,7 @@ class Ui_Lesson_Assign(QDialog):
                 for j in range(len(lesson_assign_list_dae)):
                     if professor_dictionary[i] == lesson_assign_list_dae[j][0]:
                         professor_sorted_assign_list.append(lesson_assign_list_dae[j])
-            print(professor_sorted_assign_list)
+            # print(professor_sorted_assign_list)
 
             # print(lesson_assign_under_list)
             for i in range(len(professor_sorted_assign_list)):
@@ -840,20 +841,19 @@ class Ui_Lesson_Assign(QDialog):
                         continue
                     if professor_sorted_assign_list[i][0] != grad_data_sort_list[j][0][0]:
                         continue
-                    professor_arr = []
-                    for k in range(len(grad_data_sort_list[j])):
-                        # 과목 일치하는게 있으면 과목 일치하는 것으로만 random
-                        if professor_sorted_assign_list[i][1] == grad_data_sort_list[j][k][1]:
-                            professor_arr.append(grad_data_sort_list[j][k])
+                    # professor_arr = []
+                    # for k in range(len(grad_data_sort_list[j])):
+                    #     # 과목 일치하는게 있으면 과목 일치하는 것으로만 random
+                    #     if professor_sorted_assign_list[i][1] == grad_data_sort_list[j][k][1]:
+                    #         professor_arr.append(grad_data_sort_list[j][k])
                     class_arr = []
                     # 과목 일치하는 게 있으면
-                    if len(professor_arr) != 0:
-                        idx = random.randrange(0, len(professor_arr))
-                        class_arr = professor_arr[idx]
+                    # if len(professor_arr) != 0:
+                    #     idx = random.randrange(0, len(professor_arr))
+                    #     class_arr = professor_arr[idx]
                     # 과목 일치하는 게 없으면
-                    else:
-                        idx = random.randrange(0, len(grad_data_sort_list[j]))
-                        class_arr = grad_data_sort_list[j][idx]
+                    idx = random.randrange(0, len(grad_data_sort_list[j]))
+                    class_arr = grad_data_sort_list[j][idx]
                     print("class_arr")
                     print(class_arr)
                     # for k in range(0, 10):
@@ -933,11 +933,6 @@ class Ui_Lesson_Assign(QDialog):
                     professor_sorted_assign_list[i][5] = class_arr[3]
                     professor_sorted_assign_list[i][6] = diff_arr[1]
 
-
-            print('lesson_assign_arr')
-            print(lesson_assign_arr)
-            print('random_denied_list')
-            print(random_denied_list)
             lesson_assign_list_dae = professor_sorted_assign_list
 
         self.tableData()
