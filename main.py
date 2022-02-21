@@ -38,7 +38,7 @@ class Ui_MainWindow(QMainWindow):
         # 제목
         self.titleLabel = QLabel(self.centralwidget)
         self.titleLabel.setGeometry(QRect(0, 10, 550, 90))
-        global_funtion.fontSetting(self, self.titleLabel, "8H", 36, " ")
+        global_funtion.fontSetting(self, self.titleLabel, "8H", 28, " ")
         self.titleLabel.setAlignment(Qt.AlignCenter)
 
         # 버튼의 Layout
