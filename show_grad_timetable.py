@@ -67,23 +67,36 @@ class Ui_ShowGradTimetable(QDialog):
 
         pre = ""
         for i in range(len(lesson_assign_list_dae)):
-            txt = ""
             if lesson_assign_list_dae[i][4] == '' or lesson_assign_list_dae[i][5] == '':
                 continue
             for j in lesson_assign_list_dae[i][5].split(","): #12,13,14,15,16
-                if self.tableWidget.item(int(j),0).text() != "":
-                    pre = self.tableWidget.item(int(j),0).text() + "\n"
-                txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
+                txt = ""
                 if "월" in lesson_assign_list_dae[i][4]:
+                    if self.tableWidget.item(int(j), 0).text() != "":
+                        pre = self.tableWidget.item(int(j), 0).text() + "\n"
+                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
                     self.tableWidget.setItem(int(j),0,QTableWidgetItem(txt))
                 if "화" in lesson_assign_list_dae[i][4]:
+                    if self.tableWidget.item(int(j), 1).text() != "":
+                        pre = self.tableWidget.item(int(j), 1).text() + "\n"
+                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
                     self.tableWidget.setItem(int(j),1,QTableWidgetItem(txt))
                 if "수" in lesson_assign_list_dae[i][4]:
+                    if self.tableWidget.item(int(j), 2).text() != "":
+                        pre = self.tableWidget.item(int(j), 2).text() + "\n"
+                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
                     self.tableWidget.setItem(int(j),2,QTableWidgetItem(txt))
                 if "목" in lesson_assign_list_dae[i][4]:
+                    if self.tableWidget.item(int(j), 3).text() != "":
+                        pre = self.tableWidget.item(int(j), 3).text() + "\n"
+                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
                     self.tableWidget.setItem(int(j),3,QTableWidgetItem(txt))
                 if "금" in lesson_assign_list_dae[i][4]:
+                    if self.tableWidget.item(int(j), 4).text() != "":
+                        pre = self.tableWidget.item(int(j), 4).text() + "\n"
+                    txt = pre + lesson_assign_list_dae[i][0] + "(" + lesson_assign_list_dae[i][1] + ")"
                     self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
+                pre = ''
 
 
         # 테이블 위젯 행렬 사이즈 조절

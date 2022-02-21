@@ -515,6 +515,7 @@ class Ui_Lesson_Assign(QDialog):
     def randomAssign(self):
         global lesson_assign_under_list, lesson_assign_list_dae, lesson_assign_arr
         random_code = 0
+        random_denied_list = []
         # 모든 강의가 요일, 시간이 다 차있을 때 랜덤 배정 x
         if self.radioButton_2.isChecked():
             for i in range(len(lesson_assign_under_list)):
@@ -585,6 +586,7 @@ class Ui_Lesson_Assign(QDialog):
             # 랜덤 배정 start
             for i in range(len(professor_sorted_assign_list)):
                 idx = 0
+                overlap_stack = 0
                 # 요일 비지 않았으면 랜덤 배정 x
                 if professor_sorted_assign_list[i][4] != '':
                     continue
@@ -616,7 +618,6 @@ class Ui_Lesson_Assign(QDialog):
                     #     if class_arr[4]
                     diff_arr = []
                     diff_arr = [class_arr[0], class_arr[4], lesson_dictionary[professor_sorted_assign_list[i][1]]]
-                    overlap_stack = 0
                     for k in class_arr[3].split(','):
                         if "월" in class_arr[2]:
                             for l in range(len(lesson_assign_arr[int(k)][0])):
@@ -627,7 +628,7 @@ class Ui_Lesson_Assign(QDialog):
                                         break
                                 if overlap_stack == 1:
                                     break
-                            lesson_assign_arr[int(j)][0].append(diff_arr)
+                            lesson_assign_arr[int(k)][0].append(diff_arr)
                         if "화" in class_arr[2]:
                             for l in range(len(lesson_assign_arr[int(k)][1])):
                                 for m in range(len(diff_arr)):
@@ -637,7 +638,7 @@ class Ui_Lesson_Assign(QDialog):
                                         break
                                 if overlap_stack == 1:
                                     break
-                            lesson_assign_arr[int(j)][1].append(diff_arr)
+                            lesson_assign_arr[int(k)][1].append(diff_arr)
                         if "수" in class_arr[2]:
                             for l in range(len(lesson_assign_arr[int(k)][2])):
                                 for m in range(len(diff_arr)):
@@ -647,7 +648,7 @@ class Ui_Lesson_Assign(QDialog):
                                         break
                                 if overlap_stack == 1:
                                     break
-                            lesson_assign_arr[int(j)][2].append(diff_arr)
+                            lesson_assign_arr[int(k)][2].append(diff_arr)
                         if "목" in class_arr[2]:
                             for l in range(len(lesson_assign_arr[int(k)][3])):
                                 for m in range(len(diff_arr)):
@@ -657,7 +658,7 @@ class Ui_Lesson_Assign(QDialog):
                                         break
                                 if overlap_stack == 1:
                                     break
-                            lesson_assign_arr[int(j)][3].append(diff_arr)
+                            lesson_assign_arr[int(k)][3].append(diff_arr)
                         if "금" in class_arr[2]:
                             for l in range(len(lesson_assign_arr[int(k)][4])):
                                 for m in range(len(diff_arr)):
@@ -667,22 +668,30 @@ class Ui_Lesson_Assign(QDialog):
                                         break
                                 if overlap_stack == 1:
                                     break
-                            lesson_assign_arr[int(j)][4].append(diff_arr)
+                            if overlap_stack == 1:
+                                break
+                            lesson_assign_arr[int(k)][4].append(diff_arr)
                         if overlap_stack == 1:
                             break
                     if overlap_stack == 1:
                         break
-                # if overlap_stack == 1:
-                #     break
-                # else:
-                professor_sorted_assign_list[i][4] = class_arr[2]
-                professor_sorted_assign_list[i][5] = class_arr[3]
-                professor_sorted_assign_list[i][6] = diff_arr[1]
+                if overlap_stack == 1:
+                    random_denied_list.append(professor_sorted_assign_list[i])
+                else:
+                    professor_sorted_assign_list[i][4] = class_arr[2]
+                    professor_sorted_assign_list[i][5] = class_arr[3]
+                    professor_sorted_assign_list[i][6] = diff_arr[1]
+            print('lesson_assign_arr')
+            for i in range(len(lesson_assign_arr)):
+                print(lesson_assign_arr[i])
+            print('random_denied_list')
+            print(random_denied_list)
             lesson_assign_under_list = professor_sorted_assign_list
             # 학부 랜덤 배정
         else:
             # 교수님 순번별로 다시 sort
             professor_sorted_assign_list = []
+            random_denied_list = []
             for i in range(len(professor_list)):
                 for j in range(len(lesson_assign_list_dae)):
                     if professor_dictionary[i] == lesson_assign_list_dae[j][0]:
@@ -712,6 +721,7 @@ class Ui_Lesson_Assign(QDialog):
 
             # 랜덤 배정 start
             for i in range(len(professor_sorted_assign_list)):
+                overlap_stack = 0
                 idx = 0
                 # 요일 비지 않았으면 랜덤 배정 x
                 if professor_sorted_assign_list[i][4] != '':
@@ -744,7 +754,6 @@ class Ui_Lesson_Assign(QDialog):
                     #     if class_arr[4]
                     diff_arr = []
                     diff_arr = [class_arr[0], class_arr[4], lesson_dictionary[class_arr[1]]]
-                    overlap_stack = 0
                     for k in class_arr[3].split(','):
                         if "월" in class_arr[2]:
                             for l in range(len(lesson_assign_arr[k][0])):
@@ -804,6 +813,12 @@ class Ui_Lesson_Assign(QDialog):
                         under_data_sort_list[j][4] = class_arr[2]
                         under_data_sort_list[j][5] = class_arr[3]
                         under_data_sort_list[j][6] = diff_arr[1]
+                if overlap_stack == 1:
+                    random_denied_list.append(professor_sorted_assign_list[i])
+            print('lesson_assign_arr')
+            print(lesson_assign_arr)
+            print('random_denied_list')
+            print(random_denied_list)
             lesson_assign_under_list = under_data_sort_list
 
 
