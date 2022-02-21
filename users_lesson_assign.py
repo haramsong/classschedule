@@ -35,7 +35,7 @@ class Ui_Lesson_Assign(QDialog):
         under_timetable_list = lesson_assign_under_list
 
         global count
-        count = 100
+        count = 10
         # 시작, 종료시간 combobox 정보
         global time_start_arr, time_end_arr
         time_start_arr = [""]
@@ -255,7 +255,7 @@ class Ui_Lesson_Assign(QDialog):
         global_funtion().message_box_2(QMessageBox.Question, "경고", "저장을 안하고 초기화 시 등록했던 데이터가 삭제됩니다. 초기화하시겠습니까?", "예", "아니오")
 
         global count
-        count = 100
+        count = 10
 
         self.jsonLoad()
         if configData['message'] == 'Y':
@@ -275,12 +275,16 @@ class Ui_Lesson_Assign(QDialog):
                 lesson_assign_under_df_origin = pd.read_excel('data/lesson_assign_under.xlsx')
                 lesson_assign_under_df_origin.replace(np.NaN, '', inplace=True)
                 lesson_assign_under_list_origin = lesson_assign_under_df_origin.values.tolist()
+                lesson_assign_under_df_origin.to_excel('data/lesson_assign_under_tableview.xlsx',
+                                  index=False)  # dataframe excel 저장
                 self.df_load()
             else:
                 lesson_assign_list_dae = lesson_assign_list_dae_origin
                 lesson_assign_df_dae_origin = pd.read_excel('data/lesson_assign_dae.xlsx')
                 lesson_assign_df_dae_origin.replace(np.NaN, '', inplace=True)
                 lesson_assign_list_dae_origin = lesson_assign_df_dae_origin.values.tolist()
+                lesson_assign_df_dae_origin.to_excel('data/lesson_assign_grad_tableview.xlsx',
+                                  index=False)  # dataframe excel 저장
                 self.df_dae_load
             self.tableData()
         else:
@@ -592,6 +596,16 @@ class Ui_Lesson_Assign(QDialog):
         random_code = 0
         random_denied_list = []
         if count == 0:
+            if self.radioButton_2.isChecked():
+                df_write = pd.DataFrame(lesson_assign_under_list,
+                                        columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+                df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                                  index=False)  # dataframe excel 저장
+            else:
+                df_write = pd.DataFrame(lesson_assign_under_list,
+                                        columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+                df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                                  index=False)  # dataframe excel 저장
             global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
             return
         # 모든 강의가 요일, 시간이 다 차있을 때 랜덤 배정 x
@@ -677,25 +691,27 @@ class Ui_Lesson_Assign(QDialog):
                         continue
                     if professor_sorted_assign_list[i][0] != under_data_sort_list[j][0][0]:
                         continue
-                    professor_arr = []
-                    for k in range(len(under_data_sort_list[j])):
+                    # professor_arr = []
+                    # for k in range(len(under_data_sort_list[j])):
                         # 과목 일치하는게 있으면 과목 일치하는 것으로만 random
-                        if professor_sorted_assign_list[i][1] == under_data_sort_list[j][k][1]:
-                            professor_arr.append(under_data_sort_list[j][k])
-                    class_arr = []
+                        # if professor_sorted_assign_list[i][1] == under_data_sort_list[j][k][1]:
+                        #     professor_arr.append(under_data_sort_list[j][k])
                     # 과목 일치하는 게 있으면
-                    if len(professor_arr) != 0:
-                        idx = random.randrange(0, len(professor_arr))
-                        class_arr = professor_arr[idx]
-                    # 과목 일치하는 게 없으면
-                    else:
-                        idx = random.randrange(0, len(under_data_sort_list[j]))
-                        class_arr = under_data_sort_list[j][idx]
+                    # if len(professor_arr) != 0:
+                    #     idx = random.randrange(0, len(professor_arr))
+                    #     class_arr = professor_arr[idx]
+                    # # 과목 일치하는 게 없으면
+                    # else:
+                    idx = random.randrange(0, len(under_data_sort_list[j]))
+                    class_arr = under_data_sort_list[j][idx]
                     # print("class_arr")
                     # print(class_arr)
                     # for k in range(0, 10):
                     #     if class_arr[4]
                     diff_arr = []
+                    if class_arr[1] != professor_sorted_assign_list[i][1] and class_arr[1] == '수학적프로그래밍':
+                        overlap_stack = 1
+                        break
                     diff_arr = [class_arr[0], class_arr[4], lesson_dictionary[professor_sorted_assign_list[i][1]]]
                     for k in class_arr[3].split(','):
                         if "월" in class_arr[2]:
@@ -770,10 +786,7 @@ class Ui_Lesson_Assign(QDialog):
             lesson_assign_under_list = professor_sorted_assign_list
             print('lesson_assign_under_list')
             print(lesson_assign_under_list)
-            df_write = pd.DataFrame(lesson_assign_under_list,
-                                    columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
-            df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
-                              index=False)  # dataframe excel 저장
+
             # 학부 랜덤 배정
         else:
             # 교수님 순번별로 다시 sort
@@ -899,7 +912,8 @@ class Ui_Lesson_Assign(QDialog):
                     if overlap_stack == 1:
                         break
                 if overlap_stack == 1:
-                    random_denied_list.append(professor_sorted_assign_list[i])
+                    continue
+                    # random_denied_list.append(professor_sorted_assign_list[i])
                 else:
                     professor_sorted_assign_list[i][4] = class_arr[2]
                     professor_sorted_assign_list[i][5] = class_arr[3]
@@ -911,10 +925,7 @@ class Ui_Lesson_Assign(QDialog):
             print('random_denied_list')
             print(random_denied_list)
             lesson_assign_under_list = professor_sorted_assign_list
-            df_write = pd.DataFrame(lesson_assign_under_list,
-                                    columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
-            df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
-                              index=False)  # dataframe excel 저장
+
         self.tableData()
         count -= 1
         self.randomAssign()
