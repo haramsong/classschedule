@@ -31,11 +31,11 @@ class Ui_ShowGradTimetable(QDialog):
     # 화면 출력
     def setupUi(self):
         self.setObjectName("Dialog")
-        self.setFixedSize(1050, 700)
+        self.setFixedSize(1250, 800)
 
         # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
-        self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
+        self.tableWidget.setGeometry(QRect(50, 100, 1150, 630))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
@@ -106,12 +106,12 @@ class Ui_ShowGradTimetable(QDialog):
 
 
         # 테이블 위젯 행렬 사이즈 조절
-        self.tableWidget.verticalHeader().setDefaultSectionSize(80)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(70)
 
         # 라벨 설정
         self.label = QLabel(self) # 학년도
         self.label.setObjectName("label")
-        self.label.setGeometry(QRect(0, 10, 1050, 80))
+        self.label.setGeometry(QRect(0, 10, 1250, 80))
         self.label.setAlignment(Qt.AlignCenter)
         global_funtion.fontSetting(self, self.label, "8H", 24, " ")
 
