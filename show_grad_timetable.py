@@ -1,5 +1,4 @@
 #from PyQt5 import QtCore, QtGui, QtWidgets
-
 from dialog import *
 from data_load import *
 import json
