@@ -266,7 +266,7 @@ for i in range(len(grad_data_sort_list)):
     print(grad_data_sort_list[i])
 
 # key : 과목, value : 학년인 dictionary
-global lesson_dictionary, professor_dictionary
+global lesson_dictionary, professor_dictionary, professor_class_dictionary, time_dictionary
 lesson_dictionary = dict()
 for i in range(len(lesson_list)):
     if lesson_list[i][3] == '대학원':
@@ -282,4 +282,16 @@ for i in range(len(professor_list)):
     professor_dictionary[professor_id] = professor_list[i][1]
 print(professor_dictionary)
 print(professor_dictionary[0])
+
+professor_class_dictionary = dict()
+for i in range(len(professor_list)):
+    professor_class_id = professor_list[i][1]
+    professor_class_dictionary[professor_class_id] = professor_list[i][2]
+print(professor_class_dictionary)
+
+time_dictionary = dict()
+for i in range(len(time_list)):
+    time_id = str(time_list[i][0])
+    time_dictionary[time_id] = time_list[i][1]
+print(time_dictionary)
 # directoryNm = QFileDialog.getExistingDirectory()

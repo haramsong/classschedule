@@ -23,10 +23,11 @@ class Ui_Lesson_Assign(QDialog):
             ["수정", "img/shuffle.png", 40, 40, self.changeInfo],
             ["삭제", "img/delete.png", 40, 40, self.deleteInfo],
             ["배정", "img/play.png", 40, 40, self.randomAssign],
-            ["저장", "img/floppy-disk", 40, 40, self.saveInfo]
+            ["저장", "img/floppy-disk", 40, 40, self.saveInfo],
+            ["시간표 미리보기", "img/lesson_schedule.png", 40, 40, self.showTimetable]
         ]
 
-        tool_button_arr2 = ["시간표 미리보기", 770, 700, 40, 50, "img/lesson_schedule.png", 50, 50, self.showTimetable]
+        tool_button_arr2 = ["강의 확정", 760, 690, 50, 50, "img/submit.png", 50, 50, self.lessonSubmit]
 
         refresh_button_arr = ["새로고침",50,40,40,40, "img/refresh.png", 40, 40, self.refreshInfo]
         reset_button_arr = ["초기화",750,40,40,40, "img/reset.png", 40, 40, self.resetInfo]
@@ -1088,11 +1089,93 @@ class Ui_Lesson_Assign(QDialog):
                     for j in range(len(df2.columns)):
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
+    def lessonSubmit(self):
+        # import os
+        #
+        # subdir_names = os.listdir('data/class_dataset')
+        # year_arr = []
+        # for i in list(subdir_names):
+        #     ar = []
+        #     y = i[0:4]
+        #     s = i[5]
+        #     ar.append(y)
+        #     ar.append(s)
+        #     year_arr.append(ar)
+        # print(year_arr)
+        # list.sort(year_arr, key=lambda k: (k[0], k[1]))
+        # print(year_arr)
+        # year_arr.reverse()
+        # if year_arr[0][0] == year_str and year_arr[0][1] == semester_str:
+        #     global_funtion().message_box_1(QMessageBox.Information, "경고", "이미 해당 학기에 확정된 강의 시간표가 있습니다.", "확인")
+        #     return
+        for i in range(len(lesson_assign_list)):
+            if lesson_assign_list[i][9] == year_str and lesson_assign_list[i][10] == semester_str:
+                global_funtion().message_box_1(QMessageBox.Information, "경고", "이미 해당 학기에 확정된 강의 시간표가 있습니다.", "확인")
+                return
+        lesson_assign_under_df_sub = pd.read_excel('data/lesson_assign_under.xlsx')
+        lesson_assign_df_dae_sub = pd.read_excel('data/lesson_assign_dae.xlsx')
+        lesson_assign_under_df_sub.replace(np.NaN, '', inplace=True)
+        lesson_assign_df_dae_sub.replace(np.NaN, '', inplace=True)
+        lesson_assign_under_list_sub = lesson_assign_under_df_sub.values.tolist()
+        lesson_assign_list_dae_sub = lesson_assign_df_dae_sub.values.tolist()
 
+        lesson_dataset_list = []
+        lesson_submit_total_list = lesson_assign_under_list_sub + lesson_assign_list_dae_sub
+        for i in range(len(lesson_submit_total_list)):
+            for j in range(len(lesson_submit_total_list[i])):
+                if lesson_submit_total_list[i][j] == '':
+                    global_funtion().message_box_1(QMessageBox.Information, "경고", "강의 배정을 다한 후 확정해 주시길 바랍니다.", "확인")
+                    return
+            time_duration_str = ''
+            time_duration_arr = ','.split(lesson_submit_total_list[i][5])
+            if len(time_duration_arr) == 3:
+                time_duration_str = '75'
+            elif len(time_duration_arr) == 4:
+                time_duration_str = '100'
+            elif len(time_duration_arr) == 6:
+                time_duration_str = '150'
+            if lesson_submit_total_list[i][3] != '전공':
+                major_str = "수학과" + str(lesson_dictionary[lesson_submit_total_list[i][0]])
+            else:
+                major_str = "대학원 수학전공"
+            classtime_str = lesson_submit_total_list[i][4] + time_dictionary[time_duration_arr[0]] + '(' + time_duration_str + ')'
+            submit_list = [lesson_submit_total_list[i][0], professor_class_dictionary[lesson_submit_total_list[i][0]],
+                           major_str, lesson_submit_total_list[i][3], '',
+                           lesson_submit_total_list[i][1], str(lesson_submit_total_list[i][2]), classtime_str,lesson_submit_total_list[i][6], '']
+            lesson_dataset_list.append(submit_list)
 
+        sorted_list = []
+        for i in range(len(professor_list)):
+            for j in range(len(lesson_dataset_list)):
+                if lesson_dataset_list[j][0] == professor_list[i][1]:
+                    sorted_list.append(lesson_dataset_list[j])
 
+        masterID_code = global_list[3][1]
+        sorted_list_2 = sorted_list.copy()
+        for i in range(len(sorted_list_2)):
+            next_index = int(global_list[3][3])
+            masterID = masterID_code + str(next_index).zfill(3)  # 문자 A, B, R 표현을 위해 masterID_code라는 global 변수를 추가함
+            sorted_list_2[i].insert(0, masterID)
+            sorted_list_2[i].append(major_str)
+            sorted_list_2[i].append(year_str)
+            sorted_list_2[i].append(semester_str)
+            global_list[3][3] = next_index + 1                      # 다음 ID 수정
 
+        sorted_col = ['성명','직급','대상학과','교과구분','교과목번호','교과목명','분반','강의시간','강의실','비고']
+        new_dataset_df = pd.DataFrame(sorted_list, columns=sorted_col)
+        new_dataset_df.to_excel('data/class_dataset/' + year_str + '_' + semester_str + '.xlsx', index=False)
 
+        glob_df = pd.DataFrame(global_list,
+                          columns=global_list_col)  # global_list array, column은 global_list_col로 하는 dataframe 생성
+        glob_df.to_excel('data/global_master.xlsx', index=False)  # global list df를 excel 저장
+
+        less_df = pd.DataFrame(sorted_list_2,
+                               columns=lesson_assign_list_col)  # global_list array, column은 global_list_col로 하는 dataframe 생성
+        less_df.to_excel('data/lesson_assign.xlsx', index=False)  # global list df를 excel 저장
+
+        directoryNm = QFileDialog.getExistingDirectory()
+        dir_df = pd.DataFrame(sorted_list, columns=sorted_col)
+        dir_df.to_excel(directoryNm + '/' + year_str + '년도_' + semester_str + '학기_전임교수_시간표.xlsx', index=False)
 
 
 if __name__ == "__main__":

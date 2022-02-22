@@ -149,8 +149,14 @@ class Ui_Timetable(QDialog):
     def lesson_assign(self):
         a = Ui_Lesson_Assign()
         a.exec_()
+        self.table_fill()
 
     def table_fill(self):
+        global lesson_assign_df, lesson_assign_list
+        lesson_assign_df = pd.read_excel('data/lesson_assign.xlsx')
+        lesson_assign_df.replace(np.NaN, '', inplace=True)
+        lesson_assign_list = lesson_assign_df.values.tolist()
+
         self.tableWidget.clear()
         self.tableWidget.setRowCount(0)
 
