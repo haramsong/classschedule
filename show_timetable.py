@@ -31,11 +31,11 @@ class Ui_ShowTimetable(QDialog):
     def setupUi(self):
         # global temp_under_timetable_list
         self.setObjectName("Dialog")
-        self.setFixedSize(1250, 800)
+        self.setFixedSize(1050, 700)
 
         # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
-        self.tableWidget.setGeometry(QRect(50, 100, 1150, 630))
+        self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setColumnCount(5)
@@ -108,12 +108,12 @@ class Ui_ShowTimetable(QDialog):
                 pre = ""
 
         # 테이블 위젯 행렬 사이즈 조절
-        self.tableWidget.verticalHeader().setDefaultSectionSize(70)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(80)
 
         # 라벨 설정
         self.label = QLabel(self) # 학년도
         self.label.setObjectName("label")
-        self.label.setGeometry(QRect(0, 10, 1250, 80))
+        self.label.setGeometry(QRect(0, 10, 1050, 80))
         self.label.setAlignment(Qt.AlignCenter)
         global_funtion.fontSetting(self, self.label, "8H", 24, " ")
         # label_text = str(year_str) + '학년도 ' + str(semester_str) + '학기'
