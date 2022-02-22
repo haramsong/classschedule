@@ -21,14 +21,17 @@ class Ui_Timetable(QDialog):
         # 버튼 관련 설정
         tool_button_arr = [
             ["사용자 지정", "img/edit.png", 50, 50, self.lesson_assign],
-            # ["삭제", "img/delete.png", 50, 50, self.delete]
+            ["삭제", "img/delete.png", 50, 50, self.delete]
         ]
-
         # json load
-        with open("info_type.json", "r") as info:
-            configData = json.load(info)
+        self.jsonLoad()
 
         horizontal_header_arr = ['월', '화', '수', '목', '금']
+
+    def jsonLoad(self):
+        global configData
+        with open("info_type.json", "r") as info:
+            configData = json.load(info)
 
     # 화면 출력
     def setupUi(self):
@@ -58,9 +61,9 @@ class Ui_Timetable(QDialog):
 
         # 버튼 설정
         self.verticalLayoutWidget = QWidget(self)
-        self.verticalLayoutWidget.setGeometry(QRect(60, -160, 160, 420))
+        self.verticalLayoutWidget.setGeometry(QRect(30, 30, 200, 60))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout = QHBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout.setObjectName("verticalLayout")
 
@@ -207,8 +210,16 @@ class Ui_Timetable(QDialog):
                         self.tableWidget.setItem(int(j),4,QTableWidgetItem(txt))
                     pre = ''
 
-    # def delete(self):
-    #     print('삭제')
+    def delete(self):
+        global_funtion().message_box_2(QMessageBox.Question, "경고", "저장되어 있던 학부, 대학원 사용자 배정 정보가 삭제됩니다. 정말 삭제하시겠습니까? (새학기 강의 배정할 때만 사용)", "예",
+                                       "아니오")
+        self.jsonLoad()
+        if configData['message'] == 'Y':
+            df_del = pd.DataFrame([], columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+            df_del2 = pd.DataFrame([], columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
+            df_del.to_excel('data/lesson_assign_under.xlsx', index=False)  # dataframe excel 저장
+            df_del2.to_excel('data/lesson_assign_dae.xlsx', index=False)
+            global_funtion().message_box_1(QMessageBox.Information, "확인", "삭제되었습니다. ", "확인")
 
 if __name__ == "__main__":
     import sys
