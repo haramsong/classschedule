@@ -7,7 +7,7 @@ from users_lesson_assign import *
 from PyQt5 import QtGui
 
 # 시간표 창 만들기
-class Ui_ShowUnderTimetable(QDialog):
+class Ui_ShowTimetable(QDialog):
     def __init__(self):
         super().__init__()
         self.get_init_data()
@@ -37,6 +37,7 @@ class Ui_ShowUnderTimetable(QDialog):
         self.tableWidget = QTableWidget(self)
         self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
         self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
         self.tableWidget.clear()
@@ -126,7 +127,7 @@ class Ui_ShowUnderTimetable(QDialog):
 
     def retranslateUi(self):
         # label_text = self.yearSelect.currentText()
-        self.label.setText("시간표 미리보기")
+        self.label.setText("학부 시간표 미리보기")
         _translate = QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "강의 배정"))
 

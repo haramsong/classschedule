@@ -38,6 +38,7 @@ class Ui_Timetable(QDialog):
         # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
         self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
+        self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
