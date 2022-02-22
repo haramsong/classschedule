@@ -168,6 +168,7 @@ under_dataset_df['수업시간'] = under_dataset_df['수업시간'].str.split(')
 under_dataset_df['수업시간'] = under_dataset_df['수업시간'].astype(int)
 
 
+
 #학부 수업 시작시간의 시간ID 반환
 for i in range(len(under_dataset_df)):
     for j in range(len(time_df)):
