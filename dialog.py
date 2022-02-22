@@ -121,8 +121,7 @@ class Ui_Dialog(QDialog):
 
         self.page_data()            # 데이터 불러오기
         self.retranslateUi()        # 텍스트 출력
-        global_funtion.buttonBox(self, self, 330, 450, 311, 30, self.accept)
-        
+
         
     # List Click Event
     def listClick(self):
