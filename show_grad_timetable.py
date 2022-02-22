@@ -36,6 +36,7 @@ class Ui_ShowGradTimetable(QDialog):
         # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
         self.tableWidget.setGeometry(QRect(50, 100, 1150, 630))
+        self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
         self.tableWidget.setRowCount(0)
@@ -122,7 +123,7 @@ class Ui_ShowGradTimetable(QDialog):
         self.jsonload()
 
     def retranslateUi(self):
-        self.label.setText('시간표 미리보기')
+        self.label.setText('대학원 시간표 미리보기')
         _translate = QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "강의 배정"))
 

@@ -1,8 +1,8 @@
 from imports import *
 from dialog import *
 from data_load import *
-from show_under_timetable import *
-from show_grad_timetable import *
+from show_timetable import *
+# from show_grad_timetable import *
 import json
 import os
 import random
@@ -199,8 +199,9 @@ class Ui_Lesson_Assign(QDialog):
         global_funtion.tool_button_setting(self, self.toolButton, tool_button_arr2)
 
         # 테이블 위젯 만들기( 목록 띄우기 위함 )
-        self.tableWidget =QTableWidget(self.groupBox_2)
+        self.tableWidget = QTableWidget(self.groupBox_2)
         self.tableWidget.setGeometry(QRect(30, 150, 571, 380))
+        self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setObjectName("tableWidget")
         # 행과 열 만들기
         self.tableWidget.setColumnCount(8)
@@ -596,15 +597,18 @@ class Ui_Lesson_Assign(QDialog):
         random_code = 0
         random_denied_list = []
         if count == 0:
+            print('lesson_assign_arr')
+            for i in range(len(lesson_assign_arr)):
+                print(lesson_assign_arr[i])
             if self.radioButton_2.isChecked():
                 df_write = pd.DataFrame(lesson_assign_under_list,
                                         columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
                 df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
                                   index=False)  # dataframe excel 저장
             else:
-                df_write = pd.DataFrame(lesson_assign_list_dae,
+                df_write_dae = pd.DataFrame(lesson_assign_list_dae,
                                         columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
-                df_write.to_excel('data/lesson_assign_dae_tableview.xlsx',
+                df_write_dae.to_excel('data/lesson_assign_dae_tableview.xlsx',
                                   index=False)  # dataframe excel 저장
             global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
             return
@@ -615,16 +619,35 @@ class Ui_Lesson_Assign(QDialog):
                     continue
                 random_code += 1
             if random_code == 0:
-                global_funtion().message_box_1(QMessageBox.Information, "정보", "랜덤 배정할 강의가 없습니다", "확인")
-                return
+                print('lesson_assign_arr')
+                for i in range(len(lesson_assign_arr)):
+                    print(lesson_assign_arr[i])
+                if count == 100:
+                    global_funtion().message_box_1(QMessageBox.Information, "정보", "랜덤 배정할 강의가 없습니다", "확인")
+                    return
+                else:
+                    df_write = pd.DataFrame(lesson_assign_under_list,
+                                            columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
+                    df_write.to_excel('data/lesson_assign_under_tableview.xlsx',
+                                      index=False)  # dataframe excel 저장
+                    global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
+                    return
         else:
             for i in range(len(lesson_assign_list_dae)):
                 if lesson_assign_list_dae[i][4] != '':
                     continue
                 random_code += 1
             if random_code == 0:
-                global_funtion().message_box_1(QMessageBox.Information, "정보", "랜덤 배정할 강의가 없습니다", "확인")
-                return
+                if count == 100:
+                    global_funtion().message_box_1(QMessageBox.Information, "정보", "랜덤 배정할 강의가 없습니다", "확인")
+                    return
+                else:
+                    df_write_dae = pd.DataFrame(lesson_assign_list_dae,
+                                                columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
+                    df_write_dae.to_excel('data/lesson_assign_dae_tableview.xlsx',
+                                          index=False)  # dataframe excel 저장
+                    global_funtion().message_box_1(QMessageBox.Information, "정보", "성공적으로 배정되었습니다.", "확인")
+                    return
 
         # 요일, 시간 체크 arr 생성
         self.jsonLoad()
@@ -662,14 +685,24 @@ class Ui_Lesson_Assign(QDialog):
                     check_arr = [professor_sorted_assign_list[i][0], professor_sorted_assign_list[i][6], lesson_dictionary[professor_sorted_assign_list[i][1]]]
                     # print(check_arr)
                     if "월" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][0]:
+                            continue
                         lesson_assign_arr[int(j)][0].append(check_arr)
                     if "화" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][1]:
+                            continue
                         lesson_assign_arr[int(j)][1].append(check_arr)
                     if "수" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][2]:
+                            continue
                         lesson_assign_arr[int(j)][2].append(check_arr)
                     if "목" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][3]:
+                            continue
                         lesson_assign_arr[int(j)][3].append(check_arr)
                     if "금" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][4]:
+                            continue
                         lesson_assign_arr[int(j)][4].append(check_arr)
                 # print(lesson_assign_arr)
 
@@ -784,16 +817,11 @@ class Ui_Lesson_Assign(QDialog):
                     professor_sorted_assign_list[i][4] = class_arr[2]
                     professor_sorted_assign_list[i][5] = class_arr[3]
                     professor_sorted_assign_list[i][6] = diff_arr[1]
-            print('lesson_assign_arr')
-            for i in range(len(lesson_assign_arr)):
-                print(lesson_assign_arr[i])
+
             # print('random_denied_list')
             # print(random_denied_list)
-            print('professor_sorted_assign_list')
-            print(professor_sorted_assign_list)
+
             lesson_assign_under_list = professor_sorted_assign_list
-            print('lesson_assign_under_list')
-            print(lesson_assign_under_list)
 
             # 대학원 랜덤 배정
         else:
@@ -813,18 +841,27 @@ class Ui_Lesson_Assign(QDialog):
                     continue
                 for j in professor_sorted_assign_list[i][5].split(","):  # 12,13,14,15,16
                     check_arr = [professor_sorted_assign_list[i][0], professor_sorted_assign_list[i][6], '']
-                    print(check_arr)
+
                     if "월" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][0]:
+                            continue
                         lesson_assign_arr[int(j)][0].append(check_arr)
                     if "화" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][1]:
+                            continue
                         lesson_assign_arr[int(j)][1].append(check_arr)
                     if "수" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][2]:
+                            continue
                         lesson_assign_arr[int(j)][2].append(check_arr)
                     if "목" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][3]:
+                            continue
                         lesson_assign_arr[int(j)][3].append(check_arr)
                     if "금" in professor_sorted_assign_list[i][4]:
+                        if check_arr in lesson_assign_arr[int(j)][4]:
+                            continue
                         lesson_assign_arr[int(j)][4].append(check_arr)
-                print(lesson_assign_arr)
 
             # 랜덤 배정 start
             for i in range(len(professor_sorted_assign_list)):
@@ -841,21 +878,20 @@ class Ui_Lesson_Assign(QDialog):
                         continue
                     if professor_sorted_assign_list[i][0] != grad_data_sort_list[j][0][0]:
                         continue
-                    # professor_arr = []
-                    # for k in range(len(grad_data_sort_list[j])):
-                    #     # 과목 일치하는게 있으면 과목 일치하는 것으로만 random
-                    #     if professor_sorted_assign_list[i][1] == grad_data_sort_list[j][k][1]:
-                    #         professor_arr.append(grad_data_sort_list[j][k])
+                    professor_arr = []
+                    for k in range(len(grad_data_sort_list[j])):
+                        # 과목 일치하는게 있으면 과목 일치하는 것으로만 random
+                        if grad_data_sort_list[j][k][1] != "논문연구":
+                            professor_arr.append(grad_data_sort_list[j][k])
                     class_arr = []
-                    # 과목 일치하는 게 있으면
+                    # 논문연구 제외
                     # if len(professor_arr) != 0:
-                    #     idx = random.randrange(0, len(professor_arr))
-                    #     class_arr = professor_arr[idx]
+                    idx = random.randrange(0, len(professor_arr))
+                    class_arr = professor_arr[idx]
+                    print(professor_arr)
                     # 과목 일치하는 게 없으면
-                    idx = random.randrange(0, len(grad_data_sort_list[j]))
-                    class_arr = grad_data_sort_list[j][idx]
-                    print("class_arr")
-                    print(class_arr)
+                    # idx = random.randrange(0, len(grad_data_sort_list[j]))
+                    # class_arr = grad_data_sort_list[j][idx]
                     # for k in range(0, 10):
                     #     if class_arr[4]
                     diff_arr = []
@@ -932,7 +968,6 @@ class Ui_Lesson_Assign(QDialog):
                     professor_sorted_assign_list[i][4] = class_arr[2]
                     professor_sorted_assign_list[i][5] = class_arr[3]
                     professor_sorted_assign_list[i][6] = diff_arr[1]
-
             lesson_assign_list_dae = professor_sorted_assign_list
 
         self.tableData()
@@ -963,12 +998,11 @@ class Ui_Lesson_Assign(QDialog):
 
     # 시간표 미리보기
     def showTimetable(self):
-        global radioBtn, radioBtn2, under_timetable_list, grad_timetable_list
-        if radioBtn2.isChecked():   # 학부 라디오버튼 체크시
-            Ui_ShowUnderTimetable().exec_()
-        elif radioBtn.isChecked():  # 대학원 라디오버튼 체크시
-            grad_timetable_list = lesson_assign_list_dae
-            Ui_ShowGradTimetable().exec_()
+        global radioBtn, radioBtn2
+        Ui_ShowTimetable().exec_()
+        # elif radioBtn.isChecked():  # 대학원 라디오버튼 체크시
+        #     grad_timetable_list = lesson_assign_list_dae
+        #     Ui_ShowGradTimetable().exec_()
 
     # 추가,수정, 삭제된 사항을 table에 새로 띄우기
     def tableData(self):
@@ -979,7 +1013,6 @@ class Ui_Lesson_Assign(QDialog):
             item.setText(header_arr[i])
             self.tableWidget.setHorizontalHeaderItem(i, item)
             self.tableWidget.horizontalHeader().setSectionResizeMode(i, QHeaderView.Stretch)
-        print('a') #확인용
 
         if self.radioButton.isChecked():    # 대학원 라디오버튼 체크시
             self.comboBox_2.clear()         # 대학원 수업명 콤보박스 초기화

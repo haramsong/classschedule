@@ -152,7 +152,7 @@ grad_dataset_df2 = pd.concat([grad_dataset_df3, grad_dataset_df4])              
 grad_dataset_df5 = grad_dataset_df[~grad_dataset_df['강의시간'].str.contains(':')].copy()
 grad_dataset_df5['요일'] = grad_dataset_df5['강의시간'].str.slice(start= 0, stop = 1)
 
-grad_dataset_df5['시간'] = grad_dataset_df5['강의시간'].str.slice(start= 1, stop = 3) + ':00(180)'
+grad_dataset_df5['시간'] = grad_dataset_df5['강의시간'].str.slice(start= 1, stop = 3) + ':00(150)'
 grad_dataset_df5 = grad_dataset_df5.drop(['강의시간'], axis = 1)                     # 강의시간 컬럼 삭제
 
 grad_dataset_df = pd.concat([grad_dataset_df2, grad_dataset_df5])
@@ -206,13 +206,15 @@ grad_dataset_df['수업시간'] = grad_dataset_df['시간'].str.split('(').str[1
 grad_dataset_df['수업시간'] = grad_dataset_df['수업시간'].str.split(')').str[0]
 grad_dataset_df['수업시간'] = grad_dataset_df['수업시간'].astype(int)                     # grad_dataset_df['수업시간'] series 타입변환 object -> int
 
+print(grad_dataset_df)
+
 #대학원 수업 시작시간의 시간ID 반환
 for i in range(len(grad_dataset_df)):
     for j in range(len(time_df)):
         if grad_dataset_df.iloc[i, 4] == time_df.iloc[j, 1]:                           # 시작시간과 timd_df에서 시간 비교
             grad_dataset_df.iloc[i, 4] = time_df.iloc[j, 0]                            # 시작시간을 시간ID로 변환
 
-classtime = (grad_dataset_df['수업시간'] // 30) + 1                                      # 대학원 수업시간에 해당하는 시간ID의 개수 int
+classtime = (grad_dataset_df['수업시간'] // 30)                                      # 대학원 수업시간에 해당하는 시간ID의 개수 int
 grad_dataset_df['시간ID'] = 0
 
 start_arr2 = grad_dataset_df['시작시간'].values.tolist()
@@ -221,7 +223,7 @@ finish_arr2 = grad_dataset_df['시작시간'].astype(int) + classtime
 time = []
 for i in range(len(start_arr2)):
     time2 = []
-    for j in range(start_arr2[i], finish_arr2[i]):
+    for j in range(start_arr2[i], finish_arr2[i] + 1):
         time2.append(str(j))
     time_string = ",".join(time2)
     time.append(time_string)
