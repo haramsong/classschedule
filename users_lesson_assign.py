@@ -599,9 +599,9 @@ class Ui_Lesson_Assign(QDialog):
         random_code = 0
         random_denied_list = []
         if count == 0:
-            print('lesson_assign_arr')
-            for i in range(len(lesson_assign_arr)):
-                print(lesson_assign_arr[i])
+            # print('lesson_assign_arr')
+            # for i in range(len(lesson_assign_arr)):
+            #     print(lesson_assign_arr[i])
             if self.radioButton_2.isChecked():
                 df_write = pd.DataFrame(lesson_assign_under_list,
                                         columns=lesson_assign_under_list_col)  # data array, column은 label_col로 하는 dataframe 생성
