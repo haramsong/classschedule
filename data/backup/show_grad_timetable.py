@@ -17,7 +17,7 @@ class Ui_ShowGradTimetable(QDialog):
         global configData, horizontal_header_arr, grad_timetable_list
 
         # json load
-        with open("info_type.json", "r") as info:
+        with open("../../info_type.json", "r") as info:
             configData = json.load(info)
 
         horizontal_header_arr = ['월', '화', '수', '목', '금']
@@ -137,7 +137,7 @@ class Ui_ShowGradTimetable(QDialog):
 
     def jsonload(self):
         global configData
-        with open("info_type.json", "r") as info:
+        with open("../../info_type.json", "r") as info:
             configData = json.load(info)
 
 
