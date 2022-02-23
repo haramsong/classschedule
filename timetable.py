@@ -36,11 +36,11 @@ class Ui_Timetable(QDialog):
     # 화면 출력
     def setupUi(self):
         self.setObjectName("Dialog")
-        self.setFixedSize(1050, 700)
+        self.setFixedSize(1250, 900)
 
         # 테이블 위젯 설정(시간표)
         self.tableWidget = QTableWidget(self)
-        self.tableWidget.setGeometry(QRect(50, 100, 950, 530))
+        self.tableWidget.setGeometry(QRect(25, 100, 1200, 730))
         self.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(5)
@@ -48,12 +48,12 @@ class Ui_Timetable(QDialog):
 
 
         # 테이블 위젯 행렬 사이즈 조절
-        self.tableWidget.verticalHeader().setDefaultSectionSize(60)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(90)
 
         # 라벨 설정
         self.label = QLabel(self) # 학년도
         self.label.setObjectName("label")
-        self.label.setGeometry(QRect(0, 10, 1050, 80))
+        self.label.setGeometry(QRect(0, 10, 1250, 80))
         self.label.setAlignment(Qt.AlignCenter)
         global_funtion.fontSetting(self, self.label, "8H", 24, " ")
         # label_text = str(year_str) + '학년도 ' + str(semester_str) + '학기'
@@ -69,7 +69,7 @@ class Ui_Timetable(QDialog):
 
         # Combobox
         self.yearSelect = QComboBox(self)
-        self.yearSelect.setGeometry(QRect(800, 60, 200, 30))
+        self.yearSelect.setGeometry(QRect(1000, 60, 200, 30))
 
 
         subdir_names = os.listdir('data/class_dataset')

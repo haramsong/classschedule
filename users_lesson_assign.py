@@ -6,6 +6,7 @@ from show_timetable import *
 import json
 import os
 import random
+import copy
 
 # 사용자 지정 창 만들기
 class Ui_Lesson_Assign(QDialog):
@@ -553,7 +554,7 @@ class Ui_Lesson_Assign(QDialog):
                             # changed_data.append(str(time_arr)[1:-1])        # 시간ID
                             changed_data.append(str(time)[1:-1])
                         changed_data.append(self.lineEdit_11.text())    # 강의실
-                        lesson_assign_list_dae[i][1:8] = changed_data
+                        lesson_assign_list_dae[i] = changed_data
                         df_write = pd.DataFrame(lesson_assign_list_dae,
                                                 columns=lesson_assign_list_col_dae)  # data array, column은 label_col로 하는 dataframe 생성
                         df_write.to_excel('data/lesson_assign_dae_tableview.xlsx',
@@ -1090,24 +1091,24 @@ class Ui_Lesson_Assign(QDialog):
                         self.tableWidget.setItem(i, j, QTableWidgetItem(str(df2.iloc[i, j])))
 
     def lessonSubmit(self):
-        # import os
-        #
-        # subdir_names = os.listdir('data/class_dataset')
-        # year_arr = []
-        # for i in list(subdir_names):
-        #     ar = []
-        #     y = i[0:4]
-        #     s = i[5]
-        #     ar.append(y)
-        #     ar.append(s)
-        #     year_arr.append(ar)
-        # print(year_arr)
-        # list.sort(year_arr, key=lambda k: (k[0], k[1]))
-        # print(year_arr)
-        # year_arr.reverse()
-        # if year_arr[0][0] == year_str and year_arr[0][1] == semester_str:
-        #     global_funtion().message_box_1(QMessageBox.Information, "경고", "이미 해당 학기에 확정된 강의 시간표가 있습니다.", "확인")
-        #     return
+        import os
+
+        subdir_names = os.listdir('data/class_dataset')
+        year_arr = []
+        for i in list(subdir_names):
+            ar = []
+            y = i[0:4]
+            s = i[5]
+            ar.append(y)
+            ar.append(s)
+            year_arr.append(ar)
+        print(year_arr)
+        list.sort(year_arr, key=lambda k: (k[0], k[1]))
+        print(year_arr)
+        year_arr.reverse()
+        if year_arr[0][0] == year_str and year_arr[0][1] == semester_str:
+            global_funtion().message_box_1(QMessageBox.Information, "경고", "이미 해당 학기에 확정된 강의 시간표가 있습니다.", "확인")
+            return
         for i in range(len(lesson_assign_list)):
             if lesson_assign_list[i][9] == year_str and lesson_assign_list[i][10] == semester_str:
                 global_funtion().message_box_1(QMessageBox.Information, "경고", "이미 해당 학기에 확정된 강의 시간표가 있습니다.", "확인")
@@ -1127,7 +1128,10 @@ class Ui_Lesson_Assign(QDialog):
                     global_funtion().message_box_1(QMessageBox.Information, "경고", "강의 배정을 다한 후 확정해 주시길 바랍니다.", "확인")
                     return
             time_duration_str = ''
-            time_duration_arr = ','.split(lesson_submit_total_list[i][5])
+            time_duration_arr = lesson_submit_total_list[i][5].split(',')
+            print(lesson_submit_total_list[i])
+            print(lesson_submit_total_list[i][5])
+            print(time_duration_arr)
             if len(time_duration_arr) == 3:
                 time_duration_str = '75'
             elif len(time_duration_arr) == 4:
@@ -1135,7 +1139,7 @@ class Ui_Lesson_Assign(QDialog):
             elif len(time_duration_arr) == 6:
                 time_duration_str = '150'
             if lesson_submit_total_list[i][3] != '전공':
-                major_str = "수학과" + str(lesson_dictionary[lesson_submit_total_list[i][0]])
+                major_str = "수학과" + str(lesson_dictionary[lesson_submit_total_list[i][1]])
             else:
                 major_str = "대학원 수학전공"
             classtime_str = lesson_submit_total_list[i][4] + time_dictionary[time_duration_arr[0]] + '(' + time_duration_str + ')'
@@ -1149,9 +1153,9 @@ class Ui_Lesson_Assign(QDialog):
             for j in range(len(lesson_dataset_list)):
                 if lesson_dataset_list[j][0] == professor_list[i][1]:
                     sorted_list.append(lesson_dataset_list[j])
-
+        print(sorted_list)
         masterID_code = global_list[3][1]
-        sorted_list_2 = sorted_list.copy()
+        sorted_list_2 = copy.deepcopy(lesson_submit_total_list)
         for i in range(len(sorted_list_2)):
             next_index = int(global_list[3][3])
             masterID = masterID_code + str(next_index).zfill(3)  # 문자 A, B, R 표현을 위해 masterID_code라는 global 변수를 추가함
@@ -1160,23 +1164,30 @@ class Ui_Lesson_Assign(QDialog):
             sorted_list_2[i].append(year_str)
             sorted_list_2[i].append(semester_str)
             global_list[3][3] = next_index + 1                      # 다음 ID 수정
+        print(sorted_list)
+
+        directoryNm = QFileDialog.getExistingDirectory()
+        if directoryNm == '':
+            return
 
         sorted_col = ['성명','직급','대상학과','교과구분','교과목번호','교과목명','분반','강의시간','강의실','비고']
         new_dataset_df = pd.DataFrame(sorted_list, columns=sorted_col)
-        new_dataset_df.to_excel('data/class_dataset/' + year_str + '_' + semester_str + '.xlsx', index=False)
-
-        glob_df = pd.DataFrame(global_list,
-                          columns=global_list_col)  # global_list array, column은 global_list_col로 하는 dataframe 생성
-        glob_df.to_excel('data/global_master.xlsx', index=False)  # global list df를 excel 저장
+        new_dataset_df.to_excel('data/class_dataset/' + str(year_str) + '_' + str(semester_str) + '.xlsx', index=False)
 
         less_df = pd.DataFrame(sorted_list_2,
                                columns=lesson_assign_list_col)  # global_list array, column은 global_list_col로 하는 dataframe 생성
         less_df.to_excel('data/lesson_assign.xlsx', index=False)  # global list df를 excel 저장
 
-        directoryNm = QFileDialog.getExistingDirectory()
         dir_df = pd.DataFrame(sorted_list, columns=sorted_col)
-        dir_df.to_excel(directoryNm + '/' + year_str + '년도_' + semester_str + '학기_전임교수_시간표.xlsx', index=False)
+        dir_df.to_excel(directoryNm + '/' + str(year_str) + '년도_' + str(semester_str) + '학기_전임교수_시간표.xlsx', index=False)
 
+        glob_df = pd.DataFrame(global_list,
+                          columns=global_list_col)  # global_list array, column은 global_list_col로 하는 dataframe 생성
+        glob_df.to_excel('data/global_master.xlsx', index=False)  # global list df를 excel 저장
+
+
+        global_funtion().message_box_1(QMessageBox.Information, "확인", "강의 확정을 완료했습니다.", "확인")
+        self.close()
 
 if __name__ == "__main__":
     import sys
