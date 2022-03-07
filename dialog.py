@@ -216,6 +216,9 @@ class Ui_Dialog(QDialog):
         # Step1 우측 입력한 form들의 데이터를 new_data에 담는다
         new_data = []
         if configData['info_type'] == "lesson":  # 강의 정보
+            if line_arr[0].text() == '':
+                global_funtion().message_box_1(QMessageBox.Information, "경고", "필수정보를 입력해주세요.", "확인")  # 저장완료 메세지 출력
+                return
             new_data.append(line_arr[0].text())
             new_data.append(line_arr[1].currentText())
             new_data.append(line_arr[2].currentText())
@@ -224,6 +227,18 @@ class Ui_Dialog(QDialog):
             new_data.append(line_arr[5].text())
 
         elif configData['info_type'] == "professor":  # 교수 정보
+            print(line_arr[0].text())
+            print(line_arr[2].text())
+            if line_arr[0].text() == '':
+                global_funtion().message_box_1(QMessageBox.Information, "경고", "교수명을 입력해주세요.", "확인")  # 저장완료 메세지 출력
+                return
+            if line_arr[2].text() == '':
+                global_funtion().message_box_1(QMessageBox.Information, "경고", "순번을 입력해주세요.", "확인")  # 저장완료 메세지 출력
+                return
+            if int(line_arr[2].text()) != len(professor_list) + 1:
+                global_funtion().message_box_1(QMessageBox.Information, "경고", "정확한 다음 순번을 입력해주세요.", "확인")  # 저장완료 메세지 출력
+                return
+
             new_data.append(line_arr[0].text())
             new_data.append(line_arr[1].currentText())
             new_data.append(line_arr[2].text())
@@ -232,6 +247,9 @@ class Ui_Dialog(QDialog):
             new_data.append(line_arr[5].text())
 
         elif configData['info_type'] == 'classroom':  # 강의실 정보
+            if line_arr[0].text() == '':
+                global_funtion().message_box_1(QMessageBox.Information, "경고", "필수정보를 입력해주세요.", "확인")  # 저장완료 메세지 출력
+                return
             for i in range(len(line_arr)):
                 new_data.append(line_arr[i].text())
         #print(new_data)
