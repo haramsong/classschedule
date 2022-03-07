@@ -454,7 +454,7 @@ class Ui_Lesson_Assign(QDialog):
 
         if radioBtn2.isChecked():                   # 학부 라디오버튼 체크시
             if start == 0 & end == 0:  # 시작시간 종료시간 선택 안함
-                time.append(26)
+                time.append('26')
                 write_data.append(str(time)[1:-1])  # 시간ID
             else:  # 시작시간 종료시간 선택함
                 for i in range(start - 1, end):
@@ -479,7 +479,7 @@ class Ui_Lesson_Assign(QDialog):
             # print("1",lesson_assign_under_list)
         else:                                       # 대학원 라디오버튼 체크시
             if start == 0 & end == 0:  # 시작시간 종료시간 선택 안함
-                time.append(26)
+                time.append('26')
                 write_data.append(str(time)[1:-1])  # 시간ID
             else:  # 시작시간 종료시간 선택함
                 for i in range(start - 1, end):
@@ -526,7 +526,7 @@ class Ui_Lesson_Assign(QDialog):
                         start = self.comboBox_3.currentIndex()          # 시작시간의 시간ID
                         end = self.comboBox_4.currentIndex()            # 종료시간의 시간ID
                         if start == 0 & end == 0:                       # 시작시간 종료시간 선택 안함
-                            time.append(26)
+                            time.append('26')
                             changed_data.append(str(time)[1:-1])        # 시간ID
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
@@ -559,7 +559,7 @@ class Ui_Lesson_Assign(QDialog):
                         start = self.comboBox_3.currentIndex()          # 시작시간의 시간ID
                         end = self.comboBox_4.currentIndex()            # 종료시간의 시간ID
                         if start == 0 & end == 0:                       # 시작시간 종료시간 선택 안함
-                            time.append(26)
+                            time.append('26')
                             changed_data.append(str(time)[1:-1])        # 시간ID
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
@@ -1116,7 +1116,7 @@ class Ui_Lesson_Assign(QDialog):
             lesson_submit_total_list = lesson_assign_under_list_sub
             for i in range(len(lesson_submit_total_list)):
                 time_duration_str = ''
-                if int(lesson_submit_total_list[i][5]) == 26:
+                if '26' in str(lesson_submit_total_list[i][5]):
                     time_duration_arr = []
                 else:
                     time_duration_arr = lesson_submit_total_list[i][5].split(',')
@@ -1175,7 +1175,7 @@ class Ui_Lesson_Assign(QDialog):
             lesson_submit_total_list = lesson_assign_list_dae_sub
             for i in range(len(lesson_submit_total_list)):
                 time_duration_str = ''
-                if int(lesson_submit_total_list[i][5]) == 26:
+                if '26' in str(lesson_submit_total_list[i][5]):
                     time_duration_arr = []
                 else:
                     time_duration_arr = lesson_submit_total_list[i][5].split(',')
