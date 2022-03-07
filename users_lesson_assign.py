@@ -450,11 +450,13 @@ class Ui_Lesson_Assign(QDialog):
         time = []
         start = self.comboBox_3.currentIndex()      # 시작시간의 시간ID
         end = self.comboBox_4.currentIndex()        # 종료시간의 시간ID
-
+        if self.lineEdit_8.text() == '':
+            global_funtion().message_box_1(QMessageBox.Information, "확인", "필수 정보를 모두 입력해주세요.", "확인")
+            return
 
         if radioBtn2.isChecked():                   # 학부 라디오버튼 체크시
             if start == 0 & end == 0:  # 시작시간 종료시간 선택 안함
-                time.append('26')
+                time.append(26)
                 write_data.append(str(time)[1:-1])  # 시간ID
             else:  # 시작시간 종료시간 선택함
                 for i in range(start - 1, end):
@@ -479,7 +481,7 @@ class Ui_Lesson_Assign(QDialog):
             # print("1",lesson_assign_under_list)
         else:                                       # 대학원 라디오버튼 체크시
             if start == 0 & end == 0:  # 시작시간 종료시간 선택 안함
-                time.append('26')
+                time.append(26)
                 write_data.append(str(time)[1:-1])  # 시간ID
             else:  # 시작시간 종료시간 선택함
                 for i in range(start - 1, end):
@@ -512,6 +514,9 @@ class Ui_Lesson_Assign(QDialog):
         global_funtion().message_box_2(QMessageBox.Question, "확인", "작성내용을 수정하시겠습니까?", "예", "아니오")
         self.jsonLoad()
         if configData['message'] == 'Y':
+            if self.lineEdit_8.text() == '':
+                global_funtion().message_box_1(QMessageBox.Information, "확인", "필수 정보를 모두 입력해주세요.", "확인")
+                return
             if radioBtn2.isChecked(): # 학부 버튼 클릭 시
                 for i in range(len(lesson_assign_under_list)):  # data 개수만큼 for문
                     if i == curr_row:                           # 위젯list에서 선택한 row와 i번째 data가 일치하면
@@ -521,12 +526,13 @@ class Ui_Lesson_Assign(QDialog):
                         changed_data.append(self.lineEdit_8.text())             # 분반
                         changed_data.append(self.comboBox_5.currentText())      # 교과분류
                         changed_data.append(self.lineEdit_9.text())             # 요일
+
                         # 시작시간 종료시간 담는 코드
                         time = []
                         start = self.comboBox_3.currentIndex()          # 시작시간의 시간ID
                         end = self.comboBox_4.currentIndex()            # 종료시간의 시간ID
                         if start == 0 & end == 0:                       # 시작시간 종료시간 선택 안함
-                            time.append('26')
+                            time.append(26)
                             changed_data.append(str(time)[1:-1])        # 시간ID
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
@@ -559,7 +565,7 @@ class Ui_Lesson_Assign(QDialog):
                         start = self.comboBox_3.currentIndex()          # 시작시간의 시간ID
                         end = self.comboBox_4.currentIndex()            # 종료시간의 시간ID
                         if start == 0 & end == 0:                       # 시작시간 종료시간 선택 안함
-                            time.append('26')
+                            time.append(26)
                             changed_data.append(str(time)[1:-1])        # 시간ID
                         else:                                           # 시작시간 종료시간 선택함
                             for j in range(start - 1, end):
@@ -1087,7 +1093,9 @@ class Ui_Lesson_Assign(QDialog):
                 df2.replace(np.NaN, '', inplace=True)
                 df2 = df2.reset_index()[['교수명', '강좌명', '분반', '분류', '요일', '시간ID', '강의실명']]
                 df2['분반'] = df2['분반'].astype(str).apply(lambda x: x.replace('.0', ''))
+                print(df2['시간ID'])
                 df2['시간ID'] = df2['시간ID'].astype(str)
+                print(df2['시간ID'])
                 # 시간 id 중 가장 작은 숫자에 해당하는 time 시작시간으로 불러오기
                 start2 = time_df.iloc[df2['시간ID'].str.split(',').str[0]]['시작시간']
                 start2 = start2.reset_index()['시작시간']
